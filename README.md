@@ -1,7 +1,8 @@
 # Erdus
 ## ERDPlus Old ⇄ New Converter
 
-[![CI](https://img.shields.io/github/actions/workflow/status/tobiager/Erdus/ci.yml?branch=main&label=CI)](https://github.com/tobiager/Erdus/actions)
+4
+[! [CI](https://github.com/tobiager/Erdus/actions/workflows/ci.yml/badge.svg?branch=main) ](https://github.com/tobiager/Erdus/actions/workflows/ci.yml)
 [![Vercel](https://img.shields.io/badge/deploy-Vercel-black?logo=vercel)](https://erdus-inky.vercel.app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Stars](https://img.shields.io/github/stars/tobiager/Erdus?logo=github)
