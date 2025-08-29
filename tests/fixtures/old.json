@@ -1,0 +1,104 @@
+{
+  "version": 2,
+  "www": "erdplus.com",
+  "shapes": [
+    {
+      "type": "Table",
+      "details": {
+        "name": "CLIENTE",
+        "x": 220,
+        "y": 120,
+        "sort": "automatic",
+        "attributes": [
+          {
+            "names": [
+              "IdCliente"
+            ],
+            "order": 0,
+            "pkMember": true,
+            "optional": false,
+            "soloUnique": false,
+            "fk": false,
+            "dataType": "int",
+            "dataTypeSize": null,
+            "id": 101
+          },
+          {
+            "names": [
+              "Nombre"
+            ],
+            "order": 0,
+            "pkMember": false,
+            "optional": false,
+            "soloUnique": false,
+            "fk": false,
+            "dataType": "varchar",
+            "dataTypeSize": "60",
+            "id": 102
+          }
+        ],
+        "uniqueGroups": [],
+        "id": 1
+      }
+    },
+    {
+      "type": "Table",
+      "details": {
+        "name": "DOMICILIO",
+        "x": 520,
+        "y": 120,
+        "sort": "automatic",
+        "attributes": [
+          {
+            "names": [
+              "CodigoDomicilio"
+            ],
+            "order": 0,
+            "pkMember": true,
+            "optional": false,
+            "soloUnique": false,
+            "fk": false,
+            "dataType": "int",
+            "dataTypeSize": null,
+            "id": 201
+          },
+          {
+            "names": [
+              "IdCliente"
+            ],
+            "order": 1,
+            "pkMember": false,
+            "optional": false,
+            "soloUnique": false,
+            "fk": true,
+            "dataType": "int",
+            "dataTypeSize": null,
+            "references": [
+              {
+                "tableId": 1,
+                "attributeId": 101,
+                "fkSubIndex": 0
+              }
+            ],
+            "id": 202
+          }
+        ],
+        "uniqueGroups": [],
+        "id": 2
+      }
+    }
+  ],
+  "connectors": [
+    {
+      "type": "TableConnector",
+      "source": 2,
+      "destination": 1,
+      "details": {
+        "fkAttributeId": 202,
+        "id": 9001
+      }
+    }
+  ],
+  "width": 1600,
+  "height": 900
+}

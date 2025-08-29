@@ -1,0 +1,116 @@
+{
+  "diagramType": 2,
+  "data": {
+    "nodes": [
+      {
+        "id": "t-1",
+        "type": "Table",
+        "position": {
+          "x": 220,
+          "y": 120
+        },
+        "data": {
+          "label": "CLIENTE",
+          "isConnectable": true,
+          "columns": [
+            {
+              "id": "c-1-101",
+              "name": "IdCliente",
+              "type": "INT",
+              "position": 0,
+              "isPrimaryKey": true
+            },
+            {
+              "id": "c-1-102",
+              "name": "Nombre",
+              "type": "VARCHAR(60)",
+              "position": 0
+            }
+          ],
+          "numberOfGroups": 0,
+          "isSelected": false
+        },
+        "measured": {
+          "width": 240,
+          "height": 76
+        },
+        "selected": false,
+        "dragging": false
+      },
+      {
+        "id": "t-2",
+        "type": "Table",
+        "position": {
+          "x": 520,
+          "y": 120
+        },
+        "data": {
+          "label": "DOMICILIO",
+          "isConnectable": true,
+          "columns": [
+            {
+              "id": "c-2-201",
+              "name": "CodigoDomicilio",
+              "type": "INT",
+              "position": 0,
+              "isPrimaryKey": true
+            },
+            {
+              "id": "c-2-202",
+              "name": "IdCliente",
+              "type": "INT",
+              "position": 0
+            }
+          ],
+          "numberOfGroups": 0,
+          "isSelected": false
+        },
+        "measured": {
+          "width": 240,
+          "height": 76
+        },
+        "selected": false,
+        "dragging": false
+      }
+    ],
+    "edges": [
+      {
+        "id": "t-2->t-1_g-2-1-202",
+        "type": "Relational",
+        "source": "t-2",
+        "target": "t-1",
+        "targetHandle": "foreign-key-handle-g-2-1-202",
+        "markerStart": {
+          "type": "arrow"
+        },
+        "data": {
+          "foreignKeyProps": {
+            "foreignKeyGroupId": "g-2-1-202",
+            "sourceTableId": "t-2",
+            "columns": [
+              {
+                "id": "c-2-202",
+                "name": "IdCliente",
+                "type": "INT"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "viewport": {
+      "x": -40,
+      "y": 0,
+      "zoom": 1
+    }
+  },
+  "name": "imported-old",
+  "folder": {
+    "name": "Diagrams",
+    "folderType": 1,
+    "depth": 0,
+    "id": 1
+  },
+  "id": 1,
+  "updatedAtTimestamp": 0
+}

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>ERDPlus Old ⇄ New Converter</title>
+  <meta name="description" content="Conversor lossless de ERDPlus (old⇄new). 100% local.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+  <style>
+    :root{
+      --bg:#0f172a; --panel:#111827; --text:#e5e7eb; --muted:#9ca3af; --accent:#22d3ee;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif;background:linear-gradient(180deg,#0b1220,#0f172a);color:var(--text)}
+    header{padding:28px 20px;text-align:center}
+    header h1{margin:0 0 6px;font-size:26px}
+    header p{margin:0;color:var(--muted)}
+    main{max-width:960px;margin:0 auto;padding:20px}
+    .card{background:rgba(17,24,39,.7);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}}
+    .drop{border:2px dashed rgba(255,255,255,.2);border-radius:10px;padding:18px;text-align:center;cursor:pointer}
+    .drop:hover{border-color:var(--accent)}
+    .row{display:flex;gap:10px;align-items:center;margin-top:12px}
+    input[type=file]{flex:1}
+    button{background:var(--accent);color:#06242b;border:none;border-radius:8px;padding:10px 14px;font-weight:600;cursor:pointer}
+    button.secondary{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,.2)}
+    .log{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;background:#0a0f1e;border-radius:8px;padding:12px;margin-top:12px;white-space:pre-wrap;max-height:220px;overflow:auto;color:#cbd5e1}
+    ul{margin-top:8px}
+    a{color:var(--accent)}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ERDPlus Old ⇄ New Converter</h1>
+    <p>Conversión 100% local (sin backend). Round‑trip exacto, incl. FKs compuestas.</p>
+  </header>
+  <main>
+    <div class="grid">
+      <div class="card">
+        <h3>Convertir archivo (.erdplus / .json)</h3>
+        <div id="drop" class="drop">Arrastrá y soltá tu archivo o hacé click</div>
+        <div class="row">
+          <input id="file" type="file" accept=".erdplus,.json"/>
+          <button id="convert">Convertir</button>
+          <button id="sample" class="secondary">Ejemplo</button>
+        </div>
+        <div id="log" class="log">Listo para convertir…</div>
+      </div>
+      <div class="card">
+        <h3>Detalles</h3>
+        <ul>
+          <li>Detecta formato automáticamente (old / new).</li>
+          <li>Conserva posiciones, orden, PKs y FKs (simples/compuestas).</li>
+          <li>Descarga: <code>archivo-old.erdplus</code> o <code>archivo-new.erdplus</code>.</li>
+        </ul>
+        <p>Privado por diseño: el JSON se procesa en tu navegador.</p>
+        <p><a href="https://github.com/your-user/erdplus-converter" target="_blank" rel="noreferrer">GitHub</a></p>
+      </div>
+    </div>
+  </main>
+  <script type="module" src="/src/app.ts"></script>
+</body>
+</html>
