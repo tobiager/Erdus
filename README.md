@@ -11,7 +11,7 @@ Conversor **lossless** entre formatos **old** y **new** de ERDPlus. Soporta **FK
 - Salida: `nombre-old.erdplus` o `nombre-new.erdplus` según corresponda.
 
 ## Demo
-- Prod: https://erdplus-converter.vercel.app
+- Prod: https://erdus-inky.vercel.app
 
 ## Uso local
 ```bash
