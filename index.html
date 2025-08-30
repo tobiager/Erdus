@@ -8,7 +8,7 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
   <style>
     :root{
-      --bg:#0f172a; --panel:#111827; --text:#e5e7eb; --muted:#9ca3af; --accent:#265cff;
+      --bg:#0f172a; --panel:#111827; --text:#e5e7eb; --muted:#9ca3af; --accent:#1280ff;
     }
     *{box-sizing:border-box}
     body{margin:0;min-height:100vh;display:flex;flex-direction:column;font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif;background:linear-gradient(180deg,#000,#0a0a0a);color:var(--text)}
@@ -21,12 +21,9 @@
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
     @media(max-width:880px){.grid{grid-template-columns:1fr}}
     .drop{border:2px dashed rgba(255,255,255,.2);border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:border-color .3s,background-color .3s}
-    .drop:hover{border-color:var(--accent);background:rgba(59,130,246,.05)}
+    .drop:hover{border-color:var(--accent);background:rgba(18,128,255,.08)}
     .row{display:flex;gap:12px;align-items:center;margin-top:16px;flex-wrap:wrap}
     input[type=file]{display:none}
-    button, .btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-weight:600;cursor:pointer;transition:background .3s,transform .3s}
-    button:hover, .btn:hover{transform:translateY(-2px);filter:brightness(1.1)}
-    button.secondary{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,.2)}
     .log{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;background:#0a0f1e;border-radius:8px;padding:12px;margin-top:12px;white-space:pre-wrap;max-height:220px;overflow:auto;color:#cbd5e1}
     ul{margin-top:8px}
     a{color:var(--accent)}
@@ -36,12 +33,59 @@
     footer svg{width:16px;height:16px;fill:currentColor}
     @keyframes fadeDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
     @keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+    /* === Botón oscuro + acento azul (compartido) === */
+    .btn-ghost,
+    .gh-star-btn{
+      display:inline-flex;align-items:center;gap:.5rem;
+      padding:.55rem .9rem;border-radius:.6rem;
+      background:#111827;                 /* fondo negro/gris oscuro */
+      color:var(--accent);                 /* texto/ícono azul */
+      border:1px solid rgba(255,255,255,.1);
+      font-weight:600;line-height:1;cursor:pointer;
+      text-decoration:none;
+      transition:transform .06s ease, background .2s ease, border-color .2s ease, filter .2s ease;
+    }
+    .btn-ghost:hover,
+    .gh-star-btn:hover{ background:#1f2937; border-color:var(--accent); }
+    .btn-ghost:active,
+    .gh-star-btn:active{ transform:translateY(1px); }
+    .btn-ghost svg,
+    .gh-star-btn svg{ fill:currentColor; }
+    .btn-ghost:focus-visible,
+    .gh-star-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+    .footer-inner {
+      display:flex;
+      justify-content:center;   /* centra horizontal */
+      align-items:center;       /* alinea vertical */
+      gap:6px;                  /* espacio entre texto y link */
+      flex-wrap:wrap;           /* se acomoda si la pantalla es chica */
+    }
+
+    .gh-link {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      color:var(--accent);
+      text-decoration:none;
+      font-weight:600;
+    }
+
+    .gh-link:hover { text-decoration:underline; }
+
+    .gh-icon {
+      width:16px;
+      height:16px;
+      fill:currentColor;
+    }
+
   </style>
 </head>
 <body>
   <header>
     <h1>ERDPlus Old ⇄ New Converter</h1>
-    <p>Conversión 100% local (sin backend). Round‑trip exacto, incl. FKs compuestas.</p>
+    <p>Conversión 100% local (sin backend). Round-trip exacto, incl. FKs compuestas.</p>
   </header>
   <main>
     <div class="grid">
@@ -50,8 +94,8 @@
         <div id="drop" class="drop">Arrastrá y soltá tu archivo o hacé click</div>
         <div class="row">
           <input id="file" type="file" accept=".erdplus,.json"/>
-          <button id="convert">Convertir</button>
-          <button id="sample" class="secondary">Ejemplo</button>
+          <button id="convert" class="btn-ghost">Convertir</button>
+          <button id="sample"  class="btn-ghost">Ejemplo</button>
         </div>
         <div id="log" class="log">Listo para convertir…</div>
       </div>
@@ -61,16 +105,47 @@
           <li>Detecta formato automáticamente (old / new).</li>
           <li>Conserva posiciones, orden, PKs y FKs (simples/compuestas).</li>
           <li>Descarga: <code>archivo-old.erdplus</code> o <code>archivo-new.erdplus</code>.</li>
-          <li>Actualmente hay un error que no pasa las conecciones.</li>
+          <li>Actualmente hay un error que no pasa las <strong>conexiones</strong>.</li>
         </ul>
         <p>Privado por diseño: el JSON se procesa en tu navegador.</p>
-        <p><a href="https://github.com/tobiager/Erdus" target="_blank" rel="noreferrer">Repositorio de GitHub</a></p>
+        <p>
+          <a class="gh-star-btn" href="https://github.com/tobiager/Erdus" target="_blank" rel="noopener">
+            <svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16">
+              <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38
+                       0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+                       -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07
+                       -1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.01.08-2.11
+                       0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27
+                       1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.91.08 2.11
+                       .51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
+                       0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+            </svg>
+            <span>Dar estrella en GitHub</span>
+          </a>
+        </p>
       </div>
     </div>
   </main>
   <footer>
-    Hecho por pasión con <a href="https://github.com/tobiager" target="_blank" rel="noreferrer"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.01.08-2.11 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.91.08 2.11.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>Tobias</a>
-  </footer>
+    <div class="footer-inner">
+      <span>© 2025 · Hecho con pasión y dedicación por </span>
+      <a class="gh-link" href="https://github.com/tobiager" target="_blank" rel="noopener">
+        <svg class="gh-icon" viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 
+          0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+          -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 
+          2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 
+          0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 
+          0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 
+          2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 
+          2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 
+          1.48 0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38A8.013 
+          8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+        Tobías
+      </a>
+    </div>
+  </footer>  
   <script type="module" src="/src/app.ts"></script>
 </body>
 </html>
