@@ -2,7 +2,9 @@
 ## ERDPlus Old ⇄ New Converter
 
 
+[![npm](https://img.shields.io/npm/v/erdplus-converter)](https://www.npmjs.com/package/erdplus-converter)
 [![CI](https://github.com/tobiager/Erdus/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/tobiager/Erdus/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/tobiager/Erdus/branch/main/graph/badge.svg)](https://codecov.io/gh/tobiager/Erdus)
 [![Vercel](https://img.shields.io/badge/deploy-Vercel-black?logo=vercel)](https://erdus-inky.vercel.app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Stars](https://img.shields.io/github/stars/tobiager/Erdus?logo=github)
@@ -23,8 +25,22 @@ Erdus es un conversor **lossless** entre los formatos **old** y **new** de ERDPl
 
 ## 🔗 Demo
 - Producción: **https://erdus-inky.vercel.app**
+- StackBlitz: [Sandbox interactivo](https://stackblitz.com/github/tobiager/Erdus)
 
 > En ERDPlus (versión nueva) seleccioná **Menu → Restore → Upload** para abrir el archivo convertido. Las posiciones, tipos, restricciones y conexiones se mantienen intactas.
+
+---
+
+## ⚡ Quickstart (1 min)
+
+```bash
+git clone https://github.com/tobiager/Erdus.git
+cd Erdus
+npm i
+npm run dev
+```
+
+Abrí [http://localhost:5173](http://localhost:5173) y arrastrá tu archivo `.erdplus` para convertirlo.
 
 ---
 
@@ -99,6 +115,15 @@ npm i
 
 ---
 
+## 📚 Ejemplos
+
+- [examples/next](examples/next)
+- [examples/ci4](examples/ci4)
+- [examples/supabase](examples/supabase)
+- Documentación: [docs](docs/README.md)
+
+---
+
 ## ☁️ Deploy en Vercel
 1. Importá el repositorio (Framework: **Vite**).
 2. Build: `npm run build`
@@ -164,6 +189,14 @@ npm run test
 ```
 - **old → new → old**: deben conservarse tablas, atributos, posiciones y claves.
 - **new → old → new**: deben conservarse nodos, *edges* y columnas FK.
+
+---
+
+## ❓ FAQ
+
+**¿El conversor sube mis archivos?** No, todo corre en tu navegador.
+
+**¿Funciona con claves foráneas compuestas?** Sí, soporta FKs múltiples sin perder información.
 
 ---
 

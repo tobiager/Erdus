@@ -72,9 +72,9 @@ export function oldToNew(oldDoc: OldDoc): NewDoc {
     for (const c of oldDoc.connectors as OldConnector[]) {
       if (c.type !== 'TableConnector') continue;
       const fkAttrId = (c.details as any)?.fkAttributeId;
-      const rec = attrById.get(fkAttrId);
+      const child = c.source;
+      const rec = attrById.get(`${child}-${fkAttrId}`);
       if (!rec) continue;
-      const child = rec.tableId;             // en old, source = hijo
       const parent = c.destination;          // destino = padre
       let idx = 0;
       const ref = rec.attr.references?.[0];

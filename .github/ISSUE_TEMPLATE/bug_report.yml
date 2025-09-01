@@ -1,6 +1,6 @@
 name: Bug report
 description: Reportá un bug
-labels: ["bug"]
+labels: ["bug", "help wanted"]
 body:
   - type: textarea
     attributes:
