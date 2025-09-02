@@ -18,7 +18,8 @@
     "build": "vite build",
     "preview": "vite preview --strictPort --port 4173",
     "test": "vitest run",
-    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "format": "prettier --write .",
     "cli": "node dist/cli.js"
   },

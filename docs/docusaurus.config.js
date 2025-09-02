@@ -1,3 +1,4 @@
+/* eslint-env node */
 module.exports = {
   title: 'Erdus Docs',
   url: 'https://tobiager.github.io',

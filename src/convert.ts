@@ -1,5 +1,5 @@
 // convert.ts — ERDPlus old ⇄ new (lossless determinístico)
-import type { OldDoc, OldTable, OldAttr, OldConnector, NewDoc, NewNode, NewCol } from './types';
+import type { OldDoc, OldTable, OldAttr, OldConnector, NewDoc, NewNode, NewCol, NewEdge } from './types';
 
 const nodeId = (oldId: number) => `t-${oldId}`;
 const colId  = (oldTableId: number, oldAttrId: number) => `c-${oldTableId}-${oldAttrId}`;
