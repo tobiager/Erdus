@@ -8,7 +8,7 @@
 
 [Disponible en inglés](README.md) ✦ [Demo](https://erdus-inky.vercel.app) ✦ [Docs](#) ✦ [Contribuir](#-contribuyendo) ✦ [Roadmap](#%EF%B8%8F-roadmap-erdus--conversor-universal)
 
-**One IR to map them all.** Erdus es el **conversor universal open source** para diagramas ER y esquemas de bases de datos.  
+**Un IR para mapearlos a todos.** Erdus es el **conversor universal open source** para diagramas ER y esquemas de bases de datos.  
 Unifica ERDPlus, SQL DDL, Prisma, JSON Schema y más bajo una estricta **Representación Intermedia (IR)**.  
 Construí una vez, convertí en cualquier lugar. 🚀
 
