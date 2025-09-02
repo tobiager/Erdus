@@ -1,21 +1,35 @@
+<div align="center">
+
+[![Erdus](assets/banner.png)](https://erdus-inky.vercel.app)
+
 # Erdus
-## Conversor universal de diagramas ER
+### Conversor universal de diagramas ER
 
-[Disponible en inglés](README.md)
+[Disponible en inglés](README.md) ✦ [Demo](https://erdus-inky.vercel.app) ✦ [Docs](#) ✦ [Contribuir](#-contribuir) ✦ [Roadmap](#-roadmap--conversor-universal)
 
-[![npm](https://img.shields.io/npm/v/erdplus-converter)](https://www.npmjs.com/package/erdplus-converter)
-[![CI](https://github.com/tobiager/Erdus/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/tobiager/Erdus/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/tobiager/Erdus/branch/main/graph/badge.svg)](https://codecov.io/gh/tobiager/Erdus)
-[![Vercel](https://img.shields.io/badge/deploy-Vercel-black?logo=vercel)](https://erdus-inky.vercel.app)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![Stars](https://img.shields.io/github/stars/tobiager/Erdus?logo=github)
-![Issues](https://img.shields.io/github/issues/tobiager/Erdus)
-![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?logo=vite&logoColor=white)
-![Node](https://img.shields.io/badge/Node-≥18-339933?logo=node.js&logoColor=white)
+**One IR to map them all.** Erdus es el **conversor universal open source** para diagramas ER y esquemas de bases de datos.  
+Unifica ERDPlus, SQL DDL, Prisma, JSON Schema y más bajo una estricta **Representación Intermedia (IR)**.  
+Construí una vez, convertí en cualquier lugar. 🚀
 
-Erdus es un conversor **open source** pensado para transformar diagramas ER entre distintos formatos. Su núcleo modular lo convierte en un **conversor universal** al que se le pueden agregar nuevos destinos mediante plugins. El primer módulo incluido convierte los formatos **old** y **new** de ERDPlus sin pérdida, manejando **claves foráneas compuestas**, generando IDs determinísticos para las columnas, preservando el orden y las posiciones y reconstruyendo todas las relaciones, de modo que al restaurar el archivo en ERDPlus el diagrama se vea idéntico al original.
+</div>
+
+<br>
+
+<div align="center">
+
+![Stars](https://img.shields.io/github/stars/tobiager/Erdus?labelColor=black&style=for-the-badge&color=1280ff&logo=github)
+![MIT](https://img.shields.io/badge/Licencia-MIT-FFF?labelColor=black&style=for-the-badge&color=1280ff)
+![CI](https://img.shields.io/github/actions/workflow/status/tobiager/Erdus/ci.yml?label=CI&labelColor=black&style=for-the-badge&color=1280ff)
+![Vercel](https://img.shields.io/badge/Deploy-Vercel-FFF?labelColor=black&logo=vercel&style=for-the-badge&color=1280ff)
+
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white&style=for-the-badge&labelColor=black)
+![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?logo=vite&logoColor=white&style=for-the-badge&labelColor=black)
+![Node](https://img.shields.io/badge/Node-≥18-339933?logo=node.js&logoColor=white&style=for-the-badge&labelColor=black)
+
+![Vercel OSS Program](https://vercel.com/oss/program-badge.svg)
+
+</div>
+
 
 - **100 % cliente (privacidad)**: los archivos nunca abandonan el navegador.
 - **Entrada**: archivos `.erdplus` o `.json` (se detecta el formato automáticamente).

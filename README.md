@@ -1,19 +1,35 @@
+<div align="center">
+
+[![Erdus](assets/banner.png)](https://erdus-inky.vercel.app)
+
 # Erdus
-## Universal ER Diagram Converter
+### Universal ER Diagram Converter
 
-[Also available in Spanish](README.es.md)
+[Also available in Spanish](README.es.md) ✦ [Demo](https://erdus-inky.vercel.app) ✦ [Docs](#) ✦ [Contributing](#contributing) ✦ [Roadmap](#-roadmap--universal-converter)
 
-[![CI](https://github.com/tobiager/Erdus/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/tobiager/Erdus/actions/workflows/ci.yml)
-[![Vercel](https://img.shields.io/badge/deploy-Vercel-black?logo=vercel)](https://erdus-inky.vercel.app)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![Stars](https://img.shields.io/github/stars/tobiager/Erdus?logo=github)
-![Issues](https://img.shields.io/github/issues/tobiager/Erdus)
-![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?logo=vite&logoColor=white)
-![Node](https://img.shields.io/badge/Node-≥18-339933?logo=node.js&logoColor=white)
+**One IR to map them all.** Erdus is the **open-source universal converter** for ER diagrams and database schemas.  
+It unifies ERDPlus, SQL DDL, Prisma, JSON Schema and more under a strict **Intermediate Representation (IR)**.  
+Build once, convert everywhere. 🚀
 
-Erdus is an **open-source** platform that aims to convert ER diagrams across formats. Its modular core makes it a **universal converter** where new plugins can add more targets. The first bundled module converts ERDPlus **old** ⇄ **new** formats **losslessly**, handling **composite foreign keys**, generating deterministic column IDs, preserving order and positions and rebuilding all relationships so the diagram looks identical after being restored in ERDPlus.
+</div>
+
+<br>
+
+<div align="center">
+
+![Stars](https://img.shields.io/github/stars/tobiager/Erdus?labelColor=black&style=for-the-badge&color=1280ff&logo=github)
+![MIT](https://img.shields.io/badge/License-MIT-FFF?labelColor=black&style=for-the-badge&color=1280ff)
+![CI](https://img.shields.io/github/actions/workflow/status/tobiager/Erdus/ci.yml?label=CI&labelColor=black&style=for-the-badge&color=1280ff)
+![Vercel](https://img.shields.io/badge/Deploy-Vercel-FFF?labelColor=black&logo=vercel&style=for-the-badge&color=1280ff)
+
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white&style=for-the-badge&labelColor=black)
+![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?logo=vite&logoColor=white&style=for-the-badge&labelColor=black)
+![Node](https://img.shields.io/badge/Node-≥18-339933?logo=node.js&logoColor=white&style=for-the-badge&labelColor=black)
+
+![Vercel OSS Program](https://vercel.com/oss/program-badge.svg)
+
+</div>
+
 
 - **100% client side (privacy)**: files never leave the browser.
 - **Input**: `.erdplus` or `.json` files (format detected automatically).
