@@ -19,7 +19,8 @@
     "preview": "vite preview --strictPort --port 4173",
     "test": "vitest run",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "cli": "node dist/cli.js"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.18.0",

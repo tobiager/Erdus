@@ -1,0 +1,11 @@
+model CLIENTE {
+  IdCliente Int @id
+  Nombre    String
+  domicilios DOMICILIO[]
+}
+
+model DOMICILIO {
+  CodigoDomicilio Int @id
+  IdCliente       Int
+  cliente         CLIENTE @relation(fields: [IdCliente], references: [IdCliente])
+}

@@ -1,25 +1,19 @@
 import { oldToNew, newToOld } from './convert';
+import { newToIR, IRDiagram } from './ir';
+import { irToPostgres } from './ir-to-sql';
+import { irToPrisma } from './ir-to-prisma';
+import { sqlToIR } from './sql-to-ir';
+import { prismaToIR } from './prisma-to-ir';
+import { irToNew } from './ir-to-new';
 
 const $ = <T extends HTMLElement>(sel: string) => document.querySelector(sel) as T;
-
 const log = (msg: string) => { ($('#log') as HTMLDivElement).textContent = msg; };
-
-function detectFormat(obj: any): 'old'|'new' {
-  if (obj && obj.version === 2 && obj.www === 'erdplus.com' && Array.isArray(obj.shapes)) return 'old';
-  if (obj && obj.diagramType === 2 && obj.data && Array.isArray(obj.data.nodes)) return 'new';
-  throw new Error('No parece ERDPlus old ni new.');
-}
 
 function computeOutName(inputName: string, to: 'old'|'new'): string {
   const ext = '.erdplus';
-  const base = inputName.endsWith(ext) ? inputName.slice(0, -ext.length) : inputName.replace(/\.(json)$/i, '');
+  const base = inputName.endsWith(ext) ? inputName.slice(0, -ext.length) : inputName.replace(/\.(json|sql|prisma)$/i, '');
   const clean = base.replace(/-(old|new)$/i, '');
   return `${clean}-${to}${ext}`;
-}
-
-async function readFile(file: File): Promise<any> {
-  const text = await file.text();
-  return JSON.parse(text);
 }
 
 function download(obj: any, name: string) {
@@ -31,39 +25,85 @@ function download(obj: any, name: string) {
   URL.revokeObjectURL(a.href);
 }
 
-async function handleConvert(file: File) {
-  try {
-    log(`Leyendo ${file.name}…`);
-    const data = await readFile(file);
-    const fmt = detectFormat(data);
-    log(`Formato detectado: ${fmt.toUpperCase()}. Convirtiendo…`);
+function downloadText(text: string, name: string) {
+  const blob = new Blob([text], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
 
+type InFmt = 'old'|'new'|'sql'|'prisma';
+
+function detectInput(text: string): InFmt {
+  try {
+    const obj = JSON.parse(text);
+    if (obj && obj.version === 2 && obj.www === 'erdplus.com' && Array.isArray(obj.shapes)) return 'old';
+    if (obj && obj.diagramType === 2 && obj.data && Array.isArray(obj.data.nodes)) return 'new';
+  } catch { /* ignore */ }
+  if (/model\s+\w+\s+{/.test(text)) return 'prisma';
+  if (/CREATE TABLE/i.test(text)) return 'sql';
+  throw new Error('Formato de entrada no soportado');
+}
+
+async function handleProcess(file: File, target: 'sql'|'prisma'|'old'|'new') {
+  try {
+    const text = await file.text();
+    const fmt = detectInput(text);
+    log(`Entrada ${fmt.toUpperCase()} → ${target.toUpperCase()}`);
+    let ir: IRDiagram;
+    let newDoc;
     if (fmt === 'old') {
-      const out = oldToNew(data);
-      const name = computeOutName(file.name, 'new');
-      download(out, name);
-      log(`OK → descargado como ${name}`);
+      const data = JSON.parse(text);
+      newDoc = oldToNew(data);
+      ir = newToIR(newDoc);
+    } else if (fmt === 'new') {
+      newDoc = JSON.parse(text);
+      ir = newToIR(newDoc);
+    } else if (fmt === 'sql') {
+      ir = sqlToIR(text);
+      newDoc = irToNew(ir);
     } else {
-      const out = newToOld(data);
-      const name = computeOutName(file.name, 'old');
-      download(out, name);
-      log(`OK → descargado como ${name}`);
+      ir = prismaToIR(text);
+      newDoc = irToNew(ir);
     }
-  } catch (e: any) {
+
+    const preview = $('#preview');
+    const pre = $('#out') as HTMLPreElement;
+    if (target === 'sql') {
+      pre.textContent = irToPostgres(ir);
+      preview.style.display = 'block';
+    } else if (target === 'prisma') {
+      pre.textContent = irToPrisma(ir);
+      preview.style.display = 'block';
+    } else {
+      preview.style.display = 'none';
+      const outDoc = target === 'new' ? newDoc : newToOld(newDoc);
+      const name = computeOutName(file.name, target);
+      download(outDoc, name);
+      log(`OK → descargado como ${name}`);
+      return;
+    }
+    log('Listo.');
+  } catch (e:any) {
     console.error(e);
     log('Error: ' + (e?.message || e));
   }
 }
 
 function setupUI() {
-  const input = document.getElementById('file') as HTMLInputElement;
-  const btn = document.getElementById('convert') as HTMLButtonElement;
-  const drop = document.getElementById('drop') as HTMLDivElement;
-  const sample = document.getElementById('sample') as HTMLButtonElement;
+  const input = $('#file') as HTMLInputElement;
+  const format = $('#format') as HTMLSelectElement;
+  const run = $('#run') as HTMLButtonElement;
+  const drop = $('#drop') as HTMLDivElement;
+  const sample = $('#sample') as HTMLButtonElement;
+  const copyBtn = $('#copy-out') as HTMLButtonElement;
+  const dlBtn = $('#download-out') as HTMLButtonElement;
 
-  btn.addEventListener('click', () => {
+  run.addEventListener('click', () => {
     if (!input.files || input.files.length === 0) { log('Elegí un archivo primero.'); return; }
-    handleConvert(input.files[0]);
+    handleProcess(input.files[0], format.value as any);
   });
 
   drop.addEventListener('dragover', e => { e.preventDefault(); drop.style.borderColor = '#22d3ee'; });
@@ -72,11 +112,27 @@ function setupUI() {
     e.preventDefault();
     drop.style.borderColor = 'rgba(255,255,255,.2)';
     const f = e.dataTransfer?.files?.[0];
-    if (f) handleConvert(f);
+    if (f) handleProcess(f, format.value as any);
   });
   drop.addEventListener('click', () => input.click());
 
-  sample.addEventListener('click', async () => {
+  copyBtn.addEventListener('click', () => {
+    const txt = ($('#out') as HTMLPreElement).textContent || '';
+    if (!txt) { log('Nada para copiar.'); return; }
+    navigator.clipboard.writeText(txt);
+    log('Copiado al portapapeles.');
+  });
+
+  dlBtn.addEventListener('click', () => {
+    const fmt = format.value as 'sql'|'prisma';
+    const txt = ($('#out') as HTMLPreElement).textContent || '';
+    if (!txt) { log('Nada para descargar.'); return; }
+    const name = fmt === 'sql' ? 'schema.sql' : 'schema.prisma';
+    downloadText(txt, name);
+    log('Descargado.');
+  });
+
+  sample.addEventListener('click', () => {
     const sampleOld = {
       version: 2, www: 'erdplus.com',
       shapes: [
@@ -98,7 +154,7 @@ function setupUI() {
       width: 1600, height: 900
     };
     const f = new File([JSON.stringify(sampleOld)], 'sample-old.erdplus', { type:'application/json' });
-    handleConvert(f);
+    handleProcess(f, format.value as any);
   });
 }
 

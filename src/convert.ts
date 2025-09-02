@@ -120,7 +120,7 @@ export function oldToNew(oldDoc: OldDoc): NewDoc {
   }
 
   
-  const edges = [];
+  const edges: NewEdge[] = [];
   for (const { child, parent, parts } of groups.values()) {
     // ordenar por fkSubIndex y por id para estabilidad
     parts.sort((x,y) => (x.idx - y.idx) || (x.attr.id - y.attr.id));

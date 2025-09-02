@@ -85,26 +85,40 @@
 <body>
   <header>
     <h1>Erdus: Universal Converter</h1>
-    <p>Converts ERDPlus old and new to a universal format. Exact round-trip, including composite FKs.</p>
+    <p>Converts ERDPlus (old⇄new) and generates PostgreSQL DDL or Prisma schemas. 100% local.</p>
   </header>
   <main>
     <div class="grid">
       <div class="card">
-        <h3>Convert file (.erdplus / .json)</h3>
+        <h3>Convert file</h3>
         <div id="drop" class="drop">Drag and drop your file or click</div>
         <div class="row">
-          <input id="file" type="file" accept=".erdplus,.json"/>
-          <button id="convert" class="btn-ghost">Convert</button>
-          <button id="sample"  class="btn-ghost">Sample</button>
+          <input id="file" type="file" accept=".erdplus,.json,.sql,.prisma"/>
+          <select id="format" class="btn-ghost">
+            <option value="sql">SQL</option>
+            <option value="prisma">Prisma</option>
+            <option value="new">ERDPlus (new)</option>
+            <option value="old">ERDPlus (old)</option>
+          </select>
+          <button id="run" class="btn-ghost">Convert</button>
+          <button id="sample" class="btn-ghost">Sample</button>
         </div>
         <div id="log" class="log">Ready to convert…</div>
+        <div id="preview" style="display:none">
+          <div class="row">
+            <button id="copy-out" class="btn-ghost">Copy</button>
+            <button id="download-out" class="btn-ghost">Download</button>
+          </div>
+          <pre id="out" class="log"></pre>
+        </div>
       </div>
       <div class="card">
         <h3>Details</h3>
         <ul>
-          <li>Auto-detects format (old / new).</li>
-          <li>Preserves positions, order, PKs and FKs (simple/composite).</li>
-          <li>Downloads: <code>file-old.erdplus</code> or <code>file-new.erdplus</code>.</li>
+          <li>Auto-detects ERDPlus, SQL or Prisma inputs.</li>
+          <li>Preserves positions, order, PKs and simple FKs.</li>
+          <li>Convert to ERDPlus <em>old</em> or <em>new</em>, PostgreSQL or Prisma.</li>
+          <li>Preview and copy/download SQL or Prisma output instantly.</li>
           <li>Currently there's a bug that doesn't transfer <strong>connections</strong>.</li>
         </ul>
         <p>Private by design: JSON is processed in your browser.</p>

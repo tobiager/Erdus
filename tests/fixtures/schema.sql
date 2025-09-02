@@ -1,0 +1,10 @@
+CREATE TABLE "CLIENTE" (
+  "IdCliente" INT PRIMARY KEY,
+  "Nombre" VARCHAR(60) NOT NULL
+);
+
+CREATE TABLE "DOMICILIO" (
+  "CodigoDomicilio" INT PRIMARY KEY,
+  "IdCliente" INT NOT NULL,
+  FOREIGN KEY ("IdCliente") REFERENCES "CLIENTE"("IdCliente")
+);
