@@ -1,0 +1,44 @@
+model empleado {
+  id_empleado Int @id
+  nombre_completo String @db.VarChar(200)
+  id_cargo Int
+  cargo cargo @relation(fields: [id_cargo], references: [id_cargo])
+  asigna_en asigna_en[]
+}
+
+model cargo {
+  id_cargo Int @id
+  nombre String @db.VarChar(200)
+  empleado empleado[]
+}
+
+model tag {
+  id_tag Int @id
+  nombre String? @db.VarChar(200)
+  proyecto_tag proyecto_tag[]
+}
+
+model proyecto {
+  id_proyecto Int @id
+  nombre_proyecto String @db.VarChar(200)
+  asigna_en asigna_en[]
+  proyecto_tag proyecto_tag[]
+}
+
+model asigna_en {
+  fecha_inicio DateTime @db.Date
+  fecha_fin DateTime @db.Date
+  id_empleado Int
+  id_proyecto Int
+  empleado empleado @relation(fields: [id_empleado], references: [id_empleado])
+  proyecto proyecto @relation(fields: [id_proyecto], references: [id_proyecto])
+  @@id([id_empleado, id_proyecto])
+}
+
+model proyecto_tag {
+  id_tag Int
+  id_proyecto Int
+  tag tag @relation(fields: [id_tag], references: [id_tag])
+  proyecto proyecto @relation(fields: [id_proyecto], references: [id_proyecto])
+  @@id([id_tag, id_proyecto])
+}

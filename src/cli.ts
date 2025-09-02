@@ -21,9 +21,9 @@ function detectInput(text: string): 'old'|'new'|'sql'|'prisma' {
 }
 
 function main() {
-  const [, , file, target] = process.argv;
-  if (!file || !target) {
-    console.error('Uso: erdus <entrada> <sql|prisma|old|new>');
+  const [, , cmd, file, target] = process.argv;
+  if (cmd !== 'convert' || !file || !target) {
+    console.error('Uso: erdus convert <entrada> <sql|prisma|old|new>');
     process.exit(1);
   }
   const raw = readFileSync(file, 'utf8');

@@ -25,6 +25,8 @@
     .row{display:flex;gap:12px;align-items:center;margin-top:16px;flex-wrap:wrap}
     input[type=file]{display:none}
     .log{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;background:#0a0f1e;border-radius:8px;padding:12px;margin-top:12px;white-space:pre-wrap;max-height:220px;overflow:auto;color:#cbd5e1}
+    .tabs{display:flex;gap:12px;margin-top:12px}
+    .tab-active{border-color:var(--accent)}
     ul{margin-top:8px}
     a{color:var(--accent)}
     footer{margin-top:auto;text-align:center;padding:20px;color:var(--muted);background:rgba(0,0,0,.8)}
@@ -109,7 +111,12 @@
             <button id="copy-out" class="btn-ghost">Copy</button>
             <button id="download-out" class="btn-ghost">Download</button>
           </div>
+          <div class="tabs">
+            <button id="tab-out" class="btn-ghost tab-active">Result</button>
+            <button id="tab-loss" class="btn-ghost">Losses</button>
+          </div>
           <pre id="out" class="log"></pre>
+          <pre id="loss" class="log" style="display:none"></pre>
         </div>
       </div>
       <div class="card">

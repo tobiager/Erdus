@@ -54,31 +54,56 @@ async function handleProcess(file: File, target: 'sql'|'prisma'|'old'|'new') {
     log(`Entrada ${fmt.toUpperCase()} → ${target.toUpperCase()}`);
     let ir: IRDiagram;
     let newDoc;
+    const losses: string[] = [];
     if (fmt === 'old') {
       const data = JSON.parse(text);
+      if (data.connectors && data.connectors.length) {
+        losses.push(`${data.connectors.length} connectors ignored`);
+      }
       newDoc = oldToNew(data);
       ir = newToIR(newDoc);
     } else if (fmt === 'new') {
       newDoc = JSON.parse(text);
+      const extra = (newDoc.data.edges || []).filter((e: any) => e.type !== 'Relational').length;
+      if (extra) losses.push(`${extra} edges not convertible`);
       ir = newToIR(newDoc);
     } else if (fmt === 'sql') {
       ir = sqlToIR(text);
       newDoc = irToNew(ir);
+      losses.push('Comments and non-table statements are ignored');
     } else {
       ir = prismaToIR(text);
       newDoc = irToNew(ir);
+      losses.push('Unsupported Prisma features were ignored');
     }
 
     const preview = $('#preview');
     const pre = $('#out') as HTMLPreElement;
+    const lossPre = $('#loss') as HTMLPreElement;
+    const copyBtn = $('#copy-out') as HTMLButtonElement;
+    const dlBtn = $('#download-out') as HTMLButtonElement;
+    const tabOut = $('#tab-out') as HTMLButtonElement;
+    const tabLoss = $('#tab-loss') as HTMLButtonElement;
+    lossPre.textContent = losses.length ? losses.join('\n') : 'No losses detected.';
+    tabOut.classList.add('tab-active');
+    tabLoss.classList.remove('tab-active');
+    pre.style.display = 'block';
+    lossPre.style.display = 'none';
     if (target === 'sql') {
       pre.textContent = irToPostgres(ir);
       preview.style.display = 'block';
+      copyBtn.style.display = '';
+      dlBtn.style.display = '';
     } else if (target === 'prisma') {
       pre.textContent = irToPrisma(ir);
       preview.style.display = 'block';
+      copyBtn.style.display = '';
+      dlBtn.style.display = '';
     } else {
-      preview.style.display = 'none';
+      pre.textContent = '';
+      preview.style.display = 'block';
+      copyBtn.style.display = 'none';
+      dlBtn.style.display = 'none';
       const outDoc = target === 'new' ? newDoc : newToOld(newDoc);
       const name = computeOutName(file.name, target);
       download(outDoc, name);
@@ -100,6 +125,10 @@ function setupUI() {
   const sample = $('#sample') as HTMLButtonElement;
   const copyBtn = $('#copy-out') as HTMLButtonElement;
   const dlBtn = $('#download-out') as HTMLButtonElement;
+  const tabOut = $('#tab-out') as HTMLButtonElement;
+  const tabLoss = $('#tab-loss') as HTMLButtonElement;
+  const outPre = $('#out') as HTMLPreElement;
+  const lossPre = $('#loss') as HTMLPreElement;
 
   run.addEventListener('click', () => {
     if (!input.files || input.files.length === 0) { log('Elegí un archivo primero.'); return; }
@@ -130,6 +159,19 @@ function setupUI() {
     const name = fmt === 'sql' ? 'schema.sql' : 'schema.prisma';
     downloadText(txt, name);
     log('Descargado.');
+  });
+
+  tabOut.addEventListener('click', () => {
+    tabOut.classList.add('tab-active');
+    tabLoss.classList.remove('tab-active');
+    outPre.style.display = 'block';
+    lossPre.style.display = 'none';
+  });
+  tabLoss.addEventListener('click', () => {
+    tabLoss.classList.add('tab-active');
+    tabOut.classList.remove('tab-active');
+    outPre.style.display = 'none';
+    lossPre.style.display = 'block';
   });
 
   sample.addEventListener('click', () => {

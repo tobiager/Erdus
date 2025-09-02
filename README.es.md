@@ -209,8 +209,8 @@ El archivo `vercel.json` ya apunta a `dist/`.
 - IR canónico (v1) → núcleo
 - ✔️ IR → PostgreSQL DDL → generar `CREATE TABLE` real
 - ✔️ IR → Prisma schema → conectar con Next.js/TS
-- Web demo (Vercel) → drag & drop + pestañas con resultados + loss report
-- CLI simple (`erdus convert ...`)
+- ✔️ Web demo (Vercel) → drag & drop + pestañas con resultados + loss report
+- ✔️ CLI simple (`erdus convert ...`)
 -  Atrae: fullstackers, devs indie, estudiantes → primeras ⭐
 
 ---

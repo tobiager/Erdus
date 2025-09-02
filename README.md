@@ -223,8 +223,8 @@ npm i
 - Canonical IR (v1) → core
 - ✅ IR → PostgreSQL DDL → generate real `CREATE TABLE`
 - ✅ IR → Prisma schema → connect with Next.js/TypeScript
-- Web demo (Vercel) → drag & drop, result tabs, loss report
-- Simple CLI (`erdus convert ...`)
+- ✅ Web demo (Vercel) → drag & drop, result tabs, loss report
+- ✅ Simple CLI (`erdus convert ...`)
 -  Attracts: fullstack devs, indie hackers, students → first stars
 
 ---
