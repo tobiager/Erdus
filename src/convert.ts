@@ -7,8 +7,8 @@ const edgeGroupId = (childId: number, parentId: number, attrIds: number[]) =>
   `g-${childId}-${parentId}-${[...attrIds].sort((a,b)=>a-b).join('_')}`;
 
 const typeOldToNew = (dt?: string, size?: string|null) => {
-  const t = (dt||'').toLowerCase();
-  if (t === 'varchar') return `VARCHAR(${size || 100})`;
+  const t = (dt || '').toLowerCase();
+  if (t === 'varchar' || t === 'varcharn') return `VARCHAR(${size || 100})`;
   if (t === 'int' || t === 'integer') return 'INT';
   if (t === 'date') return 'DATE';
   return (dt || 'TEXT').toUpperCase();
@@ -30,13 +30,6 @@ export function oldToNew(oldDoc: OldDoc): NewDoc {
     throw new Error("Documento OLD inválido: falta 'shapes'");
   }
   const tableShapes = oldDoc.shapes.filter(s => s.type === 'Table');
-  // índice rápido de atributos por id + tabla (ids pueden repetirse entre tablas)
-  const attrById = new Map<string, { attr: OldAttr; tableId: number }>();
-  for (const t of tableShapes) {
-    for (const a of t.details.attributes) {
-      attrById.set(`${t.details.id}-${a.id}`, { attr: a, tableId: t.details.id });
-    }
-  }
 
   // 1) tablas → nodos (con ids de columnas determinísticos)
   const nodes: NewNode[] = tableShapes.map(s => {
@@ -61,62 +54,23 @@ export function oldToNew(oldDoc: OldDoc): NewDoc {
     };
   });
 
-  // 2) FKs → edges (preferir CONNECTORS; fallback a attributes.references)
+  // 2) FKs → edges (solo atributos con fk:true y references)
   type Part = { attr: OldAttr; idx: number };
-  type Group = { child:number; parent:number; parts: Part[] };
+  type Group = { child: number; parent: number; parts: Part[] };
   const groups = new Map<string, Group>();
 
-  const useConnectors = Array.isArray(oldDoc.connectors) && oldDoc.connectors.length > 0;
-
-  if (useConnectors) {
-    for (const c of oldDoc.connectors as OldConnector[]) {
-      if (c.type !== 'TableConnector') continue;
-      const fkAttrId = (c.details as any)?.fkAttributeId;
-      const child = c.source;
-      const rec = attrById.get(`${child}-${fkAttrId}`);
-      if (!rec) continue;
-      const parent = c.destination;          // destino = padre
-      let idx = 0;
-      const ref = rec.attr.references?.[0];
-      if (ref && typeof ref.fkSubIndex === 'number') idx = ref.fkSubIndex;
-
+  for (const t of tableShapes) {
+    for (const a of t.details.attributes) {
+      if (!a.fk || !a.references || a.references.length === 0) continue;
+      const ref = a.references[0];
+      const child = t.details.id;
+      const parent = ref.tableId;
+      const idx = ref.fkSubIndex ?? 0;
       const key = `p-${child}-${parent}`;
       const g = groups.get(key) ?? { child, parent, parts: [] };
-      g.parts.push({ attr: rec.attr, idx });
+      g.parts.push({ attr: a, idx });
       groups.set(key, g);
     }
-  } else {
-    // Fallback: recorrer attributes con .fk/.references
-    for (const t of tableShapes) {
-      for (const a of t.details.attributes) {
-        if (!a.fk || !a.references || a.references.length === 0) continue;
-        const ref = a.references[0];
-        const child = t.details.id;
-        const parent = ref.tableId;
-        const idx = (ref.fkSubIndex ?? 0);
-        const key = `p-${child}-${parent}`;
-        const g = groups.get(key) ?? { child, parent, parts: [] };
-        g.parts.push({ attr: a, idx });
-        groups.set(key, g);
-      }
-    }
-  }
-
-  // connectors antiguos (cuando attributes no incluyen references)
-  for (const c of oldDoc.connectors || []) {
-    if (c.type !== 'TableConnector') continue;
-    const child = c.source;
-    const parent = c.destination;
-    const attrId = c.details?.fkAttributeId;
-    if (attrId == null) continue;
-    const entry = attrById.get(`${child}-${attrId}`);
-    if (!entry) continue;
-    const { attr } = entry;
-    if (attr.references && attr.references.length) continue; // ya procesado
-    const key = `p-${child}-${parent}`;
-    const g = groups.get(key) ?? { child, parent, parts: [] };
-    g.parts.push({ attr, idx: attr.id });
-    groups.set(key, g);
   }
 
   
