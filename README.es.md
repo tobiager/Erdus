@@ -98,6 +98,40 @@ Construí una vez, convertí en cualquier lugar. 🚀
 
 </details>
 
+##  Características del módulo SQL
+- Detecta automáticamente scripts `CREATE TABLE` de PostgreSQL.
+- IR ⇔ SQL: convierte la IR canónica a DDL de PostgreSQL y parsea SQL a IR.
+- Preserva claves primarias, foráneas y únicas.
+
+<details>
+<summary>##  Módulo SQL: cómo funciona</summary>
+
+### SQL → IR
+1. Escanea sentencias `CREATE TABLE` y arma tablas y columnas.
+2. Lee cláusulas `FOREIGN KEY` para reconstruir relaciones.
+
+### IR → SQL
+1. Recorre tablas y columnas para emitir definiciones `CREATE TABLE`.
+2. Genera `ALTER TABLE` para FKs compuestas e índices.
+
+</details>
+
+##  Características del módulo Prisma
+- Detecta automáticamente archivos de esquema Prisma.
+- IR ⇔ Prisma: genera modelos Prisma a partir de la IR y parsea esquemas de vuelta.
+- Mapea tipos SQL a escalares y relaciones de Prisma.
+
+<details>
+<summary>##  Módulo Prisma: cómo funciona</summary>
+
+### Prisma → IR
+1. Parsea bloques `model` extrayendo campos, tipos y relaciones.
+
+### IR → Prisma
+1. Genera bloques `model` con atributos `@id`, `@unique` y `@relation`.
+
+</details>
+
 ---
 
 ## 👐 Open source & escalable
@@ -173,8 +207,8 @@ El archivo `vercel.json` ya apunta a `dist/`.
  *Objetivo*: hacer que cualquiera lo pueda usar online y le sirva YA
 
 - IR canónico (v1) → núcleo
-- IR → PostgreSQL DDL → generar `CREATE TABLE` real
-- IR → Prisma schema → conectar con Next.js/TS
+- ✔️ IR → PostgreSQL DDL → generar `CREATE TABLE` real
+- ✔️ IR → Prisma schema → conectar con Next.js/TS
 - Web demo (Vercel) → drag & drop + pestañas con resultados + loss report
 - CLI simple (`erdus convert ...`)
 -  Atrae: fullstackers, devs indie, estudiantes → primeras ⭐
