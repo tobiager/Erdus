@@ -19,7 +19,6 @@ Build once, convert everywhere. 🚀
 
 ![Stars](https://img.shields.io/github/stars/tobiager/Erdus?labelColor=black&style=for-the-badge&color=1280ff&logo=github)
 ![MIT](https://img.shields.io/badge/License-MIT-FFF?labelColor=black&style=for-the-badge&color=1280ff)
-![CI](https://img.shields.io/github/actions/workflow/status/tobiager/Erdus/ci.yml?label=CI&labelColor=black&style=for-the-badge&color=1280ff)
 ![Vercel](https://img.shields.io/badge/Deploy-Vercel-FFF?labelColor=black&logo=vercel&style=for-the-badge&color=1280ff)
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white&style=for-the-badge&labelColor=black)
