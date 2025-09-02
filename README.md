@@ -98,6 +98,40 @@ Build once, convert everywhere. 🚀
 
 </details>
 
+##  SQL module features
+- Auto-detects PostgreSQL `CREATE TABLE` scripts.
+- IR ⇔ SQL: converts the canonical IR to PostgreSQL DDL and parses SQL back to IR.
+- Preserves PK, FK and unique constraints.
+
+<details>
+<summary>##  SQL module: how it works</summary>
+
+### SQL → IR
+1. Scans `CREATE TABLE` statements and builds tables and columns.
+2. Reads `FOREIGN KEY` clauses to reconstruct relationships.
+
+### IR → SQL
+1. Iterates tables and columns to output `CREATE TABLE` definitions.
+2. Emits `ALTER TABLE` for composite FKs and indexes.
+
+</details>
+
+##  Prisma module features
+- Auto-detects Prisma schema files.
+- IR ⇔ Prisma: generates Prisma models from IR and parses schemas back.
+- Maps SQL types to Prisma scalars and relations.
+
+<details>
+<summary>##  Prisma module: how it works</summary>
+
+### Prisma → IR
+1. Parses `model` blocks extracting fields, types and relations.
+
+### IR → Prisma
+1. Generates `model` blocks with `@id`, `@unique` and `@relation` attributes.
+
+</details>
+
 ---
 
 ## 👐 Open source & scalable
@@ -187,8 +221,8 @@ npm i
  *Goal*: anyone can use it online and get value right away
 
 - Canonical IR (v1) → core
-- IR → PostgreSQL DDL → generate real `CREATE TABLE`
-- IR → Prisma schema → connect with Next.js/TypeScript
+- ✅ IR → PostgreSQL DDL → generate real `CREATE TABLE`
+- ✅ IR → Prisma schema → connect with Next.js/TypeScript
 - Web demo (Vercel) → drag & drop, result tabs, loss report
 - Simple CLI (`erdus convert ...`)
 -  Attracts: fullstack devs, indie hackers, students → first stars
