@@ -5,7 +5,7 @@
 # Erdus
 ### Conversor universal de diagramas ER
 
-[Disponible en inglés](README.md) ✦ [Demo](https://erdus-inky.vercel.app) ✦ [Docs](#) ✦ [Contribuir](#-contribuir) ✦ [Roadmap](#-roadmap-erdus--conversor-universal)
+[Disponible en inglés](README.md) ✦ [Demo](https://erdus-inky.vercel.app) ✦ [Docs](#) ✦ [Contribuir](#-contribuyendo) ✦ [Roadmap](#%EF%B8%8F-roadmap-erdus--conversor-universal)
 
 **One IR to map them all.** Erdus es el **conversor universal open source** para diagramas ER y esquemas de bases de datos.  
 Unifica ERDPlus, SQL DDL, Prisma, JSON Schema y más bajo una estricta **Representación Intermedia (IR)**.  
@@ -31,10 +31,10 @@ Construí una vez, convertí en cualquier lugar. 🚀
 </div>
 
 
-- **100 % cliente (privacidad)**: los archivos nunca abandonan el navegador.
-- **Entrada**: archivos `.erdplus` o `.json` (se detecta el formato automáticamente).
-- **Salida**: `nombre-old.erdplus` o `nombre-new.erdplus` según la dirección de conversión.
-- **Relaciones**: dibuja un solo enlace por cada FK (incluidas las compuestas) y lo ancla a las columnas reales de la tabla hija.
+- **100% en el cliente (privacidad)**: los archivos nunca salen del navegador.  
+- **Entrada**: archivos `.erdplus` o `.json` (el formato se detecta automáticamente).  
+- **Salida**: `name-old.erdplus` o `name-new.erdplus` según la dirección de conversión.  
+- **Relaciones**: dibuja un único enlace por cada FK (incluyendo compuestas) y lo ancla a las columnas hijas reales.  
 
 **Módulos disponibles**
 - ERDPlus Old ⇄ New (incluido)
@@ -43,14 +43,13 @@ Construí una vez, convertí en cualquier lugar. 🚀
 
 ## 📁 Estructura del proyecto
 ```
-.
 ├─ src/
-│  ├─ app.ts           # UI: drag & drop, file input, descarga
-│  ├─ convert.ts       # lógica de conversión old ⇄ new (lossless)
-│  └─ types.ts         # tipos de ambos formatos (Old/New)
+│  ├─ app.ts           # UI: drag & drop, input de archivo, descarga
+│  ├─ convert.ts       # lógica de conversión old ⇄ new (sin pérdida)
+│  └─ types.ts         # tipos para ambos formatos (Old/New)
 ├─ public/
 │  └─ favicon.svg
-├─ index.html          # landing minimalista + dropzone
+├─ index.html          # landing mínima + dropzone
 ├─ vite.config.ts
 ├─ tsconfig.json
 ├─ vercel.json
@@ -60,70 +59,60 @@ Construí una vez, convertí en cualquier lugar. 🚀
 
 ---
 
-## 🔗 Demo
+##  Demo
 - Producción: **https://erdus-inky.vercel.app**
 - StackBlitz: [Sandbox interactivo](https://stackblitz.com/github/tobiager/Erdus)
 
-> En ERDPlus (versión nueva) seleccioná **Menu → Restore → Upload** para abrir el archivo convertido. Las posiciones, tipos, restricciones y conexiones se mantienen intactas.
+> [!TIP]
+> En ERDPlus (versión nueva) elegí **Menu → Restore → Upload** para abrir el archivo convertido.  
+> Las posiciones, tipos, restricciones y conexiones se mantienen intactas.
 
 ---
 
-## ⚡ Quickstart (1 min)
+##  Características del módulo ERDPlus
+- **Detección automática** del formato de entrada (old o new).  
+- **Old → New**: tablas → *nodes*, atributos → *columns*, FKs simples o compuestas → un único *edge* agrupado con `foreignKeyGroupId`.  
+- **New → Old**: *edges* → atributos FK y `connectors` con `fkSubIndex` para mantener el orden.  
+- **IDs determinísticos** para columnas en NEW (`c-<tableId>-<attrId>`) que permiten a ERDPlus anclar líneas y marcar columnas como **(FK)**.  
+- **Privado por diseño**: todo el procesamiento ocurre localmente, no hay backend ni subida de archivos.  
+- **Funciona en Windows, macOS y Linux**. El servidor de Vite provee HMR instantáneo.  
 
-```bash
-git clone https://github.com/tobiager/Erdus.git
-cd Erdus
-npm i
-npm run dev
-```
+<details>
+<summary>##  ERDPlus module: cómo funciona</summary>
 
-Abrí [http://localhost:5173](http://localhost:5173) y arrastrá tu archivo `.erdplus` para convertirlo.
-
----
-
-## ✨ Módulo ERDPlus Old ⇄ New
-- **Detección automática** del formato de entrada (old o new).
-- **Old → New**: tablas → *nodes*, atributos → *columns*, FKs simples o compuestas → una sola *edge* agrupada con `foreignKeyGroupId` estable.
-- **New → Old**: *edges* → atributos FK y `connectors` con `fkSubIndex` para preservar el orden.
-- **IDs determinísticos** para las columnas en NEW (`c-<idTabla>-<idAtributo>`), lo que permite a ERDPlus anclar las líneas y marcar las columnas como **(FK)**.
-- **Privado por diseño**: todo el procesamiento ocurre localmente; no hay backend ni subida de archivos.
-- **Compatible con Windows, macOS y Linux**. El servidor de desarrollo de Vite ofrece HMR instantáneo.
-
----
-
-## 👐 Open source y escalable
-
-- Proyecto con licencia MIT y núcleo modular.
-- Nuevos convertidores o exportadores pueden sumarse como plugins simples.
-- Incluye una CLI y una API mínima para integrarse en pipelines CI/CD, funciones serverless o clústeres de contenedores.
-
----
-
-## 🧠 Módulo ERDPlus: ¿cómo funciona?
-### Old → New (visual idéntico)
-1. Lee las tablas de `shapes[]` y crea nodos con `id = t-<id>` y columnas `id = c-<idTabla>-<idAttr>`.
-2. Reconstruye las FKs priorizando `connectors[]` (fuente de verdad en Old).
-   - Agrupa por (tablaHija → tablaPadre), **ordena por `fkSubIndex`** y genera una sola *edge* por FK compuesta.
-   - En `foreignKeyProps.columns[].id` utiliza el identificador de la columna real del hijo; ERDPlus dibuja la línea y etiqueta *(FK)*.
-3. Asigna un `foreignKeyGroupId` estable en base al hijo, el padre y el conjunto ordenado de atributos.
+### Old → New (visuales idénticos)
+1. Lee las tablas en `shapes[]` y crea nodos con `id = t-<id>` y columnas `id = c-<tableId>-<attrId>`.  
+2. Reconstruye las FKs priorizando `connectors[]` (fuente de verdad en Old).  
+   - Agrupa por (hijo → padre), **ordena por `fkSubIndex`** y genera un único edge por FK compuesta.  
+   - Usa el ID real de la columna hija en `foreignKeyProps.columns[].id`; ERDPlus dibuja la línea y etiqueta *(FK)*.  
+3. Asigna un `foreignKeyGroupId` estable basado en hijo, padre y el conjunto ordenado de atributos.  
 
 ### New → Old (estructura equivalente)
-1. Convierte nodos y columnas a tablas y atributos conservando PK, UNIQUE, NULL y tipos.
-2. De cada *edge* genera atributos FK en la tabla hija con `references` apuntando a la PK del padre y `fkSubIndex` siguiendo el orden de columnas de la *edge*.
-3. Crea `connectors` por cada columna FK para que cualquier visor antiguo pueda dibujar las conexiones.
+1. Convierte nodos y columnas a tablas y atributos preservando PK, UNIQUE, NULL y tipos.  
+2. De cada edge crea atributos FK en la tabla hija con `references` apuntando a la PK del padre y `fkSubIndex` siguiendo el orden.  
+3. Crea `connectors` por columna FK para que los visores legacy dibujen las conexiones.  
 
-> **Garantías**
-> - Round‑trip **old → new → old** sin pérdida: estructura, claves, orden y posiciones se preservan.
-> - Round‑trip **new → old → new**: mantiene nodos, *edges* y columnas FK.
-> - El JSON “new” puede diferir en IDs internos no visibles, pero es visual y semánticamente equivalente.
+> **Garantías**  
+> - Round-trip **old → new → old** sin pérdida: estructura, claves, orden y posiciones se preservan.  
+> - Round-trip **new → old → new**: nodos, edges y columnas FK se preservan.  
+> - El JSON “new” puede diferir en IDs internos invisibles pero es visual y semánticamente equivalente.  
+
+</details>
+
+---
+
+## 👐 Open source & escalable
+- Licencia MIT con núcleo modular y liviano.  
+- Nuevos conversores o exportadores se pueden enchufar como módulos simples.  
+- Incluye CLI y API mínima para integrarse en pipelines CI/CD, funciones serverless o contenedores.  
 
 ---
 
 ## 🚀 Uso local
 
 ### Requisitos
-- **Node 18+** (ideal 20+)
-- **npm** o **pnpm**
+- **Node 18+** (20+ recomendado)  
+- **npm** o **pnpm**  
 
 ### Pasos
 ```bash
@@ -133,39 +122,16 @@ npm i
 # corepack enable && corepack prepare pnpm@8 --activate
 # pnpm i
 
-# levantar en modo desarrollo
+# ejecutar en modo desarrollo
 npm run dev
 # (abre http://localhost:5173)
 
-# compilar para producción
+# build de producción
 npm run build
 
-# previsualizar la compilación
+# previsualizar el build
 npm run preview
 ```
-
----
-
-## Probar la conversión
-1. Abrí la aplicación local en `http://localhost:5173`.
-2. Arrastrá o seleccioná un archivo `.erdplus` (old o new) y presioná **Convertir**.
-3. Se descargará automáticamente `*-new.erdplus` o `*-old.erdplus` según corresponda.
-4. En ERDPlus nuevo: **Restore → Upload** para verificar que el diagrama sea idéntico.
-
-En Windows/PowerShell, si aparecen conflictos de peer dependencies al instalar, fijá ESLint 8.57:
-```bash
-npm i -D eslint@8.57.0
-npm i
-```
-
----
-
-## 📚 Ejemplos
-
-- [examples/next](examples/next)
-- [examples/ci4](examples/ci4)
-- [examples/supabase](examples/supabase)
-- Documentación: [docs](docs/README.md)
 
 ---
 
@@ -271,11 +237,14 @@ El archivo `vercel.json` ya apunta a `dist/`.
 
 ---
 
-## 🤝 Contribuir
-1. Hacé un fork y creá una rama `feat/mi-mejora`.
-2. `npm i` y `npm run dev`.
-3. Acompañá los cambios con un archivo `.erdplus` de ejemplo si aplica.
-4. Abrí un PR — ¡los PRs son bienvenidos!
+## 🤝 Contribuyendo
+
+Lee la [Guía de Contribución](CONTRIBUTING.es.md) antes de empezar.
+
+1. Bifurca y crea una rama `feat/my-improvement`.
+2. Ejecuta `npm i` y `npm run dev`.
+3. Incluye un archivo `.erdplus` de ejemplo cuando sea necesario.
+4. Abre una solicitud de colaboración (PR). ¡Agradecemos tus contribuciones!
 
 ---
 
@@ -313,4 +282,3 @@ Gracias a todas las personas que contribuyen al crecimiento de este proyecto. ¡
 ## 📝 Licencia
 
 MIT — ver [LICENSE](LICENSE).
-

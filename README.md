@@ -60,14 +60,16 @@ Build once, convert everywhere. 🚀
 
 ---
 
-## 🔗 Demo
+##  Demo
 - Production: **https://erdus-inky.vercel.app**
+- StackBlitz: [Interactive sandbox](https://stackblitz.com/github/tobiager/Erdus)
 
+> [!TIP]
 > In ERDPlus (new version) choose **Menu → Restore → Upload** to open the converted file. Positions, types, constraints and connections remain intact.
 
 ---
 
-## ✨ ERDPlus module features
+##  ERDPlus module features
 - **Automatic detection** of the input format (old or new).
 - **Old → New**: tables → *nodes*, attributes → *columns*, simple or composite FKs → a single grouped *edge* with stable `foreignKeyGroupId`.
 - **New → Old**: *edges* → FK attributes and `connectors` with `fkSubIndex` to preserve order.
@@ -75,17 +77,9 @@ Build once, convert everywhere. 🚀
 - **Private by design**: all processing happens locally; there is no backend or file upload.
 - **Works on Windows, macOS and Linux**. Vite's dev server provides instant HMR.
 
----
+<details>
+<summary>##  ERDPlus module: how it works</summary>
 
-## 👐 Open source & scalable
-
-- MIT-licensed with a lightweight, modular core.
-- New converters or exporters can plug in as simple modules.
-- Ships a CLI and minimal API so it fits CI/CD pipelines, serverless functions or container clusters.
-
----
-
-## 🧠 ERDPlus module: how it works
 ### Old → New (identical visuals)
 1. Reads `shapes[]` tables and creates nodes with `id = t-<id>` and columns `id = c-<tableId>-<attrId>`.
 2. Reconstructs FKs prioritizing `connectors[]` (source of truth in Old).
@@ -99,9 +93,19 @@ Build once, convert everywhere. 🚀
 3. Creates `connectors` per FK column so that legacy viewers can draw the connections.
 
 > **Guarantees**
-> - Round‑trip **old → new → old** without loss: structure, keys, order and positions are preserved.
-> - Round‑trip **new → old → new**: nodes, edges and FK columns are preserved.
+> - Round-trip **old → new → old** without loss: structure, keys, order and positions are preserved.
+> - Round-trip **new → old → new**: nodes, edges and FK columns are preserved.
 > - The “new” JSON may differ in internal invisible IDs but is visually and semantically equivalent.
+
+</details>
+
+---
+
+## 👐 Open source & scalable
+
+- MIT-licensed with a lightweight, modular core.
+- New converters or exporters can plug in as simple modules.
+- Ships a CLI and minimal API so it fits CI/CD pipelines, serverless functions or container clusters.
 
 ---
 
@@ -248,10 +252,13 @@ npm i
 ---
 
 ## 🤝 Contributing
-1. Fork and create a `feat/my-improvement` branch.
-2. `npm i` and `npm run dev`.
-3. Include an example `.erdplus` file when relevant.
-4. Open a PR — contributions are welcome!
+
+Please read the [Contributing Guide](CONTRIBUTING.md) before getting started.
+
+1. Fork and create a `feat/my-improvement` branch.  
+2. Run `npm i` and `npm run dev`.  
+3. Include an example `.erdplus` file when relevant.  
+4. Open a PR — contributions are welcome!  
 
 ---
 
