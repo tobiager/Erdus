@@ -276,6 +276,7 @@ Thanks to everyone who contributes to the growth of this project. Your contribut
     <img src="https://contrib.rocks/image?repo=tobiager/erdus" alt="Top contributors" />
   </a>
 </p>
+
 ---
 
 ## 📝 License
