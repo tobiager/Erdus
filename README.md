@@ -289,7 +289,7 @@ npm i
 
 ## 🤝 Contributing
 
-[![Contribute](assets/Contribute.PNG)](CONTRIBUTING.md)
+[![Contribute](assets/Contribute1.PNG)](CONTRIBUTING.md)
 
 Please read the [Contributing Guide](CONTRIBUTING.md) before getting started.
 
