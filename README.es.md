@@ -32,11 +32,13 @@ Construí una vez, convertí en cualquier lugar. 🚀
 
 - **100% en el cliente (privacidad)**: los archivos nunca salen del navegador.  
 - **Entrada**: archivos `.erdplus` o `.json` (el formato se detecta automáticamente).  
-- **Salida**: `name-old.erdplus` o `name-new.erdplus` según la dirección de conversión.  
+- **Salida**: archivo con la extensión que corresponda al formato de destino deseado (por ejemplo, `name-old.erdplus`, `schema.sql`, `schema.prisma`).  
 - **Relaciones**: dibuja un único enlace por cada FK (incluyendo compuestas) y lo ancla a las columnas hijas reales.  
 
 **Módulos disponibles**
 - ERDPlus Old ⇄ New (incluido)
+- SQL (DDL de PostgreSQL)
+- Prisma
 
 ---
 
