@@ -264,6 +264,18 @@ npm run test
 - **old → new → old**: tables, attributes, positions and keys must be preserved.
 - **new → old → new**: nodes, edges and FK columns must be preserved.
 
+
+---
+
+## 🤝🏻 Top Contributors
+
+Thanks to everyone who contributes to the growth of this project. Your contribution can also be included here!
+
+<p align="center">
+  <a href="https://github.com/tobiager/erdus/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=tobiager/erdus" alt="Top contributors" />
+  </a>
+</p>
 ---
 
 ## 📝 License
