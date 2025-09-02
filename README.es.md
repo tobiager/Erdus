@@ -5,7 +5,7 @@
 # Erdus
 ### Conversor universal de diagramas ER
 
-[Disponible en inglés](README.md) ✦ [Demo](https://erdus-inky.vercel.app) ✦ [Docs](#) ✦ [Contribuir](#-contribuir) ✦ [Roadmap](#-roadmap--conversor-universal)
+[Disponible en inglés](README.md) ✦ [Demo](https://erdus-inky.vercel.app) ✦ [Docs](#) ✦ [Contribuir](#-contribuir) ✦ [Roadmap](#-roadmap-erdus--conversor-universal)
 
 **One IR to map them all.** Erdus es el **conversor universal open source** para diagramas ER y esquemas de bases de datos.  
 Unifica ERDPlus, SQL DDL, Prisma, JSON Schema y más bajo una estricta **Representación Intermedia (IR)**.  
@@ -295,6 +295,18 @@ npm run test
 **¿El conversor sube mis archivos?** No, todo corre en tu navegador.
 
 **¿Funciona con claves foráneas compuestas?** Sí, soporta FKs múltiples sin perder información.
+
+---
+
+## 🤝🏻 Principales contribuidores
+
+Gracias a todas las personas que contribuyen al crecimiento de este proyecto. ¡Tu contribución también puede aparecer aquí!
+
+<p align="center">
+  <a href="https://github.com/tobiager/erdus/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=tobiager/erdus" alt="Principales contribuidores" />
+  </a>
+</p>
 
 ---
 
