@@ -1,6 +1,6 @@
 <div align="center">
 
-[![Erdus](assets/banner.png)](https://erdus-inky.vercel.app)
+[![Erdus](assets/Banner.JPEG)](https://erdus-inky.vercel.app)
 
 # Erdus
 ### Conversor universal de diagramas ER
