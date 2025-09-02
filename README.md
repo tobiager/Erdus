@@ -5,7 +5,7 @@
 # Erdus
 ### Universal ER Diagram Converter
 
-[Also available in Spanish](README.es.md) ✦ [Demo](https://erdus-inky.vercel.app) ✦ [Docs](#) ✦ [Contributing](#contributing) ✦ [Roadmap](#-roadmap--universal-converter)
+[Also available in Spanish](README.es.md) ✦ [Demo](https://erdus-inky.vercel.app) ✦ [Docs](#) ✦ [Contributing](#contributing) ✦ [Roadmap](#%EF%B8%8F-roadmap--universal-converter)
 
 **One IR to map them all.** Erdus is the **open-source universal converter** for ER diagrams and database schemas.  
 It unifies ERDPlus, SQL DDL, Prisma, JSON Schema and more under a strict **Intermediate Representation (IR)**.  
