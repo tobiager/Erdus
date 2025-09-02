@@ -286,17 +286,6 @@ Lee la [Guía de Contribución](CONTRIBUTING.es.md) antes de empezar.
 
 ---
 
-## 🧪 Testing (opcional)
-
-Si activás los tests (Vitest), podés validar los round‑trips:
-```bash
-npm run test
-```
-- **old → new → old**: deben conservarse tablas, atributos, posiciones y claves.
-- **new → old → new**: deben conservarse nodos, *edges* y columnas FK.
-
----
-
 ## ❓ FAQ
 
 **¿El conversor sube mis archivos?** No, todo corre en tu navegador.

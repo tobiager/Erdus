@@ -300,18 +300,6 @@ Please read the [Contributing Guide](CONTRIBUTING.md) before getting started.
 
 ---
 
-## 🧪 Testing (optional)
-
-If you enable tests (Vitest), you can validate round trips:
-```bash
-npm run test
-```
-- **old → new → old**: tables, attributes, positions and keys must be preserved.
-- **new → old → new**: nodes, edges and FK columns must be preserved.
-
-
----
-
 ## 🤝🏻 Top Contributors
 
 Thanks to everyone who contributes to the growth of this project. Your contribution can also be included here!
