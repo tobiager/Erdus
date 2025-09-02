@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>ERDPlus Old ⇄ New Converter</title>
-  <meta name="description" content="Conversor lossless de ERDPlus (old⇄new). 100% local.">
+  <title>Erdus – Universal Converter</title>
+  <meta name="description" content="Erdus, universal ERDPlus (old⇄new) converter. 100% local.">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
   <style>
     :root{
@@ -34,13 +34,13 @@
     @keyframes fadeDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
     @keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-    /* === Botón oscuro + acento azul (compartido) === */
+    /* === Dark button + blue accent (shared) === */
     .btn-ghost,
     .gh-star-btn{
       display:inline-flex;align-items:center;gap:.5rem;
       padding:.55rem .9rem;border-radius:.6rem;
-      background:#111827;                 /* fondo negro/gris oscuro */
-      color:var(--accent);                 /* texto/ícono azul */
+      background:#111827;                 /* black/dark gray background */
+      color:var(--accent);                 /* blue text/icon */
       border:1px solid rgba(255,255,255,.1);
       font-weight:600;line-height:1;cursor:pointer;
       text-decoration:none;
@@ -57,10 +57,10 @@
 
     .footer-inner {
       display:flex;
-      justify-content:center;   /* centra horizontal */
-      align-items:center;       /* alinea vertical */
-      gap:6px;                  /* espacio entre texto y link */
-      flex-wrap:wrap;           /* se acomoda si la pantalla es chica */
+      justify-content:center;   /* centers horizontally */
+      align-items:center;       /* aligns vertically */
+      gap:6px;                  /* space between text and link */
+      flex-wrap:wrap;           /* wraps if the screen is small */
     }
 
     .gh-link {
@@ -84,30 +84,30 @@
 </head>
 <body>
   <header>
-    <h1>ERDPlus Old ⇄ New Converter</h1>
-    <p>Conversión 100% local (sin backend). Round-trip exacto, incl. FKs compuestas.</p>
+    <h1>Erdus: Universal Converter</h1>
+    <p>Converts ERDPlus old and new to a universal format. Exact round-trip, including composite FKs.</p>
   </header>
   <main>
     <div class="grid">
       <div class="card">
-        <h3>Convertir archivo (.erdplus / .json)</h3>
-        <div id="drop" class="drop">Arrastrá y soltá tu archivo o hacé click</div>
+        <h3>Convert file (.erdplus / .json)</h3>
+        <div id="drop" class="drop">Drag and drop your file or click</div>
         <div class="row">
           <input id="file" type="file" accept=".erdplus,.json"/>
-          <button id="convert" class="btn-ghost">Convertir</button>
-          <button id="sample"  class="btn-ghost">Ejemplo</button>
+          <button id="convert" class="btn-ghost">Convert</button>
+          <button id="sample"  class="btn-ghost">Sample</button>
         </div>
-        <div id="log" class="log">Listo para convertir…</div>
+        <div id="log" class="log">Ready to convert…</div>
       </div>
       <div class="card">
-        <h3>Detalles</h3>
+        <h3>Details</h3>
         <ul>
-          <li>Detecta formato automáticamente (old / new).</li>
-          <li>Conserva posiciones, orden, PKs y FKs (simples/compuestas).</li>
-          <li>Descarga: <code>archivo-old.erdplus</code> o <code>archivo-new.erdplus</code>.</li>
-          <li>Actualmente hay un error que no pasa las <strong>conexiones</strong>.</li>
+          <li>Auto-detects format (old / new).</li>
+          <li>Preserves positions, order, PKs and FKs (simple/composite).</li>
+          <li>Downloads: <code>file-old.erdplus</code> or <code>file-new.erdplus</code>.</li>
+          <li>Currently there's a bug that doesn't transfer <strong>connections</strong>.</li>
         </ul>
-        <p>Privado por diseño: el JSON se procesa en tu navegador.</p>
+        <p>Private by design: JSON is processed in your browser.</p>
         <p>
           <a class="gh-star-btn" href="https://github.com/tobiager/Erdus" target="_blank" rel="noopener">
             <svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16">
@@ -120,7 +120,7 @@
                        .51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
                        0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
             </svg>
-            <span>Dar estrella en GitHub</span>
+            <span>Star on GitHub</span>
           </a>
         </p>
       </div>
@@ -128,7 +128,7 @@
   </main>
   <footer>
     <div class="footer-inner">
-      <span>© 2025 · Hecho con pasión y dedicación por </span>
+      <span>© 2025 · Built with passion and dedication by </span>
       <a class="gh-link" href="https://github.com/tobiager" target="_blank" rel="noopener">
         <svg class="gh-icon" viewBox="0 0 16 16" aria-hidden="true">
           <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 
