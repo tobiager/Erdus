@@ -5,6 +5,7 @@
 # Erdus
 ### Conversor universal de diagramas ER
 
+
 [Disponible en inglés](README.md) ✦ [Demo](https://erdus-inky.vercel.app) ✦ [Docs](#) ✦ [Contribuir](#-contribuyendo) ✦ [Roadmap](#%EF%B8%8F-roadmap-erdus--conversor-universal)
 
 **One IR to map them all.** Erdus es el **conversor universal open source** para diagramas ER y esquemas de bases de datos.  
@@ -273,6 +274,8 @@ El archivo `vercel.json` ya apunta a `dist/`.
 ---
 
 ## 🤝 Contribuyendo
+
+[![Contribuir](assets/Contribuir.PNG)](CONTRIBUTING.es.md)
 
 Lee la [Guía de Contribución](CONTRIBUTING.es.md) antes de empezar.
 
