@@ -275,7 +275,7 @@ El archivo `vercel.json` ya apunta a `dist/`.
 
 ## 🤝 Contribuyendo
 
-[![Contribuir](assets/Contribuir.PNG)](CONTRIBUTING.es.md)
+[![Contribuir](assets/Contribuir1.PNG)](CONTRIBUTING.es.md)
 
 Lee la [Guía de Contribución](CONTRIBUTING.es.md) antes de empezar.
 
