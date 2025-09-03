@@ -16,6 +16,12 @@ function computeOutName(inputName: string, to: 'old'|'new'): string {
   return `${clean}-${to}${ext}`;
 }
 
+function computeTextOutName(inputName: string, to: 'sql'|'prisma'): string {
+  const base = inputName.replace(/\.(erdplus|json|sql|prisma)$/i, '');
+  const clean = base.replace(/-(old|new)$/i, '');
+  return `${clean}.${to}`;
+}
+
 function download(obj: any, name: string) {
   const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
@@ -94,11 +100,13 @@ async function handleProcess(file: File, target: 'sql'|'prisma'|'old'|'new') {
       preview.style.display = 'block';
       copyBtn.style.display = '';
       dlBtn.style.display = '';
+      dlBtn.dataset.filename = computeTextOutName(file.name, target);
     } else if (target === 'prisma') {
       pre.textContent = irToPrisma(ir);
       preview.style.display = 'block';
       copyBtn.style.display = '';
       dlBtn.style.display = '';
+      dlBtn.dataset.filename = computeTextOutName(file.name, target);
     } else {
       pre.textContent = '';
       preview.style.display = 'block';
@@ -156,9 +164,9 @@ function setupUI() {
     const fmt = format.value as 'sql'|'prisma';
     const txt = ($('#out') as HTMLPreElement).textContent || '';
     if (!txt) { log('Nada para descargar.'); return; }
-    const name = fmt === 'sql' ? 'schema.sql' : 'schema.prisma';
+    const name = dlBtn.dataset.filename || `schema.${fmt}`;
     downloadText(txt, name);
-    log('Descargado.');
+    log(`Descargado como ${name}.`);
   });
 
   tabOut.addEventListener('click', () => {
