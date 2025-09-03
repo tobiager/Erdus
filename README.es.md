@@ -26,14 +26,12 @@ Construí una vez, convertí en cualquier lugar. 🚀
 ![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?logo=vite&logoColor=white&style=for-the-badge&labelColor=black)
 ![Node](https://img.shields.io/badge/Node-≥18-339933?logo=node.js&logoColor=white&style=for-the-badge&labelColor=black)
 
+<a href="https://www.producthunt.com/products/erdus?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-erdus" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1012222&theme=light&t=1756897350919" alt="Erdus - Universal&#0032;converter | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+
+https://github.com/user-attachments/assets/41fe5461-b944-49f3-9741-8d99f839d4cd
 
 </div>
 
-<p align="center">
-  <a href="https://erdus-inky.vercel.app">
-    <img src="assets/ejemplo1.gif" alt="Erdus" width="800"/>
-  </a>
-</p>
 
 - **100% en el cliente (privacidad)**: los archivos nunca salen del navegador.  
 - **Entrada**: archivos `.erdplus` o `.json` (el formato se detecta automáticamente).  
