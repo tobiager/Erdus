@@ -30,6 +30,11 @@ Construí una vez, convertí en cualquier lugar. 🚀
 
 </div>
 
+<p align="center">
+  <a href="https://erdus-inky.vercel.app">
+    <img src="assets/ejemplo1.gif" alt="Erdus" width="800"/>
+  </a>
+</p>
 
 - **100% en el cliente (privacidad)**: los archivos nunca salen del navegador.  
 - **Entrada**: archivos `.erdplus` o `.json` (el formato se detecta automáticamente).  
