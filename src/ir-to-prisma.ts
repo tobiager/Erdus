@@ -97,7 +97,17 @@ export function irToPrisma(diagram: IRDiagram): string {
         const meta = relNameByChildCol.get(`${table.name}.${col.name}`)!;
         const fieldName = meta.name ? `${meta.parent.name}_${meta.index}` : meta.parent.name;
         const opt = col.isOptional ? '?' : '';
-        const relAttr = `@relation(${meta.name ? `"${meta.name}", ` : ''}fields: [${col.name}], references: [${col.references.column}])`;
+        const relParts = [`fields: [${col.name}]`, `references: [${col.references.column}]`];
+        const mapAction = (a: string) => {
+          const up = a.toUpperCase();
+          if (up === 'NO ACTION') return 'NoAction';
+          if (up === 'SET NULL') return 'SetNull';
+          if (up === 'SET DEFAULT') return 'SetDefault';
+          return up.charAt(0) + up.slice(1).toLowerCase();
+        };
+        if (col.references.onDelete) relParts.push(`onDelete: ${mapAction(col.references.onDelete)}`);
+        if (col.references.onUpdate) relParts.push(`onUpdate: ${mapAction(col.references.onUpdate)}`);
+        const relAttr = `@relation(${meta.name ? `"${meta.name}", ` : ''}${relParts.join(', ')})`;
         lines.push(`  ${fieldName} ${meta.parent.name}${opt} ${relAttr}`);
       }
 
@@ -115,6 +125,10 @@ export function irToPrisma(diagram: IRDiagram): string {
         if (fkCols.length === 2) {
           lines.push(`  @@id([${fkCols.join(', ')}])`);
         }
+      }
+      for (const idx of table.indexes || []) {
+        const cols = idx.columns.join(', ');
+        lines.push(`  ${idx.unique ? '@@unique' : '@@index'}([${cols}])`);
       }
 
       return `model ${table.name} {\n${lines.join('\n')}\n}`;

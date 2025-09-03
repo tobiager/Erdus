@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { sqlToIR } from '../src/sql-to-ir';
-import { irToPrisma } from '../src/ir-to-prisma';
+import { sqlToPrisma } from '../src';
 
 describe('SQL to Prisma mapping', () => {
   it('handles PK, unique and defaults', () => {
@@ -9,7 +8,7 @@ describe('SQL to Prisma mapping', () => {
       email VARCHAR(255) UNIQUE NOT NULL,
       created_at TIMESTAMPTZ DEFAULT now() NOT NULL
     );`;
-    const prisma = irToPrisma(sqlToIR(sql));
+    const prisma = sqlToPrisma(sql);
     expect(prisma).toContain('model users');
     expect(prisma).toContain('id Int @default(autoincrement()) @id');
     expect(prisma).toContain('email String @db.VarChar(255) @unique');

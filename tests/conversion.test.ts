@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { convert } from '../src/convert'
+import { convert, sqlToPrisma, prismaToSql, oldToSql } from '../src'
 import fs from 'fs'
 import path from 'path'
 
@@ -72,10 +72,23 @@ const cases: Case[] = [
 ]
 
 describe('Conversion cases', () => {
+  const directMap: Record<string, (input: string) => Promise<string> | string> = {
+    'sql:prisma': sqlToPrisma,
+    'prisma:sql': prismaToSql,
+    'erdplus-old:sql': oldToSql,
+  }
+
   for (const c of cases) {
     it(c.name, async () => {
       const input = fs.readFileSync(path.join(__dirname, 'fixtures', c.inputFile), 'utf8')
       const result = await convert(input, { from: c.from, to: c.to })
+
+      const key = `${c.from}:${c.to}`
+      const direct = directMap[key]
+      if (direct) {
+        expect(await direct(input)).toBe(result.output)
+      }
+
       for (const token of c.expectContains) {
         expect(result.output).toContain(token)
       }

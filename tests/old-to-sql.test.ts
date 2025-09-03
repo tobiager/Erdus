@@ -1,13 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import oldDoc from './fixtures/old-complex.json';
-import { oldToNew } from '../src/convert';
-import { newToIR } from '../src/ir';
-import { irToPostgres } from '../src/ir-to-sql';
+import { oldToSql } from '../src';
 
 describe('old JSON to PostgreSQL SQL', () => {
-  const newDoc = oldToNew(oldDoc as any);
-  const ir = newToIR(newDoc);
-  const sql = irToPostgres(ir);
+  const sql = oldToSql(oldDoc as any);
 
   it('maps VARCHARN to VARCHAR with size', () => {
     expect(sql).toContain('"nombre_completo" VARCHAR(200) NOT NULL');

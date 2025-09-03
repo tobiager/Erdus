@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { prismaToIR } from '../src/prisma-to-ir';
-import { irToPostgres } from '../src/ir-to-sql';
+import { prismaToSql } from '../src';
 
 const schema = `
 model Usuario {
@@ -25,8 +24,7 @@ model UsuarioRol {
 `;
 
 describe('Prisma to SQL', () => {
-  const ir = prismaToIR(schema);
-  const sql = irToPostgres(ir);
+  const sql = prismaToSql(schema);
 
   it('matches expected snapshot', () => {
     expect(sql).toMatchInlineSnapshot(`

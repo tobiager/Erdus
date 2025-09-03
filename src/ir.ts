@@ -8,7 +8,7 @@ export interface IRColumn {
   isUnique?: boolean;
   /** Raw default expression if present, e.g. `now()` or `'foo'`. */
   default?: string;
-  references?: { table: string; column: string };
+  references?: { table: string; column: string; onDelete?: string; onUpdate?: string };
 }
 
 export interface IRTable {
@@ -16,6 +16,7 @@ export interface IRTable {
   columns: IRColumn[];
   /** Order of primary key columns for composite keys. */
   primaryKey?: string[];
+  indexes?: { columns: string[]; unique?: boolean }[];
 }
 
 export interface IRDiagram {
