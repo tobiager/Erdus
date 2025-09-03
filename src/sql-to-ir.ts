@@ -34,12 +34,17 @@ export function sqlToIR(sql: string): IRDiagram {
         const colName = parts.shift()!.replace(/["`]/g, '');
         const type = parts.shift() || 'TEXT';
         const rest = parts.join(' ');
+        const upperType = type.toUpperCase();
+        const isSerial = upperType === 'SERIAL' || upperType === 'BIGSERIAL';
+        const defaultMatch = rest.match(/DEFAULT\s+([^\s,]+)/i);
         const col: IRColumn = {
           name: colName,
           type,
           isPrimaryKey: /PRIMARY KEY/i.test(rest),
-          isOptional: !/NOT NULL/i.test(rest),
-          isUnique: /UNIQUE/i.test(rest)
+          // SERIAL columns are implicitly NOT NULL
+          isOptional: isSerial ? false : !/NOT NULL/i.test(rest),
+          isUnique: /UNIQUE/i.test(rest),
+          default: defaultMatch ? defaultMatch[1] : undefined
         };
         const ref = rest.match(/REFERENCES\s+"?([\w]+)"?\(([^)]+)\)/i);
         if (ref) {

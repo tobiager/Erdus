@@ -20,7 +20,10 @@ function mapType(raw: string): MappedType {
   if (t === 'TEXT') return { type: 'String' };
 
   if (t === 'DATE') return { type: 'DateTime', attr: '@db.Date' };
+  if (t === 'TIMESTAMPTZ') return { type: 'DateTime', attr: '@db.Timestamptz' };
   if (t === 'DATETIME' || t === 'TIMESTAMP') return { type: 'DateTime' };
+
+  if (t === 'SERIAL' || t === 'BIGSERIAL') return { type: 'Int', attr: '@default(autoincrement())' };
 
   if (t === 'BOOLEAN' || t === 'BOOL') return { type: 'Boolean' };
 
@@ -84,6 +87,7 @@ export function irToPrisma(diagram: IRDiagram): string {
         if (mapped.attr) line += ` ${mapped.attr}`;
         if (isId) line += ' @id';
         if (col.isUnique && !col.isPrimaryKey) line += ' @unique';
+        if (col.default && !/@default\(/.test(line)) line += ` @default(${col.default})`;
         lines.push(line);
       }
 

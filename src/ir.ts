@@ -6,6 +6,8 @@ export interface IRColumn {
   isPrimaryKey?: boolean;
   isOptional?: boolean;
   isUnique?: boolean;
+  /** Raw default expression if present, e.g. `now()` or `'foo'`. */
+  default?: string;
   references?: { table: string; column: string };
 }
 

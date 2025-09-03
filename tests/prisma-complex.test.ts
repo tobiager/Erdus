@@ -11,6 +11,7 @@ describe('Prisma conversion - complex ERDPlus example', () => {
     const ir = newToIR(newDoc);
     const prisma = irToPrisma(ir).trim();
     const expected = readFileSync(new URL('./fixtures/old-complex.prisma', import.meta.url), 'utf8').trim();
-    expect(prisma).toBe(expected);
+    const normalize = (s: string) => s.replace(/\r\n/g, '\n');
+    expect(normalize(prisma)).toBe(normalize(expected));
   });
 });

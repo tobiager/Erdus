@@ -95,14 +95,17 @@ async function handleProcess(file: File, target: 'sql'|'prisma'|'old'|'new') {
     tabLoss.classList.remove('tab-active');
     pre.style.display = 'block';
     lossPre.style.display = 'none';
+    let output = '';
     if (target === 'sql') {
-      pre.textContent = irToPostgres(ir);
+      output = irToPostgres(ir);
+      pre.textContent = output;
       preview.style.display = 'block';
       copyBtn.style.display = '';
       dlBtn.style.display = '';
       dlBtn.dataset.filename = computeTextOutName(file.name, target);
     } else if (target === 'prisma') {
-      pre.textContent = irToPrisma(ir);
+      output = irToPrisma(ir);
+      pre.textContent = output;
       preview.style.display = 'block';
       copyBtn.style.display = '';
       dlBtn.style.display = '';
@@ -118,7 +121,11 @@ async function handleProcess(file: File, target: 'sql'|'prisma'|'old'|'new') {
       log(`OK → descargado como ${name}`);
       return;
     }
-    log('Listo.');
+    if (ir.tables.length > 0 && !output.trim()) {
+      log('Error: conversion produced empty output.');
+    } else {
+      log('Listo.');
+    }
   } catch (e:any) {
     console.error(e);
     log('Error: ' + (e?.message || e));
