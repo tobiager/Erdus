@@ -26,7 +26,6 @@ Build once, convert everywhere. 🚀
 ![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?logo=vite&logoColor=white&style=for-the-badge&labelColor=black)
 ![Node](https://img.shields.io/badge/Node-≥18-339933?logo=node.js&logoColor=white&style=for-the-badge&labelColor=black)
 
-![Vercel OSS Program](https://vercel.com/oss/program-badge.svg)
 
 </div>
 
