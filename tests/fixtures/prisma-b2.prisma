@@ -1,0 +1,10 @@
+model Persona {
+  id  Int @id @default(autoincrement())
+  dni String @unique
+  perfil Perfil?
+}
+model Perfil {
+  id         Int @id @default(autoincrement())
+  personaId  Int @unique
+  persona    Persona @relation(fields: [personaId], references: [id])
+}

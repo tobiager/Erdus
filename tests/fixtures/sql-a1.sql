@@ -1,0 +1,5 @@
+CREATE TABLE public.cliente (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(255) UNIQUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

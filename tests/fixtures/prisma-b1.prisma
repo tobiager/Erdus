@@ -1,0 +1,17 @@
+model Usuario {
+  id     Int    @id @default(autoincrement())
+  nombre String
+  roles  UsuarioRol[]
+}
+model Rol {
+  id      Int    @id @default(autoincrement())
+  nombre  String @unique
+  usuarios UsuarioRol[]
+}
+model UsuarioRol {
+  usuario_id Int
+  rol_id     Int
+  usuario Usuario @relation(fields: [usuario_id], references: [id])
+  rol     Rol     @relation(fields: [rol_id], references: [id])
+  @@id([usuario_id, rol_id])
+}

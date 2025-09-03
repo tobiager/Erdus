@@ -1,0 +1,9 @@
+{"version":2,"www":"erdplus.com","shapes":[
+  {"type":"Table","details":{"name":"ORDEN","attributes":[
+    {"names":["id_orden"],"pkMember":true,"optional":false,"fk":false,"dataType":"int"}
+  ],"uniqueGroups":[]}},
+  {"type":"Table","details":{"name":"ITEM","attributes":[
+    {"names":["id_orden"],"pkMember":true,"optional":false,"fk":true,"dataType":"int"},
+    {"names":["n_item"],"pkMember":true,"optional":false,"fk":false,"dataType":"int"},
+    {"names":["descripcion"],"pkMember":false,"optional":true,"fk":false,"dataType":"varchar","dataTypeSize":"200"}
+  ],"uniqueGroups":[]}}]}

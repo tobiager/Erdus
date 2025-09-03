@@ -14,6 +14,8 @@ export interface IRColumn {
 export interface IRTable {
   name: string;
   columns: IRColumn[];
+  /** Order of primary key columns for composite keys. */
+  primaryKey?: string[];
 }
 
 export interface IRDiagram {

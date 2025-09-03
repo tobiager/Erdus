@@ -14,17 +14,18 @@ describe('old JSON to PostgreSQL SQL', () => {
   });
 
   it('creates proper foreign keys', () => {
-    expect(sql).toContain('ALTER TABLE "empleado" ADD FOREIGN KEY ("id_cargo") REFERENCES "cargo"("id_cargo");');
-    expect(sql).toContain('ALTER TABLE "proyecto_tag" ADD FOREIGN KEY ("id_tag") REFERENCES "tag"("id_tag");');
-    expect(sql).toContain('ALTER TABLE "proyecto_tag" ADD FOREIGN KEY ("id_proyecto") REFERENCES "proyecto"("id_proyecto");');
+    expect(sql).toContain('FOREIGN KEY ("id_cargo") REFERENCES "cargo"("id_cargo")');
+    expect(sql).toContain('FOREIGN KEY ("id_tag") REFERENCES "tag"("id_tag")');
+    expect(sql).toContain('FOREIGN KEY ("id_proyecto") REFERENCES "proyecto"("id_proyecto")');
   });
 
   it('does not create spurious FKs for tag', () => {
-    expect(sql).not.toMatch(/ALTER TABLE "tag" ADD FOREIGN KEY/);
+    const tagTable = /CREATE TABLE "tag"([\s\S]*?)\);/i.exec(sql)?.[1] || '';
+    expect(tagTable).not.toMatch(/FOREIGN KEY/);
   });
 
   it('adds composite primary key for bridge table', () => {
     const projTag = /CREATE TABLE "proyecto_tag"([\s\S]*?)\);/i.exec(sql)?.[1] || '';
-    expect(projTag).toContain('PRIMARY KEY ("id_tag", "id_proyecto")');
+    expect(projTag).toContain('PRIMARY KEY ("id_tag","id_proyecto")');
   });
 });

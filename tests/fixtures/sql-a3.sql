@@ -1,0 +1,4 @@
+CREATE TABLE pedido (
+  id SERIAL PRIMARY KEY,
+  total NUMERIC(12,2) NOT NULL CHECK (total >= 0)
+);
