@@ -9,8 +9,12 @@
 [Also available in Spanish](README.es.md) ✦ [Demo](https://erdus-inky.vercel.app) ✦ [Docs](https://deepwiki.com/tobiager/Erdus) ✦ [Contributing](#-contributing) ✦ [Roadmap](#%EF%B8%8F-roadmap--universal-converter)
 
 **One IR to map them all.** Erdus is the **open-source universal converter** for ER diagrams and database schemas.  
+
 It unifies ERDPlus, SQL DDL, Prisma, TypeORM, JSON Schema and more under a strict **Intermediate Representation (IR)**.  
+
 Build once, convert everywhere. 🚀
+
+The web interface is built with React using TSX components and styled with Tailwind CSS.
 
 </div>
 
@@ -22,13 +26,15 @@ Build once, convert everywhere. 🚀
 ![MIT](https://img.shields.io/badge/License-MIT-FFF?labelColor=black&style=for-the-badge&color=1280ff)
 ![Vercel](https://img.shields.io/badge/Deploy-Vercel-FFF?labelColor=black&logo=vercel&style=for-the-badge&color=1280ff)
 
+![React](https://img.shields.io/badge/React-18.x-61DAFB?logo=react&logoColor=white&style=for-the-badge&labelColor=black)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-06B6D4?logo=tailwindcss&logoColor=white&style=for-the-badge&labelColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white&style=for-the-badge&labelColor=black)
 ![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?logo=vite&logoColor=white&style=for-the-badge&labelColor=black)
 ![Node](https://img.shields.io/badge/Node-≥18-339933?logo=node.js&logoColor=white&style=for-the-badge&labelColor=black)
 
 <a href="https://www.producthunt.com/products/erdus?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-erdus" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1012222&theme=dark&t=1756930414298" alt="Erdus - Universal&#0032;converter | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
-https://github.com/user-attachments/assets/c1ae119b-651e-436d-a4a5-3f6c6e6eda2a
+https://github.com/user-attachments/assets/ad18f7ab-0b26-4033-9eae-6a9b209543b8
 
 </div>
 
@@ -52,18 +58,22 @@ https://github.com/user-attachments/assets/c1ae119b-651e-436d-a4a5-3f6c6e6eda2a
 ## 📁 Project structure
 ```
 .
-├─ src/
-│  ├─ app.ts           # UI: drag & drop, file input, download
-│  ├─ convert.ts       # conversion logic old ⇄ new (lossless)
-│  └─ types.ts         # types for both formats (Old/New)
-├─ public/
-│  └─ favicon.svg
-├─ index.html          # minimal landing + dropzone
-├─ vite.config.ts
-├─ tsconfig.json
-├─ vercel.json
-├─ README.md
-└─ LICENSE
+├── src/                # source: CLI, converters and web UI
+│   ├── components/     # reusable React components
+│   ├── pages/          # application pages
+│   ├── convert.ts      # ERDPlus old ⇄ new conversion logic
+│   └── ...             # other modules
+├── public/             # static assets (favicon, etc.)
+├── docs/               # documentation site
+├── examples/           # example schemas
+├── tests/              # unit tests
+├── assets/             # images used in README/docs
+├── index.html          # minimal landing + dropzone
+├── vite.config.ts
+├── tailwind.config.ts
+├── tsconfig.json
+├── vercel.json
+└── LICENSE
 ```
 
 ---
