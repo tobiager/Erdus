@@ -15,7 +15,7 @@ describe('SQL to TypeORM mapping', () => {
     const typeorm = irToTypeorm(ir);
     
     expect(typeorm).toContain('@Entity(\'users\')');
-    expect(typeorm).toContain('export class users');
+    expect(typeorm).toContain('export class Users');
     expect(typeorm).toContain('@PrimaryGeneratedColumn("increment")');
     expect(typeorm).toContain('@Column("varchar", { length: 255, unique: true })');
     expect(typeorm).toContain('@Column("timestamptz", { default: \'now()\' })');
@@ -40,9 +40,9 @@ describe('SQL to TypeORM mapping', () => {
     const ir = sqlToIR(sql);
     const typeorm = irToTypeorm(ir);
     
-    expect(typeorm).toContain('@ManyToOne(() => users)');
+    expect(typeorm).toContain('@ManyToOne(() => Users)');
     expect(typeorm).toContain('@JoinColumn({ name: \'user_id\' })');
-    expect(typeorm).toContain('@OneToMany(() => posts, posts => posts.users)');
+    expect(typeorm).toContain('@OneToMany(() => Posts, posts => posts.users');
   });
 
   it('handles composite primary keys', () => {

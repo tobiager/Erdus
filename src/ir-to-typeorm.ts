@@ -2,6 +2,13 @@ import type { IRDiagram, IRTable, IRColumn } from './ir';
 
 type TypeOrmType = { type: string; decorators?: string[] };
 
+function toPascalCase(str: string): string {
+  return str
+    .split(/[_\s-]+/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join('');
+}
+
 function mapType(raw: string): TypeOrmType {
   const t = raw.toUpperCase();
   
@@ -160,7 +167,7 @@ export function irToTypeorm(diagram: IRDiagram): string {
         }
       }
       
-      lines.push(`export class ${table.name} {`);
+      lines.push(`export class ${toPascalCase(table.name)} {`);
 
       // Add columns
       for (const col of table.columns) {
@@ -239,9 +246,9 @@ export function irToTypeorm(diagram: IRDiagram): string {
         if (!meta) continue; // Skip if no relation metadata found
         const optional = col.isOptional;
         
-        lines.push(`  @ManyToOne(() => ${meta.parent.name}${optional ? ', { nullable: true }' : ''})`);
+        lines.push(`  @ManyToOne(() => ${toPascalCase(meta.parent.name)}${optional ? ', { nullable: true }' : ''})`);
         lines.push(`  @JoinColumn({ name: '${col.name}' })`);
-        const typeAnnotation = optional ? `${meta.parent.name} | null` : meta.parent.name;
+        const typeAnnotation = optional ? `${toPascalCase(meta.parent.name)} | null` : toPascalCase(meta.parent.name);
         lines.push(`  ${meta.propertyName}: ${typeAnnotation};`);
         lines.push('');
       }
@@ -252,8 +259,8 @@ export function irToTypeorm(diagram: IRDiagram): string {
         const propertyName = r.index > 1 
           ? `${r.child.name.toLowerCase()}s_${r.index}` 
           : `${r.child.name.toLowerCase()}s`;
-        lines.push(`  @OneToMany(() => ${r.child.name}, ${r.child.name.toLowerCase()} => ${r.child.name.toLowerCase()}.${r.propertyName})`);
-        lines.push(`  ${propertyName}: ${r.child.name}[];`);
+        lines.push(`  @OneToMany(() => ${toPascalCase(r.child.name)}, ${r.child.name.toLowerCase()} => ${r.child.name.toLowerCase()}.${r.propertyName})`);
+        lines.push(`  ${propertyName}: ${toPascalCase(r.child.name)}[];`);
         lines.push('');
       }
 
