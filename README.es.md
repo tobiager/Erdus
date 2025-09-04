@@ -9,7 +9,8 @@
 [Disponible en inglés](README.md) ✦ [Demo](https://erdus-inky.vercel.app) ✦ [Docs](https://deepwiki.com/tobiager/Erdus) ✦ [Contribuir](#-contribuyendo) ✦ [Roadmap](#%EF%B8%8F-roadmap-erdus--conversor-universal)
 
 **Un IR para mapearlos a todos.** Erdus es el **conversor universal open source** para diagramas ER y esquemas de bases de datos.  
-Unifica ERDPlus, SQL DDL, Prisma, JSON Schema y más bajo una estricta **Representación Intermedia (IR)**.
+
+Unifica ERDPlus, SQL DDL, Prisma, TypeORM, JSON Schema y más bajo una estricta **Representación Intermedia (IR)**.  
 Construí una vez, convertí en cualquier lugar. 🚀
 
 La interfaz web está construida con React mediante componentes TSX y utiliza Tailwind CSS para los estilos.
@@ -46,6 +47,7 @@ https://github.com/user-attachments/assets/ad18f7ab-0b26-4033-9eae-6a9b209543b8
 - ERDPlus Old ⇄ New (incluido)
 - SQL (DDL de PostgreSQL)
 - Prisma
+- TypeORM
 
 ---
 
@@ -246,7 +248,8 @@ El archivo `vercel.json` ya apunta a `dist/`.
  *Objetivo*: ser útil en pipelines y proyectos serios
 
 - IR → JSON Schema (APIs, validación)
-- IR → TypeORM/Sequelize models
+- ✅ IR → TypeORM models
+- IR → Sequelize models
 - IR → Supabase schema (+ políticas RLS opcionales)
 - Diff/Migration plan: comparar dos IR → script SQL `ALTER`
 -  Atrae: startups, proyectos SaaS → estrellas de gente productiva

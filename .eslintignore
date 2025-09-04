@@ -1,0 +1,6 @@
+dist
+packages/*/dist
+build
+coverage
+.vite
+

@@ -69,7 +69,7 @@ export default function Home() {
           animate="show"
           custom={1}
         >
-          Convert ERDPlus diagrams, SQL schemas, and Prisma models seamlessly.
+          Convert ERDPlus diagrams, SQL schemas, Prisma models, and TypeORM entities seamlessly.
         </motion.p>
 
         <motion.div

@@ -6,7 +6,7 @@ const sections = {
       <h2 className="text-xl font-semibold mb-2">Overview</h2>
       <p>
         Erdus is an open-source universal ER diagram converter. It enables
-        migration between ERDPlus old/new formats, SQL schemas, and Prisma models
+        migration between ERDPlus old/new formats, SQL schemas, Prisma models, and TypeORM entities
         while preserving structural integrity.
       </p>
 

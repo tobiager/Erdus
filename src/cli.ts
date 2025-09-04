@@ -4,18 +4,21 @@ import { oldToNew, newToOld } from './convert';
 import { newToIR } from './ir';
 import { irToPostgres } from './ir-to-sql';
 import { irToPrisma } from './ir-to-prisma';
+import { irToTypeorm } from './ir-to-typeorm';
 import { sqlToIR } from './sql-to-ir';
 import { prismaToIR } from './prisma-to-ir';
+import { typeormToIR } from './typeorm-to-ir';
 import { irToNew } from './ir-to-new';
 import type { IRDiagram } from './ir';
 
-function detectInput(text: string): 'old'|'new'|'sql'|'prisma' {
+function detectInput(text: string): 'old'|'new'|'sql'|'prisma'|'typeorm' {
   try {
     const obj = JSON.parse(text);
     if (obj && obj.version === 2 && obj.www === 'erdplus.com' && Array.isArray(obj.shapes)) return 'old';
     if (obj && obj.diagramType === 2 && obj.data && Array.isArray(obj.data.nodes)) return 'new';
   } catch { /* ignore */ }
   if (/model\s+\w+\s+{/.test(text)) return 'prisma';
+  if (/@Entity/.test(text)) return 'typeorm';
   if (/CREATE TABLE/i.test(text)) return 'sql';
   throw new Error('Formato de entrada no soportado');
 }
@@ -23,7 +26,7 @@ function detectInput(text: string): 'old'|'new'|'sql'|'prisma' {
 function main() {
   const [, , cmd, file, target] = process.argv;
   if (cmd !== 'convert' || !file || !target) {
-    console.error('Uso: erdus convert <entrada> <sql|prisma|old|new>');
+    console.error('Uso: erdus convert <entrada> <sql|prisma|typeorm|old|new>');
     process.exit(1);
   }
   const raw = readFileSync(file, 'utf8');
@@ -40,6 +43,9 @@ function main() {
   } else if (fmt === 'sql') {
     ir = sqlToIR(raw);
     newDoc = irToNew(ir);
+  } else if (fmt === 'typeorm') {
+    ir = typeormToIR(raw);
+    newDoc = irToNew(ir);
   } else {
     ir = prismaToIR(raw);
     newDoc = irToNew(ir);
@@ -49,6 +55,8 @@ function main() {
     console.log(irToPostgres(ir));
   } else if (target === 'prisma') {
     console.log(irToPrisma(ir));
+  } else if (target === 'typeorm') {
+    console.log(irToTypeorm(ir));
   } else if (target === 'new') {
     console.log(JSON.stringify(newDoc, null, 2));
   } else if (target === 'old') {

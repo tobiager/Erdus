@@ -3,14 +3,16 @@ import { oldToNew, newToOld } from '../convert';
 import { newToIR, IRDiagram } from '../ir';
 import { irToPostgres } from '../ir-to-sql';
 import { irToPrisma } from '../ir-to-prisma';
+import { irToTypeorm } from '../ir-to-typeorm';
 import { sqlToIR } from '../sql-to-ir';
 import { prismaToIR } from '../prisma-to-ir';
+import { typeormToIR } from '../typeorm-to-ir';
 import { irToNew } from '../ir-to-new';
 import Dropzone from "../components/Dropzone";
 import CtaButton from "../components/CtaButton";
 
-type InFmt = 'old' | 'new' | 'sql' | 'prisma';
-type TgtFmt = 'sql' | 'prisma' | 'new' | 'old';
+type InFmt = 'old' | 'new' | 'sql' | 'prisma' | 'typeorm';
+type TgtFmt = 'sql' | 'prisma' | 'typeorm' | 'new' | 'old';
 
 const detectInput = (text: string): InFmt => {
   try {
@@ -19,6 +21,7 @@ const detectInput = (text: string): InFmt => {
     if (obj && obj.diagramType === 2 && obj.data && Array.isArray(obj.data.nodes)) return 'new';
   } catch { /* not JSON */ }
   if (/model\s+\w+\s*{/.test(text)) return 'prisma';
+  if (/@Entity/.test(text)) return 'typeorm';
   if (/CREATE\s+TABLE/i.test(text)) return 'sql';
   throw new Error('Unsupported input format');
 };
@@ -30,8 +33,8 @@ const computeOutName = (inputName: string, to: 'old' | 'new') => {
   return `${clean}-${to}${ext}`;
 };
 
-const computeTextOutName = (inputName: string, to: 'sql' | 'prisma') => {
-  const base = inputName.replace(/\.(erdplus|json|sql|prisma)$/i, '').replace(/-(old|new)$/i, '');
+const computeTextOutName = (inputName: string, to: 'sql' | 'prisma' | 'ts') => {
+  const base = inputName.replace(/\.(erdplus|json|sql|prisma|ts)$/i, '').replace(/-(old|new)$/i, '');
   return `${base}.${to}`;
 };
 
@@ -119,6 +122,10 @@ export default function Converter() {
         ir = sqlToIR(text);
         newDoc = irToNew(ir);
         losses.push('Comments and non-table statements are ignored');
+      } else if(fmt === 'typeorm') {
+        ir = typeormToIR(text);
+        newDoc = irToNew(ir);
+        losses.push('Unsupported TypeORM features were ignored');
       } else {
         ir = prismaToIR(text);
         newDoc = irToNew(ir);
@@ -139,6 +146,15 @@ export default function Converter() {
         setOutput(prisma);
         setLoss(losses.join('\n') || 'No losses detected.');
         pushLog('Generated Prisma schema.');
+        setStatus('done');
+        return;
+      }
+
+      if (tgt === 'typeorm') {
+        const typeorm = irToTypeorm(ir);
+        setOutput(typeorm);
+        setLoss(losses.join('\n') || 'No losses detected.');
+        pushLog('Generated TypeORM entities.');
         setStatus('done');
         return;
       }
@@ -174,7 +190,8 @@ export default function Converter() {
 
   const onDownload = () => {
     if (!output) { pushLog('Nothing to download.'); return; }
-    const name = computeTextOutName(fileName || 'output', (target as 'sql' | 'prisma'));
+    const targetFormat = target === 'typeorm' ? 'ts' : (target as 'sql' | 'prisma') 
+    const name = computeTextOutName(fileName || 'output', targetFormat);
     downloadText(output, name);
     pushLog(`Downloaded as ${name}.`);
   };
@@ -224,13 +241,13 @@ export default function Converter() {
           <div className="p-5 space-y-5">
             <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Convert a file</h2>
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              Drag & drop an ERDPlus JSON, SQL, or Prisma file, then choose the output format.
+              Drag & drop an ERDPlus JSON, SQL, Prisma, or TypeORM file, then choose the output format.
             </p>
 
             <Dropzone
-              accept=".erdplus,.json,.sql,.prisma"
+              accept=".erdplus,.json,.sql,.prisma,.ts"
               variant="large"
-              extensionsHint={["ERDPlus", "JSON", "SQL", "Prisma"]}
+              extensionsHint={["ERDPlus", "JSON", "SQL", "Prisma", "TypeORM"]}
               onFile={(f) => {
                 setLastFile(f);
                 setFileName(f.name);
@@ -259,6 +276,7 @@ export default function Converter() {
                 >
                   <option value="sql">SQL (PostgreSQL)</option>
                   <option value="prisma">Prisma schema</option>
+                  <option value="typeorm">TypeORM entities</option>
                   <option value="new">ERDPlus (new)</option>
                   <option value="old">ERDPlus (old)</option>
                 </select>
@@ -295,9 +313,9 @@ export default function Converter() {
           <div className="p-5">
             <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">How it works</h2>
             <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-700 dark:text-slate-300">
-              <li>Auto-detects ERDPlus (old/new), SQL or Prisma inputs.</li>
+              <li>Auto-detects ERDPlus (old/new), SQL, Prisma, or TypeORM inputs.</li>
               <li>Keeps entity positions/order, PKs and simple FKs.</li>
-              <li>Converts to ERDPlus (old/new), PostgreSQL SQL, or Prisma.</li>
+              <li>Converts to ERDPlus (old/new), PostgreSQL SQL, Prisma, or TypeORM.</li>
               <li>Outputs appear below; ERDPlus JSON downloads automatically.</li>
               <li><span className="text-slate-600 dark:text-slate-400">Privacy:</span> everything runs locally in your browser.</li>
             </ul>
