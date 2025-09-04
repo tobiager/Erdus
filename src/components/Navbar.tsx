@@ -34,9 +34,7 @@ export default function Navbar() {
     if (!wrapper || !el) return;
     const wrapRect = wrapper.getBoundingClientRect();
     const elRect = el.getBoundingClientRect();
-
-    // Si hay scroll horizontal en xs, compensamos con scrollLeft
-    const left = elRect.left - wrapRect.left + wrapper.scrollLeft;
+    const left = elRect.left - wrapRect.left + wrapper.scrollLeft; // compensa scroll en xs
     setIndicator({ left, width: elRect.width, ready: true });
   };
 
@@ -45,7 +43,7 @@ export default function Navbar() {
       ? "converter"
       : location.pathname.startsWith("/documentation")
       ? "docs"
-      : "home";
+      : "home"; // "/" cae acá
 
   useEffect(() => {
     moveIndicatorTo(linkRefs[activeKey].current);
@@ -64,7 +62,7 @@ export default function Navbar() {
       <div className="mx-auto max-w-7xl h-16 md:h-20 px-4 sm:px-6 flex items-center justify-between">
         {/* Logo */}
         <Link
-          to="/home"
+          to="/"
           className="text-lg sm:text-xl font-bold flex items-center gap-2 text-slate-900 dark:text-white"
         >
           Erdus
@@ -86,7 +84,7 @@ export default function Navbar() {
         >
           <div className="flex items-center gap-4 sm:gap-6">
             <NavLink
-              to="/home"
+              to="/"
               ref={homeRef}
               className={link}
               onMouseEnter={(e) => moveIndicatorTo(e.currentTarget)}
@@ -112,13 +110,11 @@ export default function Navbar() {
               onMouseEnter={(e) => moveIndicatorTo(e.currentTarget)}
               onMouseLeave={() => moveIndicatorTo(linkRefs[activeKey].current)}
             >
-              {/* Label corto en xs */}
               <span className="sm:hidden">Docs</span>
               <span className="hidden sm:inline">Documentation</span>
             </NavLink>
           </div>
 
-          {/* Indicador deslizante */}
           <span
             aria-hidden
             className={`
