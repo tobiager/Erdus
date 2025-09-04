@@ -9,6 +9,14 @@ function toPascalCase(str: string): string {
     .join('');
 }
 
+function mapConstraintAction(action: string): string {
+  const up = action.toUpperCase();
+  if (up === 'NO ACTION') return 'NO ACTION';
+  if (up === 'SET NULL') return 'SET NULL';
+  if (up === 'SET DEFAULT') return 'SET DEFAULT';
+  return up.charAt(0) + up.slice(1).toLowerCase();
+}
+
 function mapType(raw: string): TypeOrmType {
   const t = raw.toUpperCase();
   
@@ -246,7 +254,21 @@ export function irToTypeorm(diagram: IRDiagram): string {
         if (!meta) continue; // Skip if no relation metadata found
         const optional = col.isOptional;
         
-        lines.push(`  @ManyToOne(() => ${toPascalCase(meta.parent.name)}${optional ? ', { nullable: true }' : ''})`);
+        // Build ManyToOne options
+        const options: string[] = [];
+        if (optional) {
+          options.push('nullable: true');
+        }
+        
+        if (col.references.onDelete) {
+          options.push(`onDelete: '${mapConstraintAction(col.references.onDelete)}'`);
+        }
+        if (col.references.onUpdate) {
+          options.push(`onUpdate: '${mapConstraintAction(col.references.onUpdate)}'`);
+        }
+        
+        const optionsStr = options.length > 0 ? `, { ${options.join(', ')} }` : '';
+        lines.push(`  @ManyToOne(() => ${toPascalCase(meta.parent.name)}${optionsStr})`);
         lines.push(`  @JoinColumn({ name: '${col.name}' })`);
         const typeAnnotation = optional ? `${toPascalCase(meta.parent.name)} | null` : toPascalCase(meta.parent.name);
         lines.push(`  ${meta.propertyName}: ${typeAnnotation};`);

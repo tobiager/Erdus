@@ -97,4 +97,19 @@ describe('SQL to TypeORM mapping', () => {
     expect(typeorm).toContain('nickname: string | null;');
     expect(typeorm).toContain('nullable: true');
   });
+
+  it('handles foreign key constraints with CASCADE and NO ACTION', () => {
+    const sql = `CREATE TABLE cliente ( id SERIAL PRIMARY KEY );
+CREATE TABLE pedido (
+  id SERIAL PRIMARY KEY,
+  cliente_id INT NOT NULL REFERENCES cliente(id) ON DELETE CASCADE ON UPDATE NO ACTION
+);`;
+    
+    const ir = sqlToIR(sql);
+    const typeorm = irToTypeorm(ir);
+    
+    expect(typeorm).toContain('@ManyToOne(() => Cliente, { onDelete: \'Cascade\', onUpdate: \'NO ACTION\' })');
+    expect(typeorm).toContain('@JoinColumn({ name: \'cliente_id\' })');
+    expect(typeorm).toContain('cliente: Cliente;');
+  });
 });
