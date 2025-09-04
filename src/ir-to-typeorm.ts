@@ -14,28 +14,25 @@ function mapConstraintAction(action: string): string {
   if (up === 'NO ACTION') return 'NO ACTION';
   if (up === 'SET NULL') return 'SET NULL';
   if (up === 'SET DEFAULT') return 'SET DEFAULT';
-  return up.charAt(0) + up.slice(1).toLowerCase();
+  if (up === 'CASCADE') return 'CASCADE';
+  if (up === 'RESTRICT') return 'RESTRICT';
+  return up
 }
 
 function mapType(raw: string): TypeOrmType {
   const t = raw.toUpperCase();
-  
   if (t.startsWith('INT') || t === 'INTEGER') {
     return { type: 'number', decorators: ['@Column("int")'] };
   }
-  
   if (t.startsWith('BIGINT')) {
     return { type: 'number', decorators: ['@Column("bigint")'] };
   }
-  
   if (t.startsWith('SMALLINT')) {
     return { type: 'number', decorators: ['@Column("smallint")'] };
   }
-  
   if (t.startsWith('DOUBLE') || t.startsWith('FLOAT') || t.startsWith('REAL')) {
     return { type: 'number', decorators: ['@Column("float")'] };
   }
-
   const dec = t.match(/^(DECIMAL|NUMERIC)\((\d+),(\d+)\)$/);
   if (dec) {
     return { 
@@ -46,7 +43,6 @@ function mapType(raw: string): TypeOrmType {
   if (t === 'DECIMAL' || t === 'NUMERIC') {
     return { type: 'number', decorators: ['@Column("decimal")'] };
   }
-
   const varchar = t.match(/^VARCHAR\((\d+)\)$/);
   if (varchar) {
     return { 
@@ -62,41 +58,33 @@ function mapType(raw: string): TypeOrmType {
       decorators: [`@Column("char", { length: ${char[1]} })`] 
     };
   }
-
   if (t === 'TEXT') {
     return { type: 'string', decorators: ['@Column("text")'] };
   }
-
   if (t === 'DATE') {
     return { type: 'Date', decorators: ['@Column("date")'] };
   }
-  
   if (t === 'TIMESTAMPTZ') {
     return { type: 'Date', decorators: ['@Column("timestamptz")'] };
   }
-  
   if (t === 'DATETIME' || t === 'TIMESTAMP') {
     return { type: 'Date', decorators: ['@Column("timestamp")'] };
   }
-
   if (t === 'SERIAL') {
     return { 
       type: 'number', 
       decorators: ['@PrimaryGeneratedColumn("increment")'] 
     };
   }
-  
   if (t === 'BIGSERIAL') {
     return { 
       type: 'number', 
       decorators: ['@PrimaryGeneratedColumn("increment")', '@Column("bigint")'] 
     };
   }
-
   if (t === 'BOOLEAN' || t === 'BOOL') {
     return { type: 'boolean', decorators: ['@Column("boolean")'] };
   }
-
   // Default fallback
   return { type: 'string', decorators: ['@Column()'] };
 }
@@ -112,7 +100,6 @@ interface RelationMeta {
 /** Convert canonical IR to TypeORM entities. */
 export function irToTypeorm(diagram: IRDiagram): string {
   const tableMap = new Map<string, IRTable>(diagram.tables.map(t => [t.name, t]));
-
   // Group FK columns by child->parent to determine relation names when needed
   const groups = new Map<string, { child: IRTable; parent: IRTable; cols: IRColumn[] }>();
   for (const table of diagram.tables) {
@@ -126,7 +113,6 @@ export function irToTypeorm(diagram: IRDiagram): string {
       groups.set(key, g);
     }
   }
-
   const relations: RelationMeta[] = [];
   for (const g of groups.values()) {
     g.cols.forEach((col, idx) => {
@@ -151,18 +137,14 @@ export function irToTypeorm(diagram: IRDiagram): string {
     list.push(r);
     backRelations.set(r.parent.name, list);
   }
-
   // Generate import statement once at the top
   const imports = `import { Entity, Column, PrimaryColumn, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn, Index } from 'typeorm';`;
-  
   const entities = diagram.tables
     .map(table => {
       const pkCols = table.columns.filter(c => c.isPrimaryKey);
       const lines: string[] = [];
-      
       // Add entity decorator (no imports here)
       lines.push(`@Entity('${table.name}')`);
-      
       // Add indexes if any
       if (table.indexes && table.indexes.length > 0) {
         for (const idx of table.indexes) {
@@ -174,23 +156,18 @@ export function irToTypeorm(diagram: IRDiagram): string {
           }
         }
       }
-      
       lines.push(`export class ${toPascalCase(table.name)} {`);
-
       // Add columns
       for (const col of table.columns) {
         const mapped = mapType(col.type);
         const isRelation = !!col.references;
         const isPk = col.isPrimaryKey;
         const optional = col.isOptional && !col.isPrimaryKey && !isRelation;
-        
         if (isRelation) {
           // Skip FK columns - they will be handled by relations
           continue;
         }
-
         let decorators: string[] = [];
-        
         if (isPk) {
           if (col.type.toUpperCase() === 'SERIAL' || col.type.toUpperCase() === 'BIGSERIAL') {
             decorators = mapped.decorators || ['@PrimaryGeneratedColumn()'];
@@ -203,7 +180,6 @@ export function irToTypeorm(diagram: IRDiagram): string {
         } else {
           decorators = mapped.decorators || ['@Column()'];
         }
-
         // Add nullable option for optional columns
         if (optional && decorators.length > 0) {
           const lastDecorator = decorators[decorators.length - 1];
@@ -215,7 +191,6 @@ export function irToTypeorm(diagram: IRDiagram): string {
             }
           }
         }
-
         // Add unique constraint
         if (col.isUnique && !col.isPrimaryKey) {
           const lastDecorator = decorators[decorators.length - 1];
@@ -227,7 +202,6 @@ export function irToTypeorm(diagram: IRDiagram): string {
             }
           }
         }
-
         // Add default value
         if (col.default && !col.type.toUpperCase().includes('SERIAL')) {
           const lastDecorator = decorators[decorators.length - 1];
@@ -240,33 +214,28 @@ export function irToTypeorm(diagram: IRDiagram): string {
             }
           }
         }
-
         decorators.forEach(decorator => lines.push(`  ${decorator}`));
         const typeAnnotation = optional ? `${mapped.type} | null` : mapped.type;
         lines.push(`  ${col.name}: ${typeAnnotation};`);
         lines.push('');
       }
-
       // Add ManyToOne relations (FK side)
       for (const col of table.columns) {
         if (!col.references) continue;
         const meta = relByChildCol.get(`${table.name}.${col.name}`);
         if (!meta) continue; // Skip if no relation metadata found
         const optional = col.isOptional;
-        
         // Build ManyToOne options
         const options: string[] = [];
         if (optional) {
           options.push('nullable: true');
         }
-        
         if (col.references.onDelete) {
           options.push(`onDelete: '${mapConstraintAction(col.references.onDelete)}'`);
         }
         if (col.references.onUpdate) {
           options.push(`onUpdate: '${mapConstraintAction(col.references.onUpdate)}'`);
         }
-        
         const optionsStr = options.length > 0 ? `, { ${options.join(', ')} }` : '';
         lines.push(`  @ManyToOne(() => ${toPascalCase(meta.parent.name)}${optionsStr})`);
         lines.push(`  @JoinColumn({ name: '${col.name}' })`);
@@ -274,7 +243,6 @@ export function irToTypeorm(diagram: IRDiagram): string {
         lines.push(`  ${meta.propertyName}: ${typeAnnotation};`);
         lines.push('');
       }
-
       // Add OneToMany relations (reverse side)
       const backRels = backRelations.get(table.name) || [];
       for (const r of backRels) {
@@ -285,7 +253,6 @@ export function irToTypeorm(diagram: IRDiagram): string {
         lines.push(`  ${propertyName}: ${toPascalCase(r.child.name)}[];`);
         lines.push('');
       }
-
       // Handle composite primary keys
       if (pkCols.length > 1) {
         // For composite keys, we need to remove individual @PrimaryColumn decorators 
@@ -294,12 +261,10 @@ export function irToTypeorm(diagram: IRDiagram): string {
         lines.push(`  // Composite primary key: [${pkNames.join(', ')}]`);
         lines.push(`  // Note: TypeORM composite keys require additional configuration`);
       }
-
       lines.push('}');
       return lines.join('\n');
     })
     .join('\n\n');
-  
   // Combine imports with entities
   return `${imports}\n\n${entities}`;
 }

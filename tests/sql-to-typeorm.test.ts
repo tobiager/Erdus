@@ -108,7 +108,7 @@ CREATE TABLE pedido (
     const ir = sqlToIR(sql);
     const typeorm = irToTypeorm(ir);
     
-    expect(typeorm).toContain('@ManyToOne(() => Cliente, { onDelete: \'Cascade\', onUpdate: \'NO ACTION\' })');
+    expect(typeorm).toContain('@ManyToOne(() => Cliente, { onDelete: \'CASCADE\', onUpdate: \'NO ACTION\' })');
     expect(typeorm).toContain('@JoinColumn({ name: \'cliente_id\' })');
     expect(typeorm).toContain('cliente: Cliente;');
   });
