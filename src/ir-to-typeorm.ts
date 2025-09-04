@@ -137,14 +137,15 @@ export function irToTypeorm(diagram: IRDiagram): string {
     backRelations.set(r.parent.name, list);
   }
 
-  return diagram.tables
+  // Generate import statement once at the top
+  const imports = `import { Entity, Column, PrimaryColumn, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn, Index } from 'typeorm';`;
+  
+  const entities = diagram.tables
     .map(table => {
       const pkCols = table.columns.filter(c => c.isPrimaryKey);
       const lines: string[] = [];
       
-      // Add imports and entity decorator
-      lines.push(`import { Entity, Column, PrimaryColumn, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinColumn, Index } from 'typeorm';`);
-      lines.push('');
+      // Add entity decorator (no imports here)
       lines.push(`@Entity('${table.name}')`);
       
       // Add indexes if any
@@ -269,4 +270,7 @@ export function irToTypeorm(diagram: IRDiagram): string {
       return lines.join('\n');
     })
     .join('\n\n');
+  
+  // Combine imports with entities
+  return `${imports}\n\n${entities}`;
 }
