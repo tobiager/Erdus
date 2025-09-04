@@ -1,0 +1,161 @@
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Github } from "lucide-react";
+import ThemeMenu from "./ThemeMenu";
+
+type LinkKey = "home" | "converter" | "docs";
+
+const link = ({ isActive }: { isActive: boolean }) =>
+  [
+    "px-2 py-1.5 text-sm sm:px-3 sm:py-2 sm:text-base font-medium transition-colors",
+    "text-slate-700 dark:text-slate-300",
+    "hover:text-slate-900 dark:hover:text-white",
+    isActive ? "text-[#1280ff] dark:text-[#1280ff]" : "",
+  ].join(" ");
+
+export default function Navbar() {
+  const location = useLocation();
+
+  const homeRef = useRef<HTMLAnchorElement>(null);
+  const converterRef = useRef<HTMLAnchorElement>(null);
+  const docsRef = useRef<HTMLAnchorElement>(null);
+
+  const linkRefs: Record<LinkKey, React.RefObject<HTMLAnchorElement>> = {
+    home: homeRef,
+    converter: converterRef,
+    docs: docsRef,
+  };
+
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [indicator, setIndicator] = useState({ left: 0, width: 0, ready: false });
+
+  const moveIndicatorTo = (el?: HTMLElement | null) => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper || !el) return;
+    const wrapRect = wrapper.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+
+    // Si hay scroll horizontal en xs, compensamos con scrollLeft
+    const left = elRect.left - wrapRect.left + wrapper.scrollLeft;
+    setIndicator({ left, width: elRect.width, ready: true });
+  };
+
+  const activeKey: LinkKey =
+    location.pathname.startsWith("/converter")
+      ? "converter"
+      : location.pathname.startsWith("/documentation")
+      ? "docs"
+      : "home";
+
+  useEffect(() => {
+    moveIndicatorTo(linkRefs[activeKey].current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeKey, location.pathname]);
+
+  useEffect(() => {
+    const handler = () => moveIndicatorTo(linkRefs[activeKey].current);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeKey]);
+
+  return (
+    <nav className="w-full">
+      <div className="mx-auto max-w-7xl h-16 md:h-20 px-4 sm:px-6 flex items-center justify-between">
+        {/* Logo */}
+        <Link
+          to="/home"
+          className="text-lg sm:text-xl font-bold flex items-center gap-2 text-slate-900 dark:text-white"
+        >
+          Erdus
+          <span className="text-[10px] leading-none bg-blue-600 text-white px-1.5 py-0.5 rounded-md">
+            beta
+          </span>
+        </Link>
+
+        {/* Links centrados + indicador (scrollable en xs) */}
+        <div
+          ref={wrapperRef}
+          className="
+            relative flex-1 min-w-0
+            flex items-center md:justify-center justify-start
+            overflow-x-auto md:overflow-visible whitespace-nowrap
+            [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden
+            gap-0
+          "
+        >
+          <div className="flex items-center gap-4 sm:gap-6">
+            <NavLink
+              to="/home"
+              ref={homeRef}
+              className={link}
+              onMouseEnter={(e) => moveIndicatorTo(e.currentTarget)}
+              onMouseLeave={() => moveIndicatorTo(linkRefs[activeKey].current)}
+            >
+              Home
+            </NavLink>
+
+            <NavLink
+              to="/converter"
+              ref={converterRef}
+              className={link}
+              onMouseEnter={(e) => moveIndicatorTo(e.currentTarget)}
+              onMouseLeave={() => moveIndicatorTo(linkRefs[activeKey].current)}
+            >
+              Converter
+            </NavLink>
+
+            <NavLink
+              to="/documentation"
+              ref={docsRef}
+              className={link}
+              onMouseEnter={(e) => moveIndicatorTo(e.currentTarget)}
+              onMouseLeave={() => moveIndicatorTo(linkRefs[activeKey].current)}
+            >
+              {/* Label corto en xs */}
+              <span className="sm:hidden">Docs</span>
+              <span className="hidden sm:inline">Documentation</span>
+            </NavLink>
+          </div>
+
+          {/* Indicador deslizante */}
+          <span
+            aria-hidden
+            className={`
+              absolute -bottom-[1px] h-[2px] bg-[#1280ff] rounded
+              transition-all duration-300 ease-out
+              ${indicator.ready ? "opacity-100" : "opacity-0"}
+            `}
+            style={{ left: indicator.left, width: indicator.width }}
+          />
+        </div>
+
+        {/* Acciones derecha */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="text-[#1280ff]">
+            <ThemeMenu />
+          </div>
+
+          <a
+            href="https://github.com/tobiager/erdus"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub"
+            className="
+              relative inline-flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-full
+              text-[#1280ff] transition
+              hover:bg-slate-200/40 dark:hover:bg-white/5
+              hover:ring-2 hover:ring-[#1280ff]/50
+              before:absolute before:inset-0 before:rounded-full
+              before:bg-[radial-gradient(60%_60%_at_50%_50%,rgba(18,128,255,0.28),transparent_70%)]
+              before:opacity-0 hover:before:opacity-100 before:transition
+            "
+          >
+            <Github size={18} className="sm:hidden" />
+            <Github size={20} className="hidden sm:block" />
+          </a>
+        </div>
+      </div>
+    </nav>
+  );
+}

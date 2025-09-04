@@ -5,10 +5,10 @@
     "moduleResolution": "Bundler",
     "outDir": "dist",
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "lib": ["DOM", "ES2020"],
+    "types": ["vite/client", "react", "react-dom"]
   },
-  "include": [
-    "src/**/*",
-    "tests/**/*"
-  ]
+  "include": ["src/**/*", "tests/**/*"]
 }

@@ -1,172 +1,29 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Erdus – Universal Converter</title>
-  <meta name="description" content="Erdus, universal ERDPlus (old⇄new) converter. 100% local.">
-  <link rel="icon" href="favicon.ico" type="image/x-icon"/>
-  <style>
-    :root{
-      --bg:#0f172a; --panel:#111827; --text:#e5e7eb; --muted:#9ca3af; --accent:#1280ff;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif;background:linear-gradient(180deg,#000,#0a0a0a);color:var(--text)}
-    header{padding:64px 20px 32px;text-align:center;animation:fadeDown 1s ease both}
-    header h1{margin:0 0 12px;font-size:clamp(32px,6vw,48px)}
-    header p{margin:0;color:var(--muted);font-size:1.1rem}
-    main{flex:1;max-width:960px;margin:0 auto;padding:0 20px 80px;animation:fadeInUp 1s ease .2s both}
-    .card{background:rgba(17,24,39,.7);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:24px;box-shadow:0 4px 24px rgba(0,0,0,.4);transition:transform .3s,box-shadow .3s;animation:fadeInUp .6s ease both}
-    .card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.5)}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-    @media(max-width:880px){.grid{grid-template-columns:1fr}}
-    .drop{border:2px dashed rgba(255,255,255,.2);border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:border-color .3s,background-color .3s}
-    .drop:hover{border-color:var(--accent);background:rgba(18,128,255,.08)}
-    .row{display:flex;gap:12px;align-items:center;margin-top:16px;flex-wrap:wrap}
-    input[type=file]{display:none}
-    .log{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;background:#0a0f1e;border-radius:8px;padding:12px;margin-top:12px;white-space:pre-wrap;max-height:220px;overflow:auto;color:#cbd5e1}
-    .tabs{display:flex;gap:12px;margin-top:12px}
-    .tab-active{border-color:var(--accent)}
-    ul{margin-top:8px}
-    a{color:var(--accent)}
-    footer{margin-top:auto;text-align:center;padding:20px;color:var(--muted);background:rgba(0,0,0,.8)}
-    footer a{color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:6px}
-    footer a:hover{text-decoration:underline}
-    footer svg{width:16px;height:16px;fill:currentColor}
-    @keyframes fadeDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  <head>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>Erdus — Universal Converter</title>
 
-    /* === Dark button + blue accent (shared) === */
-    .btn-ghost,
-    .gh-star-btn{
-      display:inline-flex;align-items:center;gap:.5rem;
-      padding:.55rem .9rem;border-radius:.6rem;
-      background:#111827;                 /* black/dark gray background */
-      color:var(--accent);                 /* blue text/icon */
-      border:1px solid rgba(255,255,255,.1);
-      font-weight:600;line-height:1;cursor:pointer;
-      text-decoration:none;
-      transition:transform .06s ease, background .2s ease, border-color .2s ease, filter .2s ease;
-    }
-    .btn-ghost:hover,
-    .gh-star-btn:hover{ background:#1f2937; border-color:var(--accent); }
-    .btn-ghost:active,
-    .gh-star-btn:active{ transform:translateY(1px); }
-    .btn-ghost svg,
-    .gh-star-btn svg{ fill:currentColor; }
-    .btn-ghost:focus-visible,
-    .gh-star-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
-
-    .footer-inner {
-      display:flex;
-      justify-content:center;   /* centers horizontally */
-      align-items:center;       /* aligns vertically */
-      gap:6px;                  /* space between text and link */
-      flex-wrap:wrap;           /* wraps if the screen is small */
-    }
-
-    .gh-link {
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      color:var(--accent);
-      text-decoration:none;
-      font-weight:600;
-    }
-
-    .gh-link:hover { text-decoration:underline; }
-
-    .gh-icon {
-      width:16px;
-      height:16px;
-      fill:currentColor;
-    }
-
-  </style>
-</head>
-<body>
-  <header>
-    <h1>Erdus: Universal Converter</h1>
-    <p>Converts ERDPlus (old⇄new) and generates PostgreSQL DDL or Prisma schemas. 100% local.</p>
-  </header>
-  <main>
-    <div class="grid">
-      <div class="card">
-        <h3>Convert file</h3>
-        <div id="drop" class="drop">Drag and drop your file or click</div>
-        <div class="row">
-          <input id="file" type="file" accept=".erdplus,.json,.sql,.prisma"/>
-          <select id="format" class="btn-ghost">
-            <option value="sql">SQL</option>
-            <option value="prisma">Prisma</option>
-            <option value="new">ERDPlus (new)</option>
-            <option value="old">ERDPlus (old)</option>
-          </select>
-          <button id="run" class="btn-ghost">Convert</button>
-          <button id="sample" class="btn-ghost">Sample</button>
-        </div>
-        <div id="log" class="log">Ready to convert…</div>
-        <div id="preview" style="display:none">
-          <div class="row">
-            <button id="copy-out" class="btn-ghost">Copy</button>
-            <button id="download-out" class="btn-ghost">Download</button>
-          </div>
-          <div class="tabs">
-            <button id="tab-out" class="btn-ghost tab-active">Result</button>
-            <button id="tab-loss" class="btn-ghost">Losses</button>
-          </div>
-          <pre id="out" class="log"></pre>
-          <pre id="loss" class="log" style="display:none"></pre>
-        </div>
-      </div>
-      <div class="card">
-        <h3>Details</h3>
-        <ul>
-          <li>Auto-detects ERDPlus, SQL or Prisma inputs.</li>
-          <li>Preserves positions, order, PKs and simple FKs.</li>
-          <li>Convert to ERDPlus <em>old</em> or <em>new</em>, PostgreSQL or Prisma.</li>
-          <li>Preview and copy/download SQL or Prisma output instantly.</li>
-          <li>Currently there's a bug that doesn't transfer <strong>connections</strong>.</li>
-        </ul>
-        <p>Private by design: JSON is processed in your browser.</p>
-        <p>
-          <a class="gh-star-btn" href="https://github.com/tobiager/Erdus" target="_blank" rel="noopener">
-            <svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16">
-              <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38
-                       0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
-                       -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07
-                       -1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.01.08-2.11
-                       0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27
-                       1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.91.08 2.11
-                       .51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
-                       0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
-            </svg>
-            <span>Star on GitHub</span>
-          </a>
-        </p>
-      </div>
-    </div>
-  </main>
-  <footer>
-    <div class="footer-inner">
-      <span>© 2025 · Built with passion and dedication by </span>
-      <a class="gh-link" href="https://github.com/tobiager" target="_blank" rel="noopener">
-        <svg class="gh-icon" viewBox="0 0 16 16" aria-hidden="true">
-          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 
-          0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
-          -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 
-          2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 
-          0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 
-          0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 
-          2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 
-          2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 
-          1.48 0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38A8.013 
-          8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
-        </svg>
-        Tobías
-      </a>
-    </div>
-  </footer>  
-  <script type="module" src="/src/app.ts"></script>
-</body>
+    <!-- Pre-aplicar tema (evita FOUC) -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme') || 'system';
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var isDark = t === 'dark' || (t === 'system' && prefersDark);
+          document.documentElement.classList.toggle('dark', isDark);
+          document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+        } catch (_) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
