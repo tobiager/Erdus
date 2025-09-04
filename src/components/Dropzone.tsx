@@ -19,7 +19,7 @@ export default function Dropzone({
   label = "Input file",
   hint = "You can also paste a file (Ctrl/Cmd + V).",
   variant = "large",
-  extensionsHint = ["ERDPlus", "JSON", "SQL", "Prisma"],
+  extensionsHint = ["ERDPlus", "JSON", "SQL", "Prisma", "TypeORM"],
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isOver, setIsOver] = useState(false);

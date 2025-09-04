@@ -9,7 +9,7 @@
 [Also available in Spanish](README.es.md) ✦ [Demo](https://erdus-inky.vercel.app) ✦ [Docs](https://deepwiki.com/tobiager/Erdus) ✦ [Contributing](#-contributing) ✦ [Roadmap](#%EF%B8%8F-roadmap--universal-converter)
 
 **One IR to map them all.** Erdus is the **open-source universal converter** for ER diagrams and database schemas.  
-It unifies ERDPlus, SQL DDL, Prisma, JSON Schema and more under a strict **Intermediate Representation (IR)**.  
+It unifies ERDPlus, SQL DDL, Prisma, TypeORM, JSON Schema and more under a strict **Intermediate Representation (IR)**.  
 Build once, convert everywhere. 🚀
 
 </div>
@@ -45,6 +45,7 @@ https://github.com/user-attachments/assets/c1ae119b-651e-436d-a4a5-3f6c6e6eda2a
 - ERDPlus Old ⇄ New (bundled)
 - SQL (PostgreSQL DDL)
 - Prisma
+- TypeORM
 
 ---
 
@@ -254,7 +255,8 @@ npm i
  *Goal*: be useful in pipelines and serious projects
 
 - IR → JSON Schema (APIs, validation)
-- IR → TypeORM/Sequelize models
+- ✅ IR → TypeORM models
+- IR → Sequelize models
 - IR → Supabase schema (+ optional RLS policies)
 - Diff/Migration plan: compare two IR → SQL `ALTER` script
 -  Attracts: startups, SaaS projects → stars from productive folks
