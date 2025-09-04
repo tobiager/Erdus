@@ -7,12 +7,20 @@ export default function ThemeMenu() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
+  // Cerrar al hacer click/pointer fuera (más robusto que 'click')
   useEffect(() => {
-    const onClick = (e: MouseEvent) => {
+    const onPointerDown = (e: PointerEvent) => {
       if (!ref.current?.contains(e.target as Node)) setOpen(false);
     };
-    window.addEventListener("click", onClick);
-    return () => window.removeEventListener("click", onClick);
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("keydown", onKeyDown);
+    };
   }, []);
 
   const select = (value: "light" | "dark" | "system") => {
@@ -23,13 +31,15 @@ export default function ThemeMenu() {
   return (
     <div className="relative" ref={ref}>
       <button
+        type="button"
         aria-label="Theme"
+        aria-haspopup="menu"
+        aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
         className="
           relative rounded-full p-2 text-[#1280ff] transition
           hover:bg-slate-200/60 dark:hover:bg-white/5
           hover:ring-2 hover:ring-[#1280ff]/50
-
           before:absolute before:inset-0 before:rounded-full
           before:bg-[radial-gradient(60%_60%_at_50%_50%,rgba(18,128,255,0.28),transparent_70%)]
           before:opacity-0 hover:before:opacity-100 before:transition
@@ -40,12 +50,14 @@ export default function ThemeMenu() {
 
       {open && (
         <div
-          className="absolute right-0 mt-2 w-44 rounded-xl
+          role="menu"
+          aria-label="Theme menu"
+          // Evita que el outside-click se propague
+          onPointerDown={(e) => e.stopPropagation()}
+          className="absolute right-0 mt-2 w-44 rounded-xl z-50
                      border border-slate-200 dark:border-[#0e1726]
                      bg-white/95 dark:bg-[#0a1222]/95 p-1
                      shadow-2xl backdrop-blur-md"
-          role="menu"
-          aria-label="Theme menu"
         >
           <Item
             icon={<Sun size={16} />}
@@ -78,14 +90,16 @@ function Item({
   onClick,
 }: {
   icon: React.ReactNode;
-  label: string;
+  label: "Light" | "Dark" | "System";
   active?: boolean;
   onClick: () => void;
 }) {
   return (
     <button
+      type="button"
+      role="menuitemradio"
+      aria-checked={active}
       onClick={onClick}
-      role="menuitem"
       className={`w-full flex items-center gap-2 rounded-md px-2 py-1.5 text-sm
         hover:bg-slate-100 dark:hover:bg-white/10
         ${
