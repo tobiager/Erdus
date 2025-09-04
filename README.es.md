@@ -32,7 +32,7 @@ La interfaz web está construida con React mediante componentes TSX y utiliza Ta
 
 <a href="https://www.producthunt.com/products/erdus?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-erdus" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1012222&theme=dark&t=1756930414298" alt="Erdus - Universal&#0032;converter | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
-https://github.com/user-attachments/assets/c1ae119b-651e-436d-a4a5-3f6c6e6eda2a
+https://github.com/user-attachments/assets/ad18f7ab-0b26-4033-9eae-6a9b209543b8
 
 </div>
 
