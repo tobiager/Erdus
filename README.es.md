@@ -47,7 +47,7 @@ https://github.com/user-attachments/assets/ad18f7ab-0b26-4033-9eae-6a9b209543b8
 - ERDPlus Old ⇄ New (incluido)
 - SQL (DDL de PostgreSQL)
 - Prisma
-- TypeORM
+- TypeORM (IR → entidades)
 
 ---
 
@@ -145,6 +145,25 @@ https://github.com/user-attachments/assets/ad18f7ab-0b26-4033-9eae-6a9b209543b8
 
 ### IR → Prisma
 1. Genera bloques `model` con atributos `@id`, `@unique` y `@relation`.
+
+</details>
+
+##  Características del módulo TypeORM
+- Autodetecta clases de entidades TypeORM.
+- IR ⇔ TypeORM: genera modelos de entidades y los parsea de vuelta al IR.
+- Mapea tipos SQL a tipos de TypeScript y decoradores, preservando relaciones e índices.
+
+<details>
+<summary>##  Módulo TypeORM: cómo funciona</summary>
+
+### TypeORM → IR
+1. Analiza las clases decoradas con `@Entity` para extraer columnas y relaciones.
+2. Reconstruye enlaces `@ManyToOne`/`@OneToMany` usando `@JoinColumn` y marca campos opcionales.
+
+### IR → TypeORM
+1. Emite clases `@Entity` con decoradores `@Column`, `@PrimaryColumn` y `@PrimaryGeneratedColumn`.
+2. Genera relaciones `@ManyToOne`/`@OneToMany` e índices `@Index`.
+3. Mapea tipos SQL a tipos de TypeORM añadiendo opciones `nullable` y `unique`.
 
 </details>
 
@@ -312,9 +331,10 @@ Lee la [Guía de Contribución](CONTRIBUTING.es.md) antes de empezar.
 
 Gracias a todas las personas que contribuyen al crecimiento de este proyecto. ¡Tu contribución también puede aparecer aquí!
 
+
 <p align="center">
   <a href="https://github.com/tobiager/erdus/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=tobiager/erdus" alt="Principales contribuidores" />
+    <img src="https://contrib.rocks/image?repo=tobiager/erdus" alt="Top contributors" />
   </a>
 </p>
 

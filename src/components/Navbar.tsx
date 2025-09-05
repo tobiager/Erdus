@@ -27,6 +27,7 @@ export default function Navbar() {
   };
 
   const wrapperRef = useRef<HTMLDivElement>(null);
+
   const [indicator, setIndicator] = useState({ left: 0, width: 0, ready: false });
 
   const moveIndicatorTo = (el?: HTMLElement | null) => {
@@ -34,7 +35,7 @@ export default function Navbar() {
     if (!wrapper || !el) return;
     const wrapRect = wrapper.getBoundingClientRect();
     const elRect = el.getBoundingClientRect();
-    const left = elRect.left - wrapRect.left + wrapper.scrollLeft; // compensa scroll en xs
+    const left = elRect.left - wrapRect.left + wrapper.scrollLeft;
     setIndicator({ left, width: elRect.width, ready: true });
   };
 
@@ -43,7 +44,7 @@ export default function Navbar() {
       ? "converter"
       : location.pathname.startsWith("/documentation")
       ? "docs"
-      : "home"; // "/" cae acá
+      : "home";
 
   useEffect(() => {
     moveIndicatorTo(linkRefs[activeKey].current);
@@ -71,16 +72,27 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Links centrados + indicador (scrollable en xs) */}
+        {/* Carril scrolleable con fade */}
         <div
           ref={wrapperRef}
+          aria-label="Main"
           className="
             relative flex-1 min-w-0
+            h-10 md:h-auto
             flex items-center md:justify-center justify-start
-            overflow-x-auto md:overflow-visible whitespace-nowrap
-            [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden
+            overflow-x-auto overflow-y-hidden
+            whitespace-nowrap
+            no-scrollbar nav-scroll-mask
+            [touch-action:pan-x]
+            [overscroll-behavior-x:contain]
+            [overscroll-behavior-y:none]
+            -mx-4 pl-4
             gap-0
+            snap-x snap-mandatory
           "
+          style={{
+            ["--edge" as any]: "36px", // ancho del fade en bordes
+          }}
         >
           <div className="flex items-center gap-4 sm:gap-6">
             <NavLink
@@ -115,23 +127,21 @@ export default function Navbar() {
             </NavLink>
           </div>
 
+          {/* Indicador */}
           <span
             aria-hidden
-            className={`
-              absolute -bottom-[1px] h-[2px] bg-[#1280ff] rounded
-              transition-all duration-300 ease-out
-              ${indicator.ready ? "opacity-100" : "opacity-0"}
-            `}
+            className={`absolute -bottom-[2px] h-[4px] bg-[#1280ff] rounded transition-all duration-300 ease-out ${
+              indicator.ready ? "opacity-100" : "opacity-0"
+            }`}
             style={{ left: indicator.left, width: indicator.width }}
           />
         </div>
 
-        {/* Acciones derecha */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        {/* Acciones derecha (fuera del scroll) */}
+        <div className="flex items-center gap-2 sm:gap-3 ml-2 sm:ml-4 shrink-0">
           <div className="text-[#1280ff]">
             <ThemeMenu />
           </div>
-
           <a
             href="https://github.com/tobiager/erdus"
             target="_blank"

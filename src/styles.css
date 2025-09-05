@@ -18,3 +18,29 @@ html.dark body {
   background: #000;     /* dark */
   color: #f1f5f9;       /* slate-100 */
 }
+
+/* Ocultar scrollbars e inercia táctil (iOS) */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Fade en los bordes del carril del navbar (tema-agnóstico) */
+.nav-scroll-mask {
+  --edge: 24px; /* ancho del desvanecido en los costados */
+  mask-image: linear-gradient(to right,
+    transparent 0,
+    black var(--edge),
+    black calc(100% - var(--edge)),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(to right,
+    transparent 0,
+    black var(--edge),
+    black calc(100% - var(--edge)),
+    transparent 100%
+  );
+}
+
