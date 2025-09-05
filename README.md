@@ -343,8 +343,8 @@ Thanks to everyone who contributes to the growth of this project. Your contribut
 
 <p align="center">
   <a href="https://github.com/tobiager/erdus/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=tobiager/erdus" alt="Top contributors" />
-  </a>
+  <img src="https://contrib.rocks/image?repo=tobiager/erdus" />
+</a>
 </p>
 
 ---
