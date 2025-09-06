@@ -1,7 +1,10 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { Github } from "lucide-react";
+import { Github, MoreVertical } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { AnimatePresence, motion } from "framer-motion";
 import ThemeMenu from "./ThemeMenu";
+import LanguageToggleCompact from "./LanguageToggleCompact";
 
 type LinkKey = "home" | "converter" | "docs";
 
@@ -15,6 +18,7 @@ const link = ({ isActive }: { isActive: boolean }) =>
 
 export default function Navbar() {
   const location = useLocation();
+  const { t } = useTranslation();
 
   const homeRef = useRef<HTMLAnchorElement>(null);
   const converterRef = useRef<HTMLAnchorElement>(null);
@@ -27,7 +31,6 @@ export default function Navbar() {
   };
 
   const wrapperRef = useRef<HTMLDivElement>(null);
-
   const [indicator, setIndicator] = useState({ left: 0, width: 0, ready: false });
 
   const moveIndicatorTo = (el?: HTMLElement | null) => {
@@ -47,16 +50,30 @@ export default function Navbar() {
       : "home";
 
   useEffect(() => {
-    moveIndicatorTo(linkRefs[activeKey].current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    requestAnimationFrame(() => moveIndicatorTo(linkRefs[activeKey].current));
   }, [activeKey, location.pathname]);
 
   useEffect(() => {
     const handler = () => moveIndicatorTo(linkRefs[activeKey].current);
     window.addEventListener("resize", handler);
     return () => window.removeEventListener("resize", handler);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeKey]);
+
+  // ——— Menú móvil (3 puntos)
+  const [menuOpen, setMenuOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => setMenuOpen(false), [location.pathname]);
+  useEffect(() => {
+    const onDocClick = (e: MouseEvent) => {
+      if (!menuOpen) return;
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
+  }, [menuOpen]);
 
   return (
     <nav className="w-full">
@@ -72,14 +89,14 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Carril scrolleable con fade */}
+        {/* Secciones centradas */}
         <div
           ref={wrapperRef}
           aria-label="Main"
           className="
             relative flex-1 min-w-0
             h-10 md:h-auto
-            flex items-center md:justify-center justify-start
+            flex items-center justify-center
             overflow-x-auto overflow-y-hidden
             whitespace-nowrap
             no-scrollbar nav-scroll-mask
@@ -90,9 +107,7 @@ export default function Navbar() {
             gap-0
             snap-x snap-mandatory
           "
-          style={{
-            ["--edge" as any]: "36px", // ancho del fade en bordes
-          }}
+          style={{ ["--edge" as any]: "36px" }}
         >
           <div className="flex items-center gap-4 sm:gap-6">
             <NavLink
@@ -102,7 +117,7 @@ export default function Navbar() {
               onMouseEnter={(e) => moveIndicatorTo(e.currentTarget)}
               onMouseLeave={() => moveIndicatorTo(linkRefs[activeKey].current)}
             >
-              Home
+              {t("nav.home")}
             </NavLink>
 
             <NavLink
@@ -112,7 +127,7 @@ export default function Navbar() {
               onMouseEnter={(e) => moveIndicatorTo(e.currentTarget)}
               onMouseLeave={() => moveIndicatorTo(linkRefs[activeKey].current)}
             >
-              Converter
+              {t("nav.converter")}
             </NavLink>
 
             <NavLink
@@ -122,8 +137,8 @@ export default function Navbar() {
               onMouseEnter={(e) => moveIndicatorTo(e.currentTarget)}
               onMouseLeave={() => moveIndicatorTo(linkRefs[activeKey].current)}
             >
-              <span className="sm:hidden">Docs</span>
-              <span className="hidden sm:inline">Documentation</span>
+              <span className="sm:hidden">{t("nav.docs")}</span>
+              <span className="hidden sm:inline">{t("nav.documentation")}</span>
             </NavLink>
           </div>
 
@@ -137,29 +152,99 @@ export default function Navbar() {
           />
         </div>
 
-        {/* Acciones derecha (fuera del scroll) */}
-        <div className="flex items-center gap-2 sm:gap-3 ml-2 sm:ml-4 shrink-0">
-          <div className="text-[#1280ff]">
-            <ThemeMenu />
+        {/* Acciones derecha */}
+        <div className="ml-2 sm:ml-4 shrink-0 flex items-center">
+          {/* Desktop */}
+          <div className="hidden md:flex items-center gap-3">
+            <LanguageToggleCompact />
+            <div className="text-[#1280ff]">
+              <ThemeMenu />
+            </div>
+            <a
+              href="https://github.com/tobiager/erdus"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+              className="
+                relative inline-flex items-center justify-center h-9 w-9 rounded-full
+                text-[#1280ff] transition
+                hover:bg-slate-200/40 dark:hover:bg-white/5
+                hover:ring-2 hover:ring-[#1280ff]/50
+                before:absolute before:inset-0 before:rounded-full
+                before:bg-[radial-gradient(60%_60%_at_50%_50%,rgba(18,128,255,0.28),transparent_70%)]
+                before:opacity-0 hover:before:opacity-100 before:transition
+              "
+            >
+              <Github size={20} />
+            </a>
           </div>
-          <a
-            href="https://github.com/tobiager/erdus"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="GitHub"
-            className="
-              relative inline-flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-full
-              text-[#1280ff] transition
-              hover:bg-slate-200/40 dark:hover:bg-white/5
-              hover:ring-2 hover:ring-[#1280ff]/50
-              before:absolute before:inset-0 before:rounded-full
-              before:bg-[radial-gradient(60%_60%_at_50%_50%,rgba(18,128,255,0.28),transparent_70%)]
-              before:opacity-0 hover:before:opacity-100 before:transition
-            "
-          >
-            <Github size={18} className="sm:hidden" />
-            <Github size={20} className="hidden sm:block" />
-          </a>
+
+          {/* Móvil: 3 puntos → stack centrado */}
+          <div className="relative md:hidden" ref={dropdownRef}>
+            <button
+              aria-label="More actions"
+              onClick={() => setMenuOpen((v) => !v)}
+              className="
+                h-9 w-9 inline-flex items-center justify-center rounded-full
+                text-[#1280ff]
+                hover:bg-slate-200/40 dark:hover:bg-white/5
+                transition
+              "
+            >
+              <MoreVertical size={20} />
+            </button>
+
+            <AnimatePresence>
+              {menuOpen && (
+                <motion.div
+                  initial="hidden"
+                  animate="show"
+                  exit="hidden"
+                  // ⬇️ Posicionado EXACTO bajo el botón (borde derecho)
+                  className="absolute top-full right-0 mt-1 z-50 w-9 origin-top-right flex flex-col items-center"
+                  variants={{
+                    hidden: { opacity: 0, y: -6, scale: 0.98 },
+                    show:   { opacity: 1, y: 0,  scale: 1 },
+                  }}
+                  transition={{ type: "spring", stiffness: 400, damping: 26 }}
+                >
+                  {/* GitHub */}
+                  <motion.a
+                    href="https://github.com/tobiager/erdus"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="GitHub"
+                    className="h-9 w-9 flex items-center justify-center rounded-full text-[#1280ff]
+                              hover:bg-slate-200/40 dark:hover:bg-white/5"
+                    onClick={() => setMenuOpen(false)}
+                    variants={{ hidden: { opacity: 0, y: -10 }, show: { opacity: 1, y: 0 } }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Github size={20} />
+                  </motion.a>
+
+                  {/* Tema */}
+                  <motion.div
+                    className="mt-1 h-9 w-9 flex items-center justify-center text-[#1280ff]
+                              hover:bg-slate-200/40 dark:hover:bg-white/5 rounded-full"
+                    variants={{ hidden: { opacity: 0, y: -10 }, show: { opacity: 1, y: 0 } }}
+                  >
+                    <ThemeMenu />
+                  </motion.div>
+
+                  {/* Idioma */}
+                  <motion.div
+                    className="mt-1 h-9 w-9 flex items-center justify-center rounded-full
+                              hover:bg-slate-200/40 dark:hover:bg-white/5"
+                    variants={{ hidden: { opacity: 0, y: -10 }, show: { opacity: 1, y: 0 } }}
+                  >
+                    <LanguageToggleCompact />
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
         </div>
       </div>
     </nav>

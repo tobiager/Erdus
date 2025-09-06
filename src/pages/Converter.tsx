@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { oldToNew, newToOld } from '../convert';
 import { newToIR, IRDiagram } from '../ir';
 import { irToPostgres } from '../ir-to-sql';
@@ -78,9 +79,10 @@ const Label: React.FC<React.PropsWithChildren<{ htmlFor?: string }>> = ({ htmlFo
 );
 
 export default function Converter() {
+  const { t } = useTranslation();
   const [target, setTarget] = useState<TgtFmt>('sql');
   const [status, setStatus] = useState<'idle' | 'working' | 'done' | 'error'>('idle');
-  const [logLines, setLogLines] = useState<string[]>(['Ready to convert...']);
+  const [logLines, setLogLines] = useState<string[]>([t('converter.log.ready')]);
   const [output, setOutput] = useState('');
   const [loss, setLoss] = useState('');
   const [fileName, setFileName] = useState('');
@@ -96,13 +98,13 @@ export default function Converter() {
     setStatus('working');
     setOutput('');
     setLoss('');
-    setLogLines([`Reading "${file.name}"...`]);
+      setLogLines([t('converter.log.reading', { file: file.name })]);
 
     try {
       const text = await readFile(file);
       const fmt = detectInput(text);
-      pushLog(`Detected input: ${fmt.toUpperCase()}`);
-      pushLog(`Target: ${tgt.toUpperCase()}`);
+      pushLog(t('converter.log.detected', { fmt: fmt.toUpperCase() }));
+      pushLog(t('converter.log.target', { tgt: tgt.toUpperCase() }));
 
       let ir: IRDiagram;
       let newDoc: any;
@@ -110,33 +112,33 @@ export default function Converter() {
 
       if (fmt === 'old') {
         const data = JSON.parse(text);
-        if (data.connectors?.length) losses.push(`${data.connectors.length} connectors ignored`);
+        if (data.connectors?.length) losses.push(t('converter.loss.connectorsIgnored', { count: data.connectors.length }));
         newDoc = oldToNew(data);
         ir = newToIR(newDoc);
       } else if (fmt === 'new') {
         newDoc = JSON.parse(text);
         const extra = (newDoc.data?.edges || []).filter((e: any) => e.type !== 'Relational').length;
-        if (extra) losses.push(`${extra} non-relational edges ignored`);
+        if (extra) losses.push(t('converter.loss.nonRelationalEdgesIgnored', { count: extra }));
         ir = newToIR(newDoc);
       } else if (fmt === 'sql') {
         ir = sqlToIR(text);
         newDoc = irToNew(ir);
-        losses.push('Comments and non-table statements are ignored');
+        losses.push(t('converter.loss.commentsIgnored'));
       } else if(fmt === 'typeorm') {
         ir = typeormToIR(text);
         newDoc = irToNew(ir);
-        losses.push('Unsupported TypeORM features were ignored');
+        losses.push(t('converter.loss.typeormIgnored'));
       } else {
         ir = prismaToIR(text);
         newDoc = irToNew(ir);
-        losses.push('Unsupported Prisma features were ignored');
+        losses.push(t('converter.loss.prismaIgnored'));
       }
 
       if (tgt === 'sql') {
         const sql = irToPostgres(ir);
         setOutput(sql);
-        setLoss(losses.join('\n') || 'No losses detected.');
-        pushLog('Generated PostgreSQL DDL.');
+        setLoss(losses.join('\n') || t('converter.loss.none'));
+        pushLog(t('converter.log.generatedSQL'));
         setStatus('done');
         return;
       }
@@ -144,8 +146,8 @@ export default function Converter() {
       if (tgt === 'prisma') {
         const prisma = irToPrisma(ir);
         setOutput(prisma);
-        setLoss(losses.join('\n') || 'No losses detected.');
-        pushLog('Generated Prisma schema.');
+        setLoss(losses.join('\n') || t('converter.loss.none'));
+        pushLog(t('converter.log.generatedPrisma'));
         setStatus('done');
         return;
       }
@@ -153,8 +155,8 @@ export default function Converter() {
       if (tgt === 'typeorm') {
         const typeorm = irToTypeorm(ir);
         setOutput(typeorm);
-        setLoss(losses.join('\n') || 'No losses detected.');
-        pushLog('Generated TypeORM entities.');
+        setLoss(losses.join('\n') || t('converter.loss.none'));
+        pushLog(t('converter.log.generatedTypeorm'));
         setStatus('done');
         return;
       }
@@ -163,18 +165,18 @@ export default function Converter() {
       const outDoc = tgt === 'new' ? newDoc : newToOld(newDoc);
       const outName = computeOutName(file.name, tgt);
       downloadJSON(outDoc, outName);
-      pushLog(`Downloaded ${outName}`);
+      pushLog(t('converter.log.downloaded', { name: outName }));
       setStatus('done');
     } catch (e: any) {
       console.error(e);
       setStatus('error');
-      pushLog('Error: ' + (e?.message || e));
+      pushLog(t('converter.log.error', { error: e?.message === 'Unsupported input format' ? t('converter.errors.unsupported') : (e?.message || e) }));
     }
-  }, [pushLog]);
+  }, [pushLog, t]);
 
   const onConvert = async () => {
     if (!lastFile) {
-      pushLog('Choose a file first.');
+      pushLog(t('converter.log.chooseFile'));
       setStatus('error');
       return;
     }
@@ -183,17 +185,17 @@ export default function Converter() {
   };
 
   const onCopy = () => {
-    if (!output) { pushLog('Nothing to copy.'); return; }
+    if (!output) { pushLog(t('converter.log.nothingToCopy')); return; }
     navigator.clipboard.writeText(output);
-    pushLog('Copied to clipboard.');
+    pushLog(t('converter.log.copied'));
   };
 
   const onDownload = () => {
-    if (!output) { pushLog('Nothing to download.'); return; }
-    const targetFormat = target === 'typeorm' ? 'ts' : (target as 'sql' | 'prisma') 
+    if (!output) { pushLog(t('converter.log.nothingToDownload')); return; }
+    const targetFormat = target === 'typeorm' ? 'ts' : (target as 'sql' | 'prisma');
     const name = computeTextOutName(fileName || 'output', targetFormat);
     downloadText(output, name);
-    pushLog(`Downloaded as ${name}.`);
+    pushLog(t('converter.log.downloadedAs', { name }));
   };
 
   const statusBadge = useMemo(() => {
@@ -202,35 +204,35 @@ export default function Converter() {
       return (
         <span className={`${base}
           bg-blue-100 text-blue-700
-          dark:bg-blue-500/15 dark:text-blue-300`}>● Processing…</span>
+          dark:bg-blue-500/15 dark:text-blue-300`}>{t('converter.status.processing')}</span>
       );
     }
     if (status === 'done') {
       return (
         <span className={`${base}
           bg-emerald-100 text-emerald-700
-          dark:bg-emerald-500/15 dark:text-emerald-300`}>● Done</span>
+          dark:bg-emerald-500/15 dark:text-emerald-300`}>{t('converter.status.done')}</span>
       );
     }
     if (status === 'error') {
       return (
         <span className={`${base}
           bg-rose-100 text-rose-700
-          dark:bg-rose-500/15 dark:text-rose-300`}>● Error</span>
+          dark:bg-rose-500/15 dark:text-rose-300`}>{t('converter.status.error')}</span>
       );
     }
     return (
       <span className={`${base}
         bg-slate-100 text-slate-700
-        dark:bg-slate-500/15 dark:text-slate-300`}>● Idle</span>
+        dark:bg-slate-500/15 dark:text-slate-300`}>{t('converter.status.idle')}</span>
     );
-  }, [status]);
+  }, [status, t]);
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Converter</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{t('converter.title')}</h1>
         {statusBadge}
       </div>
 
@@ -239,9 +241,9 @@ export default function Converter() {
         {/* Actions */}
         <Panel>
           <div className="p-5 space-y-5">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Convert a file</h2>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{t('converter.actions.convertFile')}</h2>
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              Drag & drop an ERDPlus JSON, SQL, Prisma, or TypeORM file, then choose the output format.
+              {t('converter.actions.instruction')}
             </p>
 
             <Dropzone
@@ -261,7 +263,7 @@ export default function Converter() {
               <div className="flex-1">
                 {/* label accesible, no visible para no romper la altura */}
                 <Label htmlFor="target">
-                  <span className="sr-only">Output format</span>
+                  <span className="sr-only">{t('converter.actions.outputFormat')}</span>
                 </Label>
 
                 <select
@@ -274,11 +276,11 @@ export default function Converter() {
                             dark:border-slate-700 dark:bg-[#0f1522] dark:text-slate-100
                             dark:focus:ring-slate-600 px-3"
                 >
-                  <option value="sql">SQL (PostgreSQL)</option>
-                  <option value="prisma">Prisma schema</option>
-                  <option value="typeorm">TypeORM entities</option>
-                  <option value="new">ERDPlus (new)</option>
-                  <option value="old">ERDPlus (old)</option>
+                  <option value="sql">{t('converter.targets.sql')}</option>
+                  <option value="prisma">{t('converter.targets.prisma')}</option>
+                  <option value="typeorm">{t('converter.targets.typeorm')}</option>
+                  <option value="new">{t('converter.targets.new')}</option>
+                  <option value="old">{t('converter.targets.old')}</option>
                 </select>
               </div>
 
@@ -290,7 +292,7 @@ export default function Converter() {
                           hover:!bg-[#0f1522] hover:!text-[#1280ff]
                           dark:hover:!bg-[#0f1522] dark:hover:!text-[#1280ff]"
               >
-                Convert
+                {t('converter.actions.convert')}
               </CtaButton>
             </div>
 
@@ -298,10 +300,10 @@ export default function Converter() {
             {output && (
               <div className="mt-3 flex flex-wrap gap-2">
                 <CtaButton onClick={onCopy} variant="ghost">
-                  Copy
+                  {t('converter.actions.copy')}
                 </CtaButton>
                 <CtaButton onClick={onDownload} variant="ghost">
-                  Download
+                  {t('converter.actions.download')}
                 </CtaButton>
               </div>
             )}
@@ -311,13 +313,13 @@ export default function Converter() {
         {/* Help / How it works */}
         <Panel>
           <div className="p-5">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">How it works</h2>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{t('converter.help.title')}</h2>
             <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-700 dark:text-slate-300">
-              <li>Auto-detects ERDPlus (old/new), SQL, Prisma, or TypeORM inputs.</li>
-              <li>Keeps entity positions/order, PKs and simple FKs.</li>
-              <li>Converts to ERDPlus (old/new), PostgreSQL SQL, Prisma, or TypeORM.</li>
-              <li>Outputs appear below; ERDPlus JSON downloads automatically.</li>
-              <li><span className="text-slate-600 dark:text-slate-400">Privacy:</span> everything runs locally in your browser.</li>
+              <li>{t('converter.help.list.item1')}</li>
+              <li>{t('converter.help.list.item2')}</li>
+              <li>{t('converter.help.list.item3')}</li>
+              <li>{t('converter.help.list.item4')}</li>
+              <li><span className="text-slate-600 dark:text-slate-400">{t('converter.help.list.privacyLabel')}</span> {t('converter.help.list.privacyText')}</li>
             </ul>
           </div>
         </Panel>
@@ -326,7 +328,7 @@ export default function Converter() {
       {/* Terminal (log) */}
       <Panel>
         <div className="p-4">
-          <div className="mb-2 text-xs uppercase tracking-wide text-slate-600 dark:text-slate-400">Terminal</div>
+          <div className="mb-2 text-xs uppercase tracking-wide text-slate-600 dark:text-slate-400">{t('converter.terminal')}</div>
           <pre
             className="max-h-48 overflow-auto whitespace-pre-wrap rounded-lg
                        bg-slate-50 text-slate-800
@@ -341,7 +343,7 @@ export default function Converter() {
       {output && (
         <Panel>
           <div className="p-4">
-            <div className="mb-2 text-xs uppercase tracking-wide text-slate-600 dark:text-slate-400">Output</div>
+            <div className="mb-2 text-xs uppercase tracking-wide text-slate-600 dark:text-slate-400">{t('converter.output')}</div>
             <pre
               className="max-h-[70vh] overflow-auto rounded-lg
                          bg-slate-50 text-slate-900
@@ -357,14 +359,14 @@ export default function Converter() {
       {output && (
         <Panel>
           <div className="p-4">
-            <div className="mb-2 text-xs uppercase tracking-wide text-slate-600 dark:text-slate-400">Notes</div>
-            <pre
-              className="max-h-64 overflow-auto rounded-lg
-                         bg-slate-50 text-slate-800
-                         dark:bg-[#0f1522] dark:text-slate-200 p-3 font-mono text-sm"
-            >
-{loss || 'No losses detected.'}
-            </pre>
+              <div className="mb-2 text-xs uppercase tracking-wide text-slate-600 dark:text-slate-400">{t('converter.notes')}</div>
+              <pre
+                className="max-h-64 overflow-auto rounded-lg
+                           bg-slate-50 text-slate-800
+                           dark:bg-[#0f1522] dark:text-slate-200 p-3 font-mono text-sm"
+              >
+  {loss || t('converter.loss.none')}
+              </pre>
           </div>
         </Panel>
       )}

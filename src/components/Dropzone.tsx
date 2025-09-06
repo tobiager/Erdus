@@ -1,4 +1,5 @@
 import { useRef, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 
 type Variant = "compact" | "large";
 
@@ -16,11 +17,14 @@ export default function Dropzone({
   accept,
   onFile,
   className,
-  label = "Input file",
-  hint = "You can also paste a file (Ctrl/Cmd + V).",
+  label,
+  hint,
   variant = "large",
   extensionsHint = ["ERDPlus", "JSON", "SQL", "Prisma", "TypeORM"],
 }: Props) {
+  const { t } = useTranslation();
+  const dzLabel = label ?? t("dropzone.label");
+  const dzHint = hint ?? t("dropzone.hint");
   const inputRef = useRef<HTMLInputElement>(null);
   const [isOver, setIsOver] = useState(false);
   const [fileName, setFileName] = useState<string>("");
@@ -54,7 +58,7 @@ export default function Dropzone({
   return (
     <div className={className}>
       <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
-        {label}
+        {dzLabel}
       </label>
 
       <input
@@ -78,7 +82,7 @@ export default function Dropzone({
         onDragLeave={() => setIsOver(false)}
         onDrop={onDrop}
         onPaste={onPaste}
-        aria-label="Dropzone: drag & drop your file or click"
+        aria-label={t("dropzone.aria")}
         className={[
           "group relative flex w-full items-center justify-center rounded-xl",
           "border border-dashed transition",
@@ -117,15 +121,15 @@ export default function Dropzone({
           <div className="text-center">
             {fileName ? (
               <div className="text-sm">
-                <span className="text-slate-500 dark:text-slate-400">Selected:</span>{" "}
+                <span className="text-slate-500 dark:text-slate-400">{t("dropzone.selected")}</span>{" "}
                 <span className="text-slate-900 dark:text-slate-200">{fileName}</span>
               </div>
             ) : (
               <>
                 <div className={["font-medium", large ? "text-base" : "text-sm"].join(" ")}>
-                  Drag & drop your file{" "}
+                  {t("dropzone.dragDrop")} {" "}
                   <span className="text-blue-600 dark:text-blue-400 underline-offset-4 group-hover:underline">
-                    or click to browse
+                    {t("dropzone.clickBrowse")}
                   </span>
                 </div>
                 {large && (
@@ -148,7 +152,7 @@ export default function Dropzone({
         </div>
       </div>
 
-      <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{hint}</p>
+      <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{dzHint}</p>
     </div>
   );
 }

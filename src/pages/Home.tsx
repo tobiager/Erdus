@@ -1,5 +1,6 @@
 import { motion, type Variants } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 18 },
@@ -15,6 +16,7 @@ const fadeUp: Variants = {
 };
 
 export default function Home() {
+  const { t } = useTranslation();
   return (
     <section className="relative min-h-[60vh] grid place-items-center overflow-hidden">
       {/* Fondo: gradient animado muy suave */}
@@ -57,7 +59,7 @@ export default function Home() {
         animate="show"
         custom={0}
       >
-        <span className="text-3xl sm:text-5xl">Welcome to</span>
+        <span className="text-3xl sm:text-5xl">{t("home.welcome")}</span>
 
         <span
           className="
@@ -84,7 +86,7 @@ export default function Home() {
         animate="show"
         custom={1}
       >
-        Convert ERDPlus diagrams, SQL schemas, Prisma models, and TypeORM entities seamlessly.
+        {t("home.tagline")}
       </motion.p>
 
       <motion.div
@@ -114,7 +116,7 @@ export default function Home() {
               -skew-x-12 animate-shine
             "
           />
-          Convert now
+          {t("home.convertNow")}
         </Link>
 
         {/* Star on GitHub */}
@@ -140,7 +142,7 @@ export default function Home() {
               1.48 0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38A8.013 
               8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
           </svg>
-          Star on GitHub
+          {t("home.starOnGitHub")}
         </a>
       </motion.div>
       </div>

@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Converter from "./pages/Converter";
 import Documentation from "./pages/Documentation";
 import "./styles.css";
+import "./i18n";
 
 const router = createBrowserRouter([
   {
