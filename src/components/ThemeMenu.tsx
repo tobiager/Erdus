@@ -1,20 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import { Moon, Sun, Laptop } from "lucide-react";
 import { useTheme } from "../hooks/useTheme";
+import clsx from "clsx";
 
-export default function ThemeMenu() {
+export default function ThemeMenu({ buttonClassName }: { buttonClassName?: string }) {
   const { theme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  // Cerrar al hacer click/pointer fuera (más robusto que 'click')
   useEffect(() => {
-    const onPointerDown = (e: PointerEvent) => {
-      if (!ref.current?.contains(e.target as Node)) setOpen(false);
-    };
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
+    const onPointerDown = (e: PointerEvent) => { if (!ref.current?.contains(e.target as Node)) setOpen(false); };
+    const onKeyDown = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
     window.addEventListener("pointerdown", onPointerDown);
     window.addEventListener("keydown", onKeyDown);
     return () => {
@@ -23,10 +19,7 @@ export default function ThemeMenu() {
     };
   }, []);
 
-  const select = (value: "light" | "dark" | "system") => {
-    setTheme(value);
-    setOpen(false);
-  };
+  const select = (value: "light" | "dark" | "system") => { setTheme(value); setOpen(false); };
 
   return (
     <div className="relative" ref={ref}>
@@ -36,14 +29,12 @@ export default function ThemeMenu() {
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
-        className="
-          relative rounded-full p-2 text-[#1280ff] transition
-          hover:bg-slate-200/60 dark:hover:bg-white/5
-          hover:ring-2 hover:ring-[#1280ff]/50
-          before:absolute before:inset-0 before:rounded-full
-          before:bg-[radial-gradient(60%_60%_at_50%_50%,rgba(18,128,255,0.28),transparent_70%)]
-          before:opacity-0 hover:before:opacity-100 before:transition
-        "
+        className={clsx(
+          "inline-flex items-center justify-center rounded-full text-[#1280ff]",
+          // ⬇️ sin ring/outline internos
+          "focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:outline-none",
+          buttonClassName
+        )}
       >
         <Moon size={18} />
       </button>
@@ -52,31 +43,15 @@ export default function ThemeMenu() {
         <div
           role="menu"
           aria-label="Theme menu"
-          // Evita que el outside-click se propague
           onPointerDown={(e) => e.stopPropagation()}
           className="absolute right-0 mt-2 w-44 rounded-xl z-50
                      border border-slate-200 dark:border-[#0e1726]
                      bg-white/95 dark:bg-[#0a1222]/95 p-1
                      shadow-2xl backdrop-blur-md"
         >
-          <Item
-            icon={<Sun size={16} />}
-            label="Light"
-            active={theme === "light"}
-            onClick={() => select("light")}
-          />
-          <Item
-            icon={<Moon size={16} />}
-            label="Dark"
-            active={theme === "dark"}
-            onClick={() => select("dark")}
-          />
-          <Item
-            icon={<Laptop size={16} />}
-            label="System"
-            active={theme === "system"}
-            onClick={() => select("system")}
-          />
+          <Item icon={<Sun size={16} />} label="Light"  active={theme === "light"}  onClick={() => select("light")} />
+          <Item icon={<Moon size={16} />} label="Dark"   active={theme === "dark"}   onClick={() => select("dark")} />
+          <Item icon={<Laptop size={16} />} label="System" active={theme === "system"} onClick={() => select("system")} />
         </div>
       )}
     </div>
@@ -84,16 +59,8 @@ export default function ThemeMenu() {
 }
 
 function Item({
-  icon,
-  label,
-  active,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  label: "Light" | "Dark" | "System";
-  active?: boolean;
-  onClick: () => void;
-}) {
+  icon, label, active, onClick,
+}: { icon: React.ReactNode; label: "Light" | "Dark" | "System"; active?: boolean; onClick: () => void; }) {
   return (
     <button
       type="button"
@@ -102,11 +69,10 @@ function Item({
       onClick={onClick}
       className={`w-full flex items-center gap-2 rounded-md px-2 py-1.5 text-sm
         hover:bg-slate-100 dark:hover:bg-white/10
-        ${
-          active
-            ? "bg-blue-50 text-[#1280ff] dark:bg-white/10 dark:text-[#1280ff]"
-            : "text-slate-700 dark:text-slate-300"
-        }`}
+        ${active
+          ? "bg-blue-50 text-[#1280ff] dark:bg-white/10 dark:text-[#1280ff]"
+          : "text-slate-700 dark:text-slate-300"}
+        focus:outline-none focus:ring-0 focus-visible:ring-0`}  // ⬅️ sin ring interno
     >
       {icon}
       {label}
