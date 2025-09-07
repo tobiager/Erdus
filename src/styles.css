@@ -2,21 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
-:root{
-  --panel:#0b1220;
-  --accent:#2563eb;
+:root {
+  --panel: #0b1220;
+  --accent: #2563eb;
 }
 
 /* Alto completo + evitar desbordes horizontales */
-html, body, #root { height: 100%; }
+html,
+body,
+#root {
+  height: 100%;
+}
 body {
   overflow-x: hidden;
-  background: #f8fafc;  /* slate-50 aprox */
-  color: #0f172a;       /* slate-900 */
+  background: #f8fafc; /* slate-50 aprox */
+  color: #0f172a; /* slate-900 */
 }
 html.dark body {
-  background: #000;     /* dark */
-  color: #f1f5f9;       /* slate-100 */
+  background: #000; /* dark */
+  color: #f1f5f9; /* slate-100 */
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Ocultar scrollbars e inercia táctil (iOS) */
@@ -25,22 +34,25 @@ html.dark body {
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
 }
-.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
 
 /* Fade en los bordes del carril del navbar (tema-agnóstico) */
 .nav-scroll-mask {
   --edge: 24px; /* ancho del desvanecido en los costados */
-  mask-image: linear-gradient(to right,
+  mask-image: linear-gradient(
+    to right,
     transparent 0,
     black var(--edge),
     black calc(100% - var(--edge)),
     transparent 100%
   );
-  -webkit-mask-image: linear-gradient(to right,
+  -webkit-mask-image: linear-gradient(
+    to right,
     transparent 0,
     black var(--edge),
     black calc(100% - var(--edge)),
     transparent 100%
   );
 }
-

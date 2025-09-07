@@ -12,9 +12,13 @@
     <script>
       (function () {
         try {
-          var t = localStorage.getItem('theme') || 'system';
-          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          var isDark = t === 'dark' || (t === 'system' && prefersDark);
+          var t = localStorage.getItem('theme');
+          if (!t) {
+            t = window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light';
+          }
+          var isDark = t === 'dark';
           document.documentElement.classList.toggle('dark', isDark);
           document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
         } catch (_) {}

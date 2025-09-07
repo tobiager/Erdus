@@ -1,68 +1,72 @@
-import { Link, NavLink, useLocation } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
-import { Github, MoreVertical } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { AnimatePresence, motion } from "framer-motion";
-import ThemeMenu from "./ThemeMenu";
-import LanguageToggleCompact from "./LanguageToggleCompact";
+import { Link, NavLink, useLocation } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Github, MoreVertical } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { AnimatePresence, motion } from 'framer-motion';
+import ThemeToggle from './ThemeToggle';
+import LanguageToggleCompact from './LanguageToggleCompact';
 
-type LinkKey = "home" | "converter" | "docs";
+type LinkKey = 'home' | 'converter' | 'docs';
 
 const link = ({ isActive }: { isActive: boolean }) =>
   [
-    "px-2 py-1.5 text-sm sm:px-3 sm:py-2 sm:text-base font-medium transition-colors",
-    "text-slate-700 dark:text-slate-300",
-    "hover:text-slate-900 dark:hover:text-white",
-    isActive ? "text-[#1280ff] dark:text-[#1280ff]" : "",
-  ].join(" ");
+    'px-2 py-1.5 text-sm sm:px-3 sm:py-2 sm:text-base font-medium transition-colors',
+    'text-slate-700 dark:text-slate-300',
+    'hover:text-slate-900 dark:hover:text-white',
+    isActive ? 'text-[#1280ff] dark:text-[#1280ff]' : '',
+  ].join(' ');
 
-// ——— Iconos (desktop)
+
 const iconWrapDesktop = [
   "group relative inline-flex items-center justify-center rounded-full select-none",
   "size-9 md:size-6",
   "text-[#1280ff] transition",
   "md:bg-transparent md:border-0 md:shadow-none",
-  "before:pointer-events-none before:absolute before:inset-0 before:rounded-full",
-  "before:bg-[radial-gradient(60%_60%_at_50%_50%,rgba(18,128,255,0.35),transparent_72%)]",
-  "before:blur-[2px] before:opacity-0 md:hover:before:opacity-100 md:focus-within:before:opacity-100 before:transition",
-  "after:pointer-events-none after:absolute after:rounded-full md:after:inset-[-4px]",
-  "md:after:ring-2 md:after:ring-[#1280ff]/40 after:opacity-0 md:hover:after:opacity-100 md:focus-within:after:opacity-100 after:transition",
   "md:transition-transform md:transform-gpu md:hover:scale-[1.03]",
   "md:hover:drop-shadow-[0_0_14px_rgba(18,128,255,0.45)]",
   "focus:outline-none focus-visible:outline-none",
-  "focus-within:outline-none focus-within:ring-2 focus-within:ring-[#1280ff]/50",
+
+
+  "before:pointer-events-none before:absolute before:inset-0 before:rounded-full before:content-['']",
+  "before:bg-[radial-gradient(60%_60%_at_50%_50%,rgba(18,128,255,0.35),transparent_72%)]",
+  "before:blur-[2px] before:opacity-0 before:transition",
+  "md:hover:before:opacity-100",
+
+
+  "after:pointer-events-none after:absolute after:rounded-full after:content-['']",
+  "md:after:inset-[-4px] md:after:ring-2 md:after:ring-[#1280ff]/40",
+  "after:opacity-0 after:transition",
+  "md:hover:after:opacity-100",
 ].join(" ");
 
-// Slot interno normalizado (cuadrado)
+
 const iconInnerDesktop = [
-  "relative z-[1] grid place-items-center",
-  "h-6 w-6 md:h-5 md:w-5",
-  "leading-none select-none transition-colors",
-  "group-hover:text-slate-900 dark:group-hover:text-white",
+  'relative z-[1] grid place-items-center',
+  'h-6 w-6 md:h-5 md:w-5',
+  'leading-none select-none transition-colors',
+  'group-hover:text-slate-900 dark:group-hover:text-white',
   // ✅ Sólo aplica al SVG hijo directo
-  "[&>svg]:h-full [&>svg]:w-full [&>svg]:stroke-current [&>svg]:[stroke-width:2.25]",
-].join(" ");
+  '[&>svg]:h-full [&>svg]:w-full [&>svg]:stroke-current [&>svg]:[stroke-width:2.25]',
+].join(' ');
 
-// ——— Iconos (móvil)
+
 const iconWrapMobile = [
-  "group relative inline-flex items-center justify-center rounded-full select-none",
-  "size-9 transition",
-  "!bg-white/90 !border !border-slate-200",
-  "dark:!bg-slate-800/90 dark:!border dark:!border-slate-700/70",
-  "shadow-sm shadow-black/5 dark:shadow-black/10",
-  "focus:outline-none focus-visible:outline-none",
-  "focus-within:outline-none focus-within:ring-2 focus-within:ring-[#1280ff]/50",
-].join(" ");
+  'group relative inline-flex items-center justify-center rounded-full select-none',
+  'size-9 transition',
+  '!bg-white/90 !border !border-slate-200',
+  'dark:!bg-slate-800/90 dark:!border dark:!border-slate-700/70',
+  'shadow-sm shadow-black/5 dark:shadow-black/10',
+  'focus:outline-none focus-visible:outline-none',
+].join(' ');
 
 const iconInnerMobile = [
-  "relative z-[1] grid place-items-center",
-  "h-5 w-5",
-  "leading-none select-none transition-colors",
-  "!text-[#1280ff]",
-  // ✅ Sólo el SVG directo
-  "[&>svg]:h-full [&>svg]:w-full [&>svg]:stroke-current [&>svg]:[stroke-width:2.50]",
-  "font-semibold text-[13px]",
-].join(" ");
+  'relative z-[1] grid place-items-center',
+  'h-5 w-5',
+  'leading-none select-none transition-colors',
+  '!text-[#1280ff]',
+  '[&>svg]:h-full [&>svg]:w-full [&>svg]:stroke-current [&>svg]:[stroke-width:2.50]',
+  'font-semibold text-[13px]',
+].join(' ');
 
 export default function Navbar() {
   const location = useLocation();
@@ -91,11 +95,11 @@ export default function Navbar() {
   };
 
   const activeKey: LinkKey =
-    location.pathname.startsWith("/converter")
-      ? "converter"
-      : location.pathname.startsWith("/documentation")
-      ? "docs"
-      : "home";
+    location.pathname.startsWith('/converter')
+      ? 'converter'
+      : location.pathname.startsWith('/documentation')
+      ? 'docs'
+      : 'home';
 
   useEffect(() => {
     requestAnimationFrame(() => moveIndicatorTo(linkRefs[activeKey].current));
@@ -103,8 +107,8 @@ export default function Navbar() {
 
   useEffect(() => {
     const handler = () => moveIndicatorTo(linkRefs[activeKey].current);
-    window.addEventListener("resize", handler);
-    return () => window.removeEventListener("resize", handler);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
   }, [activeKey]);
 
   // ——— Menú móvil (3 puntos)
@@ -119,8 +123,8 @@ export default function Navbar() {
         setMenuOpen(false);
       }
     };
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
+    document.addEventListener('mousedown', onDocClick);
+    return () => document.removeEventListener('mousedown', onDocClick);
   }, [menuOpen]);
 
   return (
@@ -155,7 +159,7 @@ export default function Navbar() {
             gap-0
             snap-x snap-mandatory
           "
-          style={{ ["--edge" as any]: "36px" }}
+          style={{ ['--edge' as any]: '36px' }}
         >
           <div className="flex items-center gap-4 sm:gap-6">
             <NavLink
@@ -165,7 +169,7 @@ export default function Navbar() {
               onMouseEnter={(e) => moveIndicatorTo(e.currentTarget)}
               onMouseLeave={() => moveIndicatorTo(linkRefs[activeKey].current)}
             >
-              {t("nav.home")}
+              {t('nav.home')}
             </NavLink>
 
             <NavLink
@@ -175,7 +179,7 @@ export default function Navbar() {
               onMouseEnter={(e) => moveIndicatorTo(e.currentTarget)}
               onMouseLeave={() => moveIndicatorTo(linkRefs[activeKey].current)}
             >
-              {t("nav.converter")}
+              {t('nav.converter')}
             </NavLink>
 
             <NavLink
@@ -185,8 +189,8 @@ export default function Navbar() {
               onMouseEnter={(e) => moveIndicatorTo(e.currentTarget)}
               onMouseLeave={() => moveIndicatorTo(linkRefs[activeKey].current)}
             >
-              <span className="sm:hidden">{t("nav.docs")}</span>
-              <span className="hidden sm:inline">{t("nav.documentation")}</span>
+              <span className="sm:hidden">{t('nav.docs')}</span>
+              <span className="hidden sm:inline">{t('nav.documentation')}</span>
             </NavLink>
           </div>
 
@@ -194,7 +198,7 @@ export default function Navbar() {
           <span
             aria-hidden
             className={`absolute -bottom-[2px] h-[4px] bg-[#1280ff] rounded transition-all duration-300 ease-out ${
-              indicator.ready ? "opacity-100" : "opacity-0"
+              indicator.ready ? 'opacity-100' : 'opacity-0'
             }`}
             style={{ left: indicator.left, width: indicator.width }}
           />
@@ -214,8 +218,7 @@ export default function Navbar() {
             {/* Tema */}
             <div className={iconWrapDesktop} aria-label="Theme">
               <span className={iconInnerDesktop}>
-                {/* El botón del tema sólo afecta a su SVG directo */}
-                <ThemeMenu buttonClassName="h-full w-full [&>svg]:h-full [&>svg]:w-full [&>svg]:[stroke-width:2.25]" />
+                <ThemeToggle buttonClassName="h-full w-full [&>svg]:h-full [&>svg]:w-full [&>svg]:[stroke-width:2.25]" />
               </span>
             </div>
 
@@ -253,7 +256,7 @@ export default function Navbar() {
                   exit="hidden"
                   className="absolute top-full right-0 mt-2 z-50 w-9 origin-top-right flex flex-col items-center"
                   variants={{ hidden: { opacity: 0, y: -6, scale: 0.98 }, show: { opacity: 1, y: 0, scale: 1 } }}
-                  transition={{ type: "spring", stiffness: 400, damping: 26 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 26 }}
                 >
                   <motion.a
                     href="https://github.com/tobiager/erdus"
@@ -270,13 +273,19 @@ export default function Navbar() {
                     </span>
                   </motion.a>
 
-                  <motion.div className={`${iconWrapMobile} mt-2`} variants={{ hidden: { opacity: 0, y: -10 }, show: { opacity: 1, y: 0 } }}>
+                  <motion.div
+                    className={`${iconWrapMobile} mt-2`}
+                    variants={{ hidden: { opacity: 0, y: -10 }, show: { opacity: 1, y: 0 } }}
+                  >
                     <span className={iconInnerMobile}>
-                      <ThemeMenu buttonClassName="h-full w-full !text-[#1280ff] [&>svg]:h-full [&>svg]:w-full" />
+                      <ThemeToggle buttonClassName="h-full w-full !text-[#1280ff] [&>svg]:h-full [&>svg]:w-full" />
                     </span>
                   </motion.div>
 
-                  <motion.div className={`${iconWrapMobile} mt-2`} variants={{ hidden: { opacity: 0, y: -10 }, show: { opacity: 1, y: 0 } }}>
+                  <motion.div
+                    className={`${iconWrapMobile} mt-2`}
+                    variants={{ hidden: { opacity: 0, y: -10 }, show: { opacity: 1, y: 0 } }}
+                  >
                     <span className={iconInnerMobile}>
                       <LanguageToggleCompact className="grid place-items-center h-full w-full !font-semibold !text-[13px] translate-y-[0.5px]" />
                     </span>
