@@ -52,6 +52,8 @@ https://github.com/user-attachments/assets/ad18f7ab-0b26-4033-9eae-6a9b209543b8
 - SQL (PostgreSQL DDL)
 - Prisma
 - TypeORM (IR → entity models)
+- DBML (for dbdiagram.io)
+- Mermaid ER (for documentation)
 
 ---
 
@@ -267,14 +269,14 @@ npm i
 
 ---
 
-🔵 **Phase 2 – Import & documentation**
+🔵 **Phase 2 – Import & documentation** ✅
 
  *Goal*: import existing models and document them
 
-- PostgreSQL DDL → IR (robust parser)
-- IR → dbml → use in dbdiagram.io
-- IR → Mermaid ER → document in Markdown/repos
-- Complete examples (blog, e‑commerce, school)
+- ✅ PostgreSQL DDL → IR (robust parser)
+- ✅ IR → dbml → use in dbdiagram.io
+- ✅ IR → Mermaid ER → document in Markdown/repos
+- ✅ Complete examples (blog, e‑commerce, school)
 -  Attracts: devs who document, OSS maintainers → visibility on GitHub
 
 ---

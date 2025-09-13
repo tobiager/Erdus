@@ -48,6 +48,8 @@ https://github.com/user-attachments/assets/ad18f7ab-0b26-4033-9eae-6a9b209543b8
 - SQL (DDL de PostgreSQL)
 - Prisma
 - TypeORM (IR → entidades)
+- DBML (para dbdiagram.io)
+- Mermaid ER (para documentación)
 
 ---
 
@@ -250,14 +252,14 @@ El archivo `vercel.json` ya apunta a `dist/`.
 
 ---
 
-🔵 **Fase 2 – Import & documentación**
+🔵 **Fase 2 – Import & documentación** ✅
 
  *Objetivo*: importar modelos existentes y documentarlos
 
-- PostgreSQL DDL → IR (parser robusto)
-- IR → dbml → usar en dbdiagram.io
-- IR → Mermaid ER → documentar en Markdown/repos
-- Ejemplos completos (blog, e‑commerce, escuela)
+- ✅ PostgreSQL DDL → IR (parser robusto)
+- ✅ IR → dbml → usar en dbdiagram.io
+- ✅ IR → Mermaid ER → documentar en Markdown/repos
+- ✅ Ejemplos completos (blog, e‑commerce, escuela)
 -  Atrae: devs que documentan, OSS maintainers → visibilidad en GitHub
 
 ---
