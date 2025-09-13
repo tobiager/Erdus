@@ -5,6 +5,8 @@ import { newToIR, IRDiagram } from '../ir';
 import { irToPostgres } from '../ir-to-sql';
 import { irToPrisma } from '../ir-to-prisma';
 import { irToTypeorm } from '../ir-to-typeorm';
+import { irToDbml } from '../ir-to-dbml';
+import { irToMermaid } from '../ir-to-mermaid';
 import { sqlToIR } from '../sql-to-ir';
 import { prismaToIR } from '../prisma-to-ir';
 import { typeormToIR } from '../typeorm-to-ir';
@@ -13,7 +15,7 @@ import Dropzone from "../components/Dropzone";
 import CtaButton from "../components/CtaButton";
 
 type InFmt = 'old' | 'new' | 'sql' | 'prisma' | 'typeorm';
-type TgtFmt = 'sql' | 'prisma' | 'typeorm' | 'new' | 'old';
+type TgtFmt = 'sql' | 'prisma' | 'typeorm' | 'dbml' | 'mermaid' | 'new' | 'old';
 
 const detectInput = (text: string): InFmt => {
   try {
@@ -34,8 +36,8 @@ const computeOutName = (inputName: string, to: 'old' | 'new') => {
   return `${clean}-${to}${ext}`;
 };
 
-const computeTextOutName = (inputName: string, to: 'sql' | 'prisma' | 'ts') => {
-  const base = inputName.replace(/\.(erdplus|json|sql|prisma|ts)$/i, '').replace(/-(old|new)$/i, '');
+const computeTextOutName = (inputName: string, to: 'sql' | 'prisma' | 'ts' | 'dbml' | 'mmd') => {
+  const base = inputName.replace(/\.(erdplus|json|sql|prisma|ts|dbml|mmd)$/i, '').replace(/-(old|new)$/i, '');
   return `${base}.${to}`;
 };
 
@@ -161,6 +163,24 @@ export default function Converter() {
         return;
       }
 
+      if (tgt === 'dbml') {
+        const dbml = irToDbml(ir, { includeComments: true });
+        setOutput(dbml);
+        setLoss(losses.join('\n') || t('converter.loss.none'));
+        pushLog(t('converter.log.generatedDbml'));
+        setStatus('done');
+        return;
+      }
+
+      if (tgt === 'mermaid') {
+        const mermaid = irToMermaid(ir, { includeAttributes: true, direction: 'TD' });
+        setOutput(mermaid);
+        setLoss(losses.join('\n') || t('converter.loss.none'));
+        pushLog(t('converter.log.generatedMermaid'));
+        setStatus('done');
+        return;
+      }
+
       // ERDPlus exports (download JSON)
       const outDoc = tgt === 'new' ? newDoc : newToOld(newDoc);
       const outName = computeOutName(file.name, tgt);
@@ -192,8 +212,21 @@ export default function Converter() {
 
   const onDownload = () => {
     if (!output) { pushLog(t('converter.log.nothingToDownload')); return; }
-    const targetFormat = target === 'typeorm' ? 'ts' : (target as 'sql' | 'prisma');
-    const name = computeTextOutName(fileName || 'output', targetFormat);
+    let targetFormat: string;
+    switch (target) {
+      case 'typeorm':
+        targetFormat = 'ts';
+        break;
+      case 'dbml':
+        targetFormat = 'dbml';
+        break;
+      case 'mermaid':
+        targetFormat = 'mmd';
+        break;
+      default:
+        targetFormat = target as 'sql' | 'prisma';
+    }
+    const name = computeTextOutName(fileName || 'output', targetFormat as any);
     downloadText(output, name);
     pushLog(t('converter.log.downloadedAs', { name }));
   };
@@ -279,6 +312,8 @@ export default function Converter() {
                   <option value="sql">{t('converter.targets.sql')}</option>
                   <option value="prisma">{t('converter.targets.prisma')}</option>
                   <option value="typeorm">{t('converter.targets.typeorm')}</option>
+                  <option value="dbml">{t('converter.targets.dbml')}</option>
+                  <option value="mermaid">{t('converter.targets.mermaid')}</option>
                   <option value="new">{t('converter.targets.new')}</option>
                   <option value="old">{t('converter.targets.old')}</option>
                 </select>
