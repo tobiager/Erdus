@@ -245,8 +245,8 @@ describe('Supabase Generator', () => {
       const templates = generateRLSPolicyTemplates(testDiagram);
       
       expect(templates).toContain('-- Customize this condition');
-      expect(templates).toContain('-- Who can read User records?');
-      expect(templates).toContain('-- Who can create Post records?');
+      expect(templates).toContain('-- SELECT: Who can read User records?');
+      expect(templates).toContain('-- INSERT: Who can create Post records?');
     });
   });
 

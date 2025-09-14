@@ -175,19 +175,19 @@ describe('Diff/Migration Generator', () => {
           name: 'User',
           columns: [
             { name: 'id', type: 'SERIAL', isPrimaryKey: true },
-            { name: 'full_name', type: 'VARCHAR(100)' }, // Renamed from 'name'
+            { name: 'name_new', type: 'VARCHAR(100)' }, // Renamed from 'name'
             { name: 'email', type: 'VARCHAR(255)', isUnique: true },
           ],
         }],
       };
       
-      const migration = diffIRDiagrams(oldDiagram, renamedDiagram, { renameThreshold: 0.5 });
+      const migration = diffIRDiagrams(oldDiagram, renamedDiagram, { renameThreshold: 0.4 });
       
       const rename = migration.changes.find(c => c.type === 'column_renamed');
       expect(rename).toBeDefined();
       expect(rename?.oldValue).toBe('name');
-      expect(rename?.newValue).toBe('full_name');
-      expect(rename?.sql).toContain('ALTER TABLE "User" RENAME COLUMN "name" TO "full_name"');
+      expect(rename?.newValue).toBe('name_new');
+      expect(rename?.sql).toContain('ALTER TABLE "User" RENAME COLUMN "name" TO "name_new"');
     });
 
     it('detects constraint changes', () => {

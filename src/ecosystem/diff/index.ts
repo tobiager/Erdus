@@ -138,7 +138,6 @@ function detectTableChanges(
   options: DiffOptions
 ): SchemaChange[] {
   const changes: SchemaChange[] = [];
-  const oldTableNames = oldDiagram.tables.map(t => t.name);
   const newTableNames = newDiagram.tables.map(t => t.name);
   const oldTableMap = new Map(oldDiagram.tables.map(t => [t.name, t]));
   const newTableMap = new Map(newDiagram.tables.map(t => [t.name, t]));
@@ -208,7 +207,6 @@ function detectColumnChanges(
   options: DiffOptions
 ): SchemaChange[] {
   const changes: SchemaChange[] = [];
-  const oldColumnNames = oldTable.columns.map(c => c.name);
   const newColumnNames = newTable.columns.map(c => c.name);
   const oldColumnMap = new Map(oldTable.columns.map(c => [c.name, c]));
   const newColumnMap = new Map(newTable.columns.map(c => [c.name, c]));
@@ -277,7 +275,7 @@ function detectColumnChanges(
   for (const newColumn of newTable.columns) {
     const oldColumn = oldColumnMap.get(newColumn.name);
     if (oldColumn && !isRenameTarget(changes, newColumn.name)) {
-      const columnChanges = detectColumnModifications(oldTable.name, oldColumn, newColumn, options);
+      const columnChanges = detectColumnModifications(oldTable.name, oldColumn, newColumn);
       changes.push(...columnChanges);
     }
   }
@@ -301,8 +299,7 @@ function isRenameTarget(changes: SchemaChange[], columnName: string): boolean {
 function detectColumnModifications(
   tableName: string,
   oldColumn: IRColumn, 
-  newColumn: IRColumn, 
-  options: DiffOptions
+  newColumn: IRColumn
 ): SchemaChange[] {
   const changes: SchemaChange[] = [];
   
@@ -626,7 +623,6 @@ export function diffIRDiagrams(
   
   // Detect column-level changes for existing tables
   const oldTableMap = new Map(oldDiagram.tables.map(t => [t.name, t]));
-  const newTableMap = new Map(newDiagram.tables.map(t => [t.name, t]));
   
   for (const newTable of newDiagram.tables) {
     const oldTable = oldTableMap.get(newTable.name);

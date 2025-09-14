@@ -304,7 +304,7 @@ function generateModelClassName(tableName: string): string {
 /**
  * Format Sequelize attribute options as code
  */
-function formatAttributeOptions(options: SequelizeAttributeOptions, typescript: boolean): string {
+function formatAttributeOptions(options: SequelizeAttributeOptions): string {
   const parts: string[] = [];
   
   if (options.primaryKey) {
@@ -430,7 +430,7 @@ function generateTypeScriptModel(model: ModelMeta, options: SequelizeOptions): s
   // Attributes definition
   for (const attr of model.attributes) {
     const typeStr = formatSequelizeType(attr.sequelizeType);
-    const optionsStr = formatAttributeOptions(attr.options, true);
+    const optionsStr = formatAttributeOptions(attr.options);
     
     if (optionsStr) {
       lines.push(`        ${attr.name}: { type: ${typeStr}, ${optionsStr.slice(2, -2)} },`);

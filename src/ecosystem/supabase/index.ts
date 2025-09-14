@@ -33,18 +33,6 @@ interface RLSPolicy {
 }
 
 /**
- * Supabase schema metadata
- */
-interface SupabaseSchema {
-  extensions: string[];
-  functions: string[];
-  tables: string[];
-  indexes: string[];
-  triggers: string[];
-  policies: RLSPolicy[];
-}
-
-/**
  * Map IR column type to PostgreSQL/Supabase type
  */
 function mapColumnTypeToPostgreSQL(irType: string): string {
@@ -133,7 +121,7 @@ function mapColumnTypeToPostgreSQL(irType: string): string {
 /**
  * Generate SQL column definition
  */
-function generateColumnDefinition(column: IRColumn, options: SupabaseOptions): string {
+function generateColumnDefinition(column: IRColumn): string {
   const pgType = mapColumnTypeToPostgreSQL(column.type);
   const parts: string[] = [`"${column.name}" ${pgType}`];
   
@@ -180,7 +168,7 @@ function generateCreateTable(table: IRTable, options: SupabaseOptions): string {
   const primaryKeyColumns: string[] = [];
   
   for (const column of table.columns) {
-    columnDefs.push(`  ${generateColumnDefinition(column, options)}`);
+    columnDefs.push(`  ${generateColumnDefinition(column)}`);
     
     if (column.isPrimaryKey) {
       primaryKeyColumns.push(`"${column.name}"`);
@@ -284,7 +272,7 @@ function generateRLSPolicies(table: IRTable, options: SupabaseOptions): RLSPolic
       });
       break;
       
-    case 'owner-only':
+    case 'owner-only': {
       // Assumes there's a user_id column or similar
       const userColumn = table.columns.find(c => 
         c.name.includes('user_id') || 
@@ -325,6 +313,7 @@ function generateRLSPolicies(table: IRTable, options: SupabaseOptions): RLSPolic
         });
       }
       break;
+    }
   }
   
   return policies;
@@ -476,15 +465,6 @@ export function irToSupabase(
     includeFunctions: true,
     includeUpdatedAtTriggers: true,
     ...options,
-  };
-  
-  const schema: SupabaseSchema = {
-    extensions: [],
-    functions: [],
-    tables: [],
-    indexes: [],
-    triggers: [],
-    policies: [],
   };
   
   const output: string[] = [];
