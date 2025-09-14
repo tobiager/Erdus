@@ -7,6 +7,10 @@ import { irToPrisma } from '../ir-to-prisma';
 import { irToTypeorm } from '../ir-to-typeorm';
 import { irToDbml } from '../ir-to-dbml';
 import { irToMermaid } from '../ir-to-mermaid';
+import { irToJsonSchema } from '../ir-to-json-schema';
+import { irToSequelize } from '../ir-to-sequelize';
+import { irToSupabase } from '../ir-to-supabase';
+import { generateSchemaMigration } from '../ir-diff';
 import { sqlToIR } from '../sql-to-ir';
 import { prismaToIR } from '../prisma-to-ir';
 import { typeormToIR } from '../typeorm-to-ir';
@@ -15,7 +19,7 @@ import Dropzone from "../components/Dropzone";
 import CtaButton from "../components/CtaButton";
 
 type InFmt = 'old' | 'new' | 'sql' | 'prisma' | 'typeorm';
-type TgtFmt = 'sql' | 'prisma' | 'typeorm' | 'dbml' | 'mermaid' | 'new' | 'old';
+type TgtFmt = 'sql' | 'prisma' | 'typeorm' | 'dbml' | 'mermaid' | 'jsonschema' | 'sequelize' | 'supabase' | 'new' | 'old';
 
 const detectInput = (text: string): InFmt => {
   try {
@@ -36,8 +40,8 @@ const computeOutName = (inputName: string, to: 'old' | 'new') => {
   return `${clean}-${to}${ext}`;
 };
 
-const computeTextOutName = (inputName: string, to: 'sql' | 'prisma' | 'ts' | 'dbml' | 'mmd') => {
-  const base = inputName.replace(/\.(erdplus|json|sql|prisma|ts|dbml|mmd)$/i, '').replace(/-(old|new)$/i, '');
+const computeTextOutName = (inputName: string, to: 'sql' | 'prisma' | 'ts' | 'dbml' | 'mmd' | 'json' | 'js') => {
+  const base = inputName.replace(/\.(erdplus|json|sql|prisma|ts|dbml|mmd|js)$/i, '').replace(/-(old|new)$/i, '');
   return `${base}.${to}`;
 };
 
@@ -89,6 +93,9 @@ export default function Converter() {
   const [loss, setLoss] = useState('');
   const [fileName, setFileName] = useState('');
   const [lastFile, setLastFile] = useState<File | null>(null);
+  const [migrationMode, setMigrationMode] = useState(false);
+  const [oldSchemaFile, setOldSchemaFile] = useState<File | null>(null);
+  const [newSchemaFile, setNewSchemaFile] = useState<File | null>(null);
 
   const pushLog = useCallback((line: string) => {
     setLogLines((prev) => [...prev, line]);
@@ -181,6 +188,33 @@ export default function Converter() {
         return;
       }
 
+      if (tgt === 'jsonschema') {
+        const jsonSchema = irToJsonSchema(ir);
+        setOutput(jsonSchema);
+        setLoss(losses.join('\n') || t('converter.loss.none'));
+        pushLog('Generated JSON Schema for API validation');
+        setStatus('done');
+        return;
+      }
+
+      if (tgt === 'sequelize') {
+        const sequelize = irToSequelize(ir);
+        setOutput(sequelize);
+        setLoss(losses.join('\n') || t('converter.loss.none'));
+        pushLog('Generated Sequelize models');
+        setStatus('done');
+        return;
+      }
+
+      if (tgt === 'supabase') {
+        const supabase = irToSupabase(ir, { enableRLS: true });
+        setOutput(supabase);
+        setLoss(losses.join('\n') || t('converter.loss.none'));
+        pushLog('Generated Supabase SQL schema with RLS policies');
+        setStatus('done');
+        return;
+      }
+
       // ERDPlus exports (download JSON)
       const outDoc = tgt === 'new' ? newDoc : newToOld(newDoc);
       const outName = computeOutName(file.name, tgt);
@@ -223,6 +257,15 @@ export default function Converter() {
       case 'mermaid':
         targetFormat = 'mmd';
         break;
+      case 'jsonschema':
+        targetFormat = 'json';
+        break;
+      case 'sequelize':
+        targetFormat = 'js';
+        break;
+      case 'supabase':
+        targetFormat = 'sql';
+        break;
       default:
         targetFormat = target as 'sql' | 'prisma';
     }
@@ -230,6 +273,74 @@ export default function Converter() {
     downloadText(output, name);
     pushLog(t('converter.log.downloadedAs', { name }));
   };
+
+  const handleMigration = useCallback(async () => {
+    if (!oldSchemaFile || !newSchemaFile) {
+      pushLog('Please select both old and new schema files');
+      setStatus('error');
+      return;
+    }
+
+    setStatus('working');
+    setOutput('');
+    setLoss('');
+    setLogLines(['Generating migration script...']);
+
+    try {
+      const oldText = await readFile(oldSchemaFile);
+      const newText = await readFile(newSchemaFile);
+      
+      const oldFmt = detectInput(oldText);
+      const newFmt = detectInput(newText);
+      
+      pushLog(`Old schema format: ${oldFmt.toUpperCase()}`);
+      pushLog(`New schema format: ${newFmt.toUpperCase()}`);
+
+      // Convert both to IR
+      let oldIR: IRDiagram;
+      let newIR: IRDiagram;
+
+      if (oldFmt === 'old') {
+        const data = JSON.parse(oldText);
+        const newDoc = oldToNew(data);
+        oldIR = newToIR(newDoc);
+      } else if (oldFmt === 'new') {
+        const newDoc = JSON.parse(oldText);
+        oldIR = newToIR(newDoc);
+      } else if (oldFmt === 'sql') {
+        oldIR = sqlToIR(oldText);
+      } else if (oldFmt === 'typeorm') {
+        oldIR = typeormToIR(oldText);
+      } else {
+        oldIR = prismaToIR(oldText);
+      }
+
+      if (newFmt === 'old') {
+        const data = JSON.parse(newText);
+        const newDoc = oldToNew(data);
+        newIR = newToIR(newDoc);
+      } else if (newFmt === 'new') {
+        const newDoc = JSON.parse(newText);
+        newIR = newToIR(newDoc);
+      } else if (newFmt === 'sql') {
+        newIR = sqlToIR(newText);
+      } else if (newFmt === 'typeorm') {
+        newIR = typeormToIR(newText);
+      } else {
+        newIR = prismaToIR(newText);
+      }
+
+      const migration = generateSchemaMigration(oldIR, newIR);
+      setOutput(migration);
+      setLoss('Migration script generated successfully');
+      pushLog('Migration script ready');
+      setStatus('done');
+    } catch (e: any) {
+      console.error(e);
+      setStatus('error');
+      pushLog(`Error: ${e?.message || e}`);
+    }
+  }, [oldSchemaFile, newSchemaFile, pushLog]);
 
   const statusBadge = useMemo(() => {
     const base = 'inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-medium';
@@ -312,6 +423,9 @@ export default function Converter() {
                   <option value="sql">{t('converter.targets.sql')}</option>
                   <option value="prisma">{t('converter.targets.prisma')}</option>
                   <option value="typeorm">{t('converter.targets.typeorm')}</option>
+                  <option value="jsonschema">JSON Schema</option>
+                  <option value="sequelize">Sequelize</option>
+                  <option value="supabase">Supabase</option>
                   <option value="dbml">{t('converter.targets.dbml')}</option>
                   <option value="mermaid">{t('converter.targets.mermaid')}</option>
                   <option value="new">{t('converter.targets.new')}</option>
@@ -359,6 +473,72 @@ export default function Converter() {
           </div>
         </Panel>
       </div>
+
+      {/* Migration Section */}
+      <Panel>
+        <div className="p-5 space-y-5">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Schema Migration</h2>
+            <button
+              onClick={() => setMigrationMode(!migrationMode)}
+              className="text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100"
+            >
+              {migrationMode ? 'Hide' : 'Show'} Migration Tools
+            </button>
+          </div>
+          
+          {migrationMode && (
+            <div className="space-y-4">
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Compare two schemas and generate SQL migration script with ALTER statements.
+              </p>
+              
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <Label>Old Schema</Label>
+                  <Dropzone
+                    accept=".erdplus,.json,.sql,.prisma,.ts"
+                    variant="compact"
+                    extensionsHint={["ERDPlus", "SQL", "Prisma"]}
+                    onFile={setOldSchemaFile}
+                    className="w-full"
+                  />
+                  {oldSchemaFile && (
+                    <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
+                      ✓ {oldSchemaFile.name}
+                    </p>
+                  )}
+                </div>
+                
+                <div>
+                  <Label>New Schema</Label>
+                  <Dropzone
+                    accept=".erdplus,.json,.sql,.prisma,.ts"
+                    variant="compact"
+                    extensionsHint={["ERDPlus", "SQL", "Prisma"]}
+                    onFile={setNewSchemaFile}
+                    className="w-full"
+                  />
+                  {newSchemaFile && (
+                    <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
+                      ✓ {newSchemaFile.name}
+                    </p>
+                  )}
+                </div>
+              </div>
+              
+              <CtaButton
+                onClick={handleMigration}
+                variant="solid"
+                disabled={!oldSchemaFile || !newSchemaFile}
+                className="w-full !bg-purple-600 !border-purple-600 !text-white hover:!bg-purple-700"
+              >
+                Generate Migration Script
+              </CtaButton>
+            </div>
+          )}
+        </div>
+      </Panel>
 
       {/* Terminal (log) */}
       <Panel>
