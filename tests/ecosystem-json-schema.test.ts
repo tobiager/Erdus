@@ -162,9 +162,12 @@ describe('JSON Schema Generator', () => {
       const result = irToJSONSchema(testDiagram, { separateSchemas: false });
       const formatted = formatJSONSchemaOutput(result);
       
-      expect(formatted).not.toContain('//');
+      // Should be a single JSON object, not multiple with comments
+      expect(formatted).toContain('"$schema": "https://json-schema.org/draft/2020-12/schema"');
       expect(formatted).toContain('"type": "object"');
       expect(formatted).toContain('"properties"');
+      // Should not have table name comments like "// User.json"
+      expect(formatted.startsWith('{')).toBe(true);
     });
   });
 
@@ -222,31 +225,37 @@ describe('JSON Schema Generator', () => {
               "additionalProperties": false,
               "properties": {
                 "content": {
+                  "description": "Column: content",
                   "type": [
                     "string",
                     "null",
                   ],
                 },
                 "id": {
+                  "description": "Column: id",
                   "format": "uuid",
                   "type": "string",
                 },
                 "metadata": {
+                  "description": "Column: metadata",
                   "type": [
                     "object",
                     "null",
                   ],
                 },
                 "title": {
+                  "description": "Column: title",
                   "maxLength": 200,
                   "type": "string",
                 },
                 "user_id": {
+                  "description": "Column: user_id",
                   "format": "int32",
                   "type": "integer",
                 },
                 "views": {
                   "default": 0,
+                  "description": "Column: views",
                   "format": "int32",
                   "type": "integer",
                 },
@@ -263,6 +272,7 @@ describe('JSON Schema Generator', () => {
               "additionalProperties": false,
               "properties": {
                 "age": {
+                  "description": "Column: age",
                   "format": "int32",
                   "type": [
                     "integer",
@@ -270,22 +280,27 @@ describe('JSON Schema Generator', () => {
                   ],
                 },
                 "created_at": {
+                  "description": "Column: created_at",
                   "format": "date-time",
                   "type": "string",
                 },
                 "email": {
+                  "description": "Column: email",
                   "maxLength": 255,
                   "type": "string",
                 },
                 "id": {
+                  "description": "Column: id",
                   "format": "int32",
                   "type": "integer",
                 },
                 "is_active": {
                   "default": true,
+                  "description": "Column: is_active",
                   "type": "boolean",
                 },
                 "name": {
+                  "description": "Column: name",
                   "maxLength": 100,
                   "type": "string",
                 },

@@ -224,7 +224,7 @@ describe('Sequelize Generator', () => {
           public static initialize(sequelize: Sequelize): typeof User {
             return User.init(
               {
-                id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+                id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false },
                 name: { type: DataTypes.STRING(100), allowNull: false },
                 email: { type: DataTypes.STRING(255), allowNull: false, unique: true },
                 age: { type: DataTypes.INTEGER, allowNull: true },
@@ -239,7 +239,6 @@ describe('Sequelize Generator', () => {
             );
           }
         }
-
         "
       `);
     });

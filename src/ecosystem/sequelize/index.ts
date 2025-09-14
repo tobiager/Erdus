@@ -178,7 +178,7 @@ function generateAttributeFromColumn(column: IRColumn, options: SequelizeOptions
   const sequelizeType = mapColumnTypeToSequelize(column.type);
   
   const attributeOptions: SequelizeAttributeOptions = {
-    allowNull: column.isOptional,
+    allowNull: !!column.isOptional, // Convert undefined to false, true to true
     unique: column.isUnique,
   };
   
@@ -197,12 +197,17 @@ function generateAttributeFromColumn(column: IRColumn, options: SequelizeOptions
     const defaultStr = column.default.toLowerCase();
     if (defaultStr === 'true' || defaultStr === 'false') {
       attributeOptions.defaultValue = defaultStr;
-    } else if (!isNaN(Number(defaultStr))) {
-      attributeOptions.defaultValue = defaultStr;
     } else if (defaultStr.includes('now()') || defaultStr.includes('current_timestamp')) {
       attributeOptions.defaultValue = 'DataTypes.NOW';
     } else if (defaultStr.startsWith("'") && defaultStr.endsWith("'")) {
       attributeOptions.defaultValue = `'${defaultStr.slice(1, -1)}'`;
+    } else if (!isNaN(Number(defaultStr))) {
+      // For numeric defaults, keep as quoted string if it contains decimal point
+      if (defaultStr.includes('.')) {
+        attributeOptions.defaultValue = `'${column.default}'`;
+      } else {
+        attributeOptions.defaultValue = defaultStr;
+      }
     } else {
       attributeOptions.defaultValue = `'${column.default}'`;
     }
@@ -430,7 +435,12 @@ function generateTypeScriptModel(model: ModelMeta, options: SequelizeOptions): s
     if (optionsStr) {
       lines.push(`        ${attr.name}: { type: ${typeStr}, ${optionsStr.slice(2, -2)} },`);
     } else {
-      lines.push(`        ${attr.name}: ${typeStr},`);
+      // Even when no explicit options, we need to include allowNull if it's not undefined
+      if (attr.options.allowNull !== undefined) {
+        lines.push(`        ${attr.name}: { type: ${typeStr}, allowNull: ${attr.options.allowNull} },`);
+      } else {
+        lines.push(`        ${attr.name}: ${typeStr},`);
+      }
     }
   }
   
