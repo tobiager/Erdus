@@ -5,6 +5,9 @@
   "private": false,
   "type": "module",
   "license": "MIT",
+  "bin": {
+    "erdus": "./dist/cli.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/your-user/erdplus-converter.git"
@@ -14,13 +17,16 @@
   },
   "homepage": "https://erdplus-converter.vercel.app",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "tsup --watch",
+    "build": "tsup src/cli.ts --dts --format esm,cjs --sourcemap",
+    "build:web": "vite build",
     "preview": "vite preview --strictPort --port 4173",
     "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "eslint .",
+    "fmt": "prettier -w .",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "format": "prettier --write .",
+    "release:check": "pnpm lint && pnpm test && pnpm build",
     "cli": "node dist/cli.js"
   },
   "dependencies": {
@@ -35,7 +41,10 @@
     "react-markdown": "^10.1.0",
     "react-router-dom": "^6",
     "remark-gfm": "^4.0.1",
-    "typeorm": "^0.3.26"
+    "typeorm": "^0.3.26",
+    "zod": "^3.22.4",
+    "commander": "^11.1.0",
+    "change-case": "^5.4.4"
   },
   "devDependencies": {
     "@types/node": "^24.3.1",
@@ -47,10 +56,12 @@
     "autoprefixer": "^10.4.16",
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-config-prettier": "^9.1.0",
     "postcss": "^8.4.38",
     "prettier": "^3.3.3",
     "tailwindcss": "^3.4.1",
     "typescript": "^5",
+    "tsup": "^8.0.0",
     "vite": "^5.4.19",
     "vitest": "^1.6.0"
   }
