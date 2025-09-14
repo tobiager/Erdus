@@ -7,6 +7,7 @@ export interface MigrationOperation {
   column?: string;
   newName?: string;
   columnDef?: IRColumn;
+  tableDef?: IRTable; // For addTable operations
   indexDef?: { columns: string[]; unique?: boolean };
   foreignKey?: { column: string; references: { table: string; column: string; onDelete?: string; onUpdate?: string } };
 }
@@ -22,42 +23,48 @@ export interface MigrationPlan {
 export function diffIR(oldDiagram: IRDiagram, newDiagram: IRDiagram): MigrationPlan {
   const operations: MigrationOperation[] = [];
   
-  const oldTables = new Map(oldDiagram.tables.map(t => [t.name, t]));
-  const newTables = new Map(newDiagram.tables.map(t => [t.name, t]));
+  // Use case-insensitive matching for table names to handle different naming conventions
+  const oldTables = new Map(oldDiagram.tables.map(t => [t.name.toLowerCase(), t]));
+  const newTables = new Map(newDiagram.tables.map(t => [t.name.toLowerCase(), t]));
 
   // Find dropped tables
-  for (const [tableName, table] of oldTables) {
-    if (!newTables.has(tableName)) {
+  for (const [lowerTableName, table] of oldTables) {
+    if (!newTables.has(lowerTableName)) {
       operations.push({
         type: 'dropTable',
-        table: tableName
+        table: table.name
       });
     }
   }
 
   // Find added tables
-  for (const [tableName, table] of newTables) {
-    if (!oldTables.has(tableName)) {
+  for (const [lowerTableName, table] of newTables) {
+    if (!oldTables.has(lowerTableName)) {
       operations.push({
         type: 'addTable',
-        table: tableName,
-        columnDef: undefined // Will be handled by table creation
+        table: table.name,
+        tableDef: table
       });
       continue;
     }
 
     // Compare existing tables
-    const oldTable = oldTables.get(tableName)!;
+    const oldTable = oldTables.get(lowerTableName)!;
+    
+    // Check for table renames (different case)
+    if (oldTable.name !== table.name) {
+      operations.push({
+        type: 'renameTable',
+        table: oldTable.name,
+        newName: table.name
+      });
+    }
+    
     const tableOps = diffTable(oldTable, table);
     operations.push(...tableOps);
   }
 
   // Sort operations to ensure dependencies are handled correctly
-  // 1. Drop foreign keys first
-  // 2. Drop columns/tables  
-  // 3. Add tables
-  // 4. Add columns
-  // 5. Add foreign keys
   const sortedOps = sortOperations(operations);
 
   return {
@@ -72,65 +79,115 @@ export function diffIR(oldDiagram: IRDiagram, newDiagram: IRDiagram): MigrationP
 function diffTable(oldTable: IRTable, newTable: IRTable): MigrationOperation[] {
   const operations: MigrationOperation[] = [];
   
+  // Use both exact match and normalized match for columns
   const oldColumns = new Map(oldTable.columns.map(c => [c.name, c]));
+  const oldColumnsNorm = new Map(oldTable.columns.map(c => [normalizeColumnName(c.name), c]));
   const newColumns = new Map(newTable.columns.map(c => [c.name, c]));
+  const newColumnsNorm = new Map(newTable.columns.map(c => [normalizeColumnName(c.name), c]));
 
-  // Find dropped columns
-  for (const [colName, column] of oldColumns) {
-    if (!newColumns.has(colName)) {
-      // Check if this might be a rename (simple heuristic: same type, similar position)
-      const possibleRename = findPossibleRename(column, newColumns, oldColumns);
-      if (possibleRename) {
+  // Track which columns have been processed to avoid duplicates
+  const processedOldColumns = new Set<string>();
+  const processedNewColumns = new Set<string>();
+
+  // First pass: exact matches and renames
+  for (const [newColName, newColumn] of newColumns) {
+    const exactMatch = oldColumns.get(newColName);
+    const normalizedMatch = oldColumnsNorm.get(normalizeColumnName(newColName));
+    
+    if (exactMatch) {
+      // Exact match - check for changes
+      processedOldColumns.add(exactMatch.name);
+      processedNewColumns.add(newColName);
+      
+      if (isColumnChanged(exactMatch, newColumn)) {
+        operations.push({
+          type: 'alterColumn',
+          table: newTable.name,
+          column: newColName,
+          columnDef: newColumn
+        });
+      }
+    } else if (normalizedMatch && !processedOldColumns.has(normalizedMatch.name)) {
+      // Normalized match (likely rename) - check if it's really a rename
+      processedOldColumns.add(normalizedMatch.name);
+      processedNewColumns.add(newColName);
+      
+      if (normalizedMatch.name !== newColName) {
         operations.push({
           type: 'renameColumn',
-          table: oldTable.name,
-          column: colName,
-          newName: possibleRename
+          table: newTable.name,
+          column: normalizedMatch.name,
+          newName: newColName
         });
-        continue;
       }
       
+      // Also check for type/constraint changes after rename
+      if (isColumnChanged(normalizedMatch, newColumn)) {
+        operations.push({
+          type: 'alterColumn',
+          table: newTable.name,
+          column: newColName,
+          columnDef: newColumn
+        });
+      }
+    }
+  }
+
+  // Second pass: dropped columns
+  for (const [oldColName, oldColumn] of oldColumns) {
+    if (!processedOldColumns.has(oldColName)) {
       operations.push({
         type: 'dropColumn',
         table: oldTable.name,
-        column: colName
+        column: oldColName
       });
     }
   }
 
-  // Find added columns
-  for (const [colName, column] of newColumns) {
-    if (!oldColumns.has(colName)) {
+  // Third pass: added columns
+  for (const [newColName, newColumn] of newColumns) {
+    if (!processedNewColumns.has(newColName)) {
       operations.push({
         type: 'addColumn',
-        table: oldTable.name,
-        column: colName,
-        columnDef: column
-      });
-    }
-  }
-
-  // Find altered columns
-  for (const [colName, newColumn] of newColumns) {
-    const oldColumn = oldColumns.get(colName);
-    if (oldColumn && isColumnChanged(oldColumn, newColumn)) {
-      operations.push({
-        type: 'alterColumn',
-        table: oldTable.name,
-        column: colName,
+        table: newTable.name,
+        column: newColName,
         columnDef: newColumn
       });
     }
   }
 
-  // Handle foreign key changes
+  // Handle foreign key changes for existing columns
+  handleForeignKeyChanges(oldTable, newTable, operations);
+
+  return operations;
+}
+
+/**
+ * Normalize column names to detect renames (PascalCase <-> snake_case)
+ */
+function normalizeColumnName(name: string): string {
+  return name.toLowerCase()
+    .replace(/([a-z])([A-Z])/g, '$1_$2') // PascalCase to snake_case
+    .replace(/([A-Z])([A-Z][a-z])/g, '$1_$2'); // Handle consecutive caps
+}
+
+/**
+ * Handle foreign key changes separately
+ */
+function handleForeignKeyChanges(oldTable: IRTable, newTable: IRTable, operations: MigrationOperation[]) {
   const oldFKs = oldTable.columns.filter(c => c.references);
   const newFKs = newTable.columns.filter(c => c.references);
   
+  // Use normalized names for FK matching
+  const oldFKMap = new Map(oldFKs.map(fk => [normalizeColumnName(fk.name), fk]));
+  const newFKMap = new Map(newFKs.map(fk => [normalizeColumnName(fk.name), fk]));
+  
   // Find dropped foreign keys
   for (const oldFK of oldFKs) {
-    const newFK = newColumns.get(oldFK.name);
-    if (!newFK || !newFK.references || !isReferenceEqual(oldFK.references, newFK.references)) {
+    const normalizedName = normalizeColumnName(oldFK.name);
+    const newFK = newFKMap.get(normalizedName);
+    
+    if (!newFK || !newFK.references || !isReferenceEqual(oldFK.references!, newFK.references)) {
       operations.push({
         type: 'dropForeignKey',
         table: oldTable.name,
@@ -144,11 +201,13 @@ function diffTable(oldTable: IRTable, newTable: IRTable): MigrationOperation[] {
 
   // Find added foreign keys
   for (const newFK of newFKs) {
-    const oldFK = oldColumns.get(newFK.name);
-    if (!oldFK || !oldFK.references || !isReferenceEqual(oldFK.references, newFK.references)) {
+    const normalizedName = normalizeColumnName(newFK.name);
+    const oldFK = oldFKMap.get(normalizedName);
+    
+    if (!oldFK || !oldFK.references || !isReferenceEqual(oldFK.references, newFK.references!)) {
       operations.push({
         type: 'addForeignKey',
-        table: oldTable.name,
+        table: newTable.name,
         foreignKey: {
           column: newFK.name,
           references: newFK.references!
@@ -156,8 +215,6 @@ function diffTable(oldTable: IRTable, newTable: IRTable): MigrationOperation[] {
       });
     }
   }
-
-  return operations;
 }
 
 /**

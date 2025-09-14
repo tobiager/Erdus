@@ -1,0 +1,460 @@
+{
+  "operations": [
+    {
+      "type": "dropForeignKey",
+      "table": "Posts",
+      "foreignKey": {
+        "column": "UserId",
+        "references": {
+          "table": "Users",
+          "column": "Id",
+          "onDelete": "CASCADE"
+        }
+      }
+    },
+    {
+      "type": "dropForeignKey",
+      "table": "Posts",
+      "foreignKey": {
+        "column": "CategoryId",
+        "references": {
+          "table": "Categories",
+          "column": "Id",
+          "onDelete": "SET NULL"
+        }
+      }
+    },
+    {
+      "type": "dropColumn",
+      "table": "Users",
+      "column": "PasswordHash"
+    },
+    {
+      "type": "dropColumn",
+      "table": "Users",
+      "column": "CreatedAt"
+    },
+    {
+      "type": "dropColumn",
+      "table": "Users",
+      "column": "IsActive"
+    },
+    {
+      "type": "dropColumn",
+      "table": "Users",
+      "column": "UserGuid"
+    },
+    {
+      "type": "dropColumn",
+      "table": "Posts",
+      "column": "UserId"
+    },
+    {
+      "type": "dropColumn",
+      "table": "Posts",
+      "column": "CategoryId"
+    },
+    {
+      "type": "dropColumn",
+      "table": "Posts",
+      "column": "PublishedAt"
+    },
+    {
+      "type": "dropColumn",
+      "table": "Posts",
+      "column": "ViewCount"
+    },
+    {
+      "type": "addTable",
+      "table": "tags",
+      "tableDef": {
+        "name": "tags",
+        "columns": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "isPrimaryKey": true,
+            "isOptional": false,
+            "default": "autoincrement()"
+          },
+          {
+            "name": "name",
+            "type": "VARCHAR(50)",
+            "isPrimaryKey": false,
+            "isOptional": false,
+            "isUnique": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "addTable",
+      "table": "post_tags",
+      "tableDef": {
+        "name": "post_tags",
+        "columns": [
+          {
+            "name": "post_id",
+            "type": "INTEGER",
+            "isPrimaryKey": true,
+            "isOptional": false,
+            "references": {
+              "table": "posts",
+              "column": "id",
+              "onDelete": "CASCADE"
+            }
+          },
+          {
+            "name": "tag_id",
+            "type": "INTEGER",
+            "isPrimaryKey": true,
+            "isOptional": false,
+            "references": {
+              "table": "tags",
+              "column": "id",
+              "onDelete": "CASCADE"
+            }
+          }
+        ],
+        "primaryKey": [
+          "post_id",
+          "tag_id"
+        ]
+      }
+    },
+    {
+      "type": "addColumn",
+      "table": "users",
+      "column": "password_hash",
+      "columnDef": {
+        "name": "password_hash",
+        "type": "VARCHAR(255)",
+        "isPrimaryKey": false,
+        "isOptional": false
+      }
+    },
+    {
+      "type": "addColumn",
+      "table": "users",
+      "column": "full_name",
+      "columnDef": {
+        "name": "full_name",
+        "type": "VARCHAR(100)",
+        "isPrimaryKey": false,
+        "isOptional": true
+      }
+    },
+    {
+      "type": "addColumn",
+      "table": "users",
+      "column": "created_at",
+      "columnDef": {
+        "name": "created_at",
+        "type": "TIMESTAMP WITHOUT TIME ZONE",
+        "isPrimaryKey": false,
+        "isOptional": false,
+        "default": "now()"
+      }
+    },
+    {
+      "type": "addColumn",
+      "table": "users",
+      "column": "updated_at",
+      "columnDef": {
+        "name": "updated_at",
+        "type": "TIMESTAMP WITHOUT TIME ZONE",
+        "isPrimaryKey": false,
+        "isOptional": true
+      }
+    },
+    {
+      "type": "addColumn",
+      "table": "users",
+      "column": "is_active",
+      "columnDef": {
+        "name": "is_active",
+        "type": "BOOLEAN",
+        "isPrimaryKey": false,
+        "isOptional": false,
+        "default": "true"
+      }
+    },
+    {
+      "type": "addColumn",
+      "table": "users",
+      "column": "user_uuid",
+      "columnDef": {
+        "name": "user_uuid",
+        "type": "UUID",
+        "isPrimaryKey": false,
+        "isOptional": false,
+        "default": "gen_random_uuid()"
+      }
+    },
+    {
+      "type": "addColumn",
+      "table": "categories",
+      "column": "slug",
+      "columnDef": {
+        "name": "slug",
+        "type": "VARCHAR(100)",
+        "isPrimaryKey": false,
+        "isOptional": false,
+        "isUnique": true
+      }
+    },
+    {
+      "type": "addColumn",
+      "table": "posts",
+      "column": "author_id",
+      "columnDef": {
+        "name": "author_id",
+        "type": "INTEGER",
+        "isPrimaryKey": false,
+        "isOptional": false,
+        "references": {
+          "table": "users",
+          "column": "id",
+          "onDelete": "CASCADE"
+        }
+      }
+    },
+    {
+      "type": "addColumn",
+      "table": "posts",
+      "column": "category_id",
+      "columnDef": {
+        "name": "category_id",
+        "type": "INTEGER",
+        "isPrimaryKey": false,
+        "isOptional": true,
+        "references": {
+          "table": "categories",
+          "column": "id",
+          "onDelete": "SET NULL"
+        }
+      }
+    },
+    {
+      "type": "addColumn",
+      "table": "posts",
+      "column": "published_at",
+      "columnDef": {
+        "name": "published_at",
+        "type": "TIMESTAMP WITHOUT TIME ZONE",
+        "isPrimaryKey": false,
+        "isOptional": true
+      }
+    },
+    {
+      "type": "addColumn",
+      "table": "posts",
+      "column": "view_count",
+      "columnDef": {
+        "name": "view_count",
+        "type": "INTEGER",
+        "isPrimaryKey": false,
+        "isOptional": false,
+        "default": "0"
+      }
+    },
+    {
+      "type": "addColumn",
+      "table": "posts",
+      "column": "is_featured",
+      "columnDef": {
+        "name": "is_featured",
+        "type": "BOOLEAN",
+        "isPrimaryKey": false,
+        "isOptional": false,
+        "default": "false"
+      }
+    },
+    {
+      "type": "alterColumn",
+      "table": "users",
+      "column": "id",
+      "columnDef": {
+        "name": "id",
+        "type": "INTEGER",
+        "isPrimaryKey": true,
+        "isOptional": false,
+        "default": "autoincrement()"
+      }
+    },
+    {
+      "type": "alterColumn",
+      "table": "users",
+      "column": "username",
+      "columnDef": {
+        "name": "username",
+        "type": "VARCHAR(50)",
+        "isPrimaryKey": false,
+        "isOptional": false,
+        "isUnique": true
+      }
+    },
+    {
+      "type": "alterColumn",
+      "table": "users",
+      "column": "email",
+      "columnDef": {
+        "name": "email",
+        "type": "VARCHAR(100)",
+        "isPrimaryKey": false,
+        "isOptional": false
+      }
+    },
+    {
+      "type": "alterColumn",
+      "table": "categories",
+      "column": "id",
+      "columnDef": {
+        "name": "id",
+        "type": "INTEGER",
+        "isPrimaryKey": true,
+        "isOptional": false,
+        "default": "autoincrement()"
+      }
+    },
+    {
+      "type": "alterColumn",
+      "table": "categories",
+      "column": "name",
+      "columnDef": {
+        "name": "name",
+        "type": "VARCHAR(100)",
+        "isPrimaryKey": false,
+        "isOptional": false
+      }
+    },
+    {
+      "type": "alterColumn",
+      "table": "categories",
+      "column": "description",
+      "columnDef": {
+        "name": "description",
+        "type": "TEXT",
+        "isPrimaryKey": false,
+        "isOptional": true
+      }
+    },
+    {
+      "type": "alterColumn",
+      "table": "posts",
+      "column": "id",
+      "columnDef": {
+        "name": "id",
+        "type": "INTEGER",
+        "isPrimaryKey": true,
+        "isOptional": false,
+        "default": "autoincrement()"
+      }
+    },
+    {
+      "type": "alterColumn",
+      "table": "posts",
+      "column": "title",
+      "columnDef": {
+        "name": "title",
+        "type": "VARCHAR(300)",
+        "isPrimaryKey": false,
+        "isOptional": false
+      }
+    },
+    {
+      "type": "renameColumn",
+      "table": "users",
+      "column": "Id",
+      "newName": "id"
+    },
+    {
+      "type": "renameColumn",
+      "table": "users",
+      "column": "Username",
+      "newName": "username"
+    },
+    {
+      "type": "renameColumn",
+      "table": "users",
+      "column": "Email",
+      "newName": "email"
+    },
+    {
+      "type": "renameColumn",
+      "table": "categories",
+      "column": "Id",
+      "newName": "id"
+    },
+    {
+      "type": "renameColumn",
+      "table": "categories",
+      "column": "Name",
+      "newName": "name"
+    },
+    {
+      "type": "renameColumn",
+      "table": "categories",
+      "column": "Description",
+      "newName": "description"
+    },
+    {
+      "type": "renameColumn",
+      "table": "posts",
+      "column": "Id",
+      "newName": "id"
+    },
+    {
+      "type": "renameColumn",
+      "table": "posts",
+      "column": "Title",
+      "newName": "title"
+    },
+    {
+      "type": "renameColumn",
+      "table": "posts",
+      "column": "Content",
+      "newName": "content"
+    },
+    {
+      "type": "renameTable",
+      "table": "Users",
+      "newName": "users"
+    },
+    {
+      "type": "renameTable",
+      "table": "Categories",
+      "newName": "categories"
+    },
+    {
+      "type": "renameTable",
+      "table": "Posts",
+      "newName": "posts"
+    },
+    {
+      "type": "addForeignKey",
+      "table": "posts",
+      "foreignKey": {
+        "column": "author_id",
+        "references": {
+          "table": "users",
+          "column": "id",
+          "onDelete": "CASCADE"
+        }
+      }
+    },
+    {
+      "type": "addForeignKey",
+      "table": "posts",
+      "foreignKey": {
+        "column": "category_id",
+        "references": {
+          "table": "categories",
+          "column": "id",
+          "onDelete": "SET NULL"
+        }
+      }
+    }
+  ],
+  "version": "1.0"
+}

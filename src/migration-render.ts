@@ -1,5 +1,5 @@
 import type { MigrationPlan, MigrationOperation } from './migration';
-import type { IRColumn } from './ir';
+import type { IRColumn, IRTable } from './ir';
 
 export type SqlDialect = 'postgres' | 'sqlserver' | 'mysql' | 'sqlite';
 
@@ -25,8 +25,8 @@ export function renderMigration(plan: MigrationPlan, dialect: SqlDialect, fullTa
 function renderOperation(operation: MigrationOperation, dialect: SqlDialect, fullTableDefinitions?: Map<string, any>): string {
   switch (operation.type) {
     case 'addTable':
-      // For now, we'll just add a comment - full table creation would need the complete table definition
-      return `-- TODO: CREATE TABLE ${quoteIdentifier(operation.table, dialect)} - table definition not included in migration plan`;
+      if (!operation.tableDef) return `-- TODO: CREATE TABLE ${quoteIdentifier(operation.table, dialect)} - table definition not included in migration plan`;
+      return renderCreateTable(operation.tableDef, dialect);
     
     case 'dropTable':
       return `DROP TABLE ${quoteIdentifier(operation.table, dialect)};`;
@@ -70,8 +70,57 @@ function renderOperation(operation: MigrationOperation, dialect: SqlDialect, ful
 }
 
 /**
- * Render a column definition for CREATE/ALTER statements
+ * Render CREATE TABLE statement
  */
+function renderCreateTable(table: IRTable, dialect: SqlDialect): string {
+  const tableName = quoteIdentifier(table.name, dialect);
+  const lines: string[] = [];
+  const fkCols: IRColumn[] = [];
+
+  // Add column definitions
+  for (const col of table.columns) {
+    const line = renderColumnDefinition(col, dialect);
+    lines.push(`  ${line}`);
+    if (col.references) fkCols.push(col);
+  }
+
+  // Add primary key constraint if defined
+  let pkCols = table.primaryKey
+    ? table.primaryKey.map(c => quoteIdentifier(c, dialect))
+    : table.columns
+        .filter(c => c.isPrimaryKey && !(c.type === 'Int' && c.default === 'autoincrement()'))
+        .map(c => quoteIdentifier(c.name, dialect));
+
+  // For junction tables, use all FK columns as composite PK if no explicit PK
+  if (!pkCols.length && fkCols.length === table.columns.length && fkCols.length === 2) {
+    pkCols = fkCols.map(c => quoteIdentifier(c.name, dialect));
+  }
+
+  if (pkCols.length) {
+    lines.push(`  PRIMARY KEY (${pkCols.join(', ')})`);
+  }
+
+  // Add foreign key constraints
+  for (const col of fkCols) {
+    const refTable = quoteIdentifier(col.references!.table, dialect);
+    const refColumn = quoteIdentifier(col.references!.column, dialect);
+    const colName = quoteIdentifier(col.name, dialect);
+    
+    let fkConstraint = `  FOREIGN KEY (${colName}) REFERENCES ${refTable}(${refColumn})`;
+    
+    if (col.references!.onDelete) {
+      fkConstraint += ` ON DELETE ${col.references!.onDelete}`;
+    }
+    
+    if (col.references!.onUpdate) {
+      fkConstraint += ` ON UPDATE ${col.references!.onUpdate}`;
+    }
+    
+    lines.push(fkConstraint);
+  }
+
+  return `CREATE TABLE ${tableName} (\n${lines.join(',\n')}\n);`;
+}
 function renderColumnDefinition(column: IRColumn, dialect: SqlDialect): string {
   const name = quoteIdentifier(column.name, dialect);
   const type = mapColumnType(column, dialect);

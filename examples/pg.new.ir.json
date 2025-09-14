@@ -1,0 +1,212 @@
+{
+  "tables": [
+    {
+      "name": "users",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "isPrimaryKey": true,
+          "isOptional": false,
+          "default": "autoincrement()"
+        },
+        {
+          "name": "username",
+          "type": "VARCHAR(50)",
+          "isPrimaryKey": false,
+          "isOptional": false,
+          "isUnique": true
+        },
+        {
+          "name": "email",
+          "type": "VARCHAR(100)",
+          "isPrimaryKey": false,
+          "isOptional": false
+        },
+        {
+          "name": "password_hash",
+          "type": "VARCHAR(255)",
+          "isPrimaryKey": false,
+          "isOptional": false
+        },
+        {
+          "name": "full_name",
+          "type": "VARCHAR(100)",
+          "isPrimaryKey": false,
+          "isOptional": true
+        },
+        {
+          "name": "created_at",
+          "type": "TIMESTAMP WITHOUT TIME ZONE",
+          "isPrimaryKey": false,
+          "isOptional": false,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "type": "TIMESTAMP WITHOUT TIME ZONE",
+          "isPrimaryKey": false,
+          "isOptional": true
+        },
+        {
+          "name": "is_active",
+          "type": "BOOLEAN",
+          "isPrimaryKey": false,
+          "isOptional": false,
+          "default": "true"
+        },
+        {
+          "name": "user_uuid",
+          "type": "UUID",
+          "isPrimaryKey": false,
+          "isOptional": false,
+          "default": "gen_random_uuid()"
+        }
+      ]
+    },
+    {
+      "name": "categories",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "isPrimaryKey": true,
+          "isOptional": false,
+          "default": "autoincrement()"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR(100)",
+          "isPrimaryKey": false,
+          "isOptional": false
+        },
+        {
+          "name": "description",
+          "type": "TEXT",
+          "isPrimaryKey": false,
+          "isOptional": true
+        },
+        {
+          "name": "slug",
+          "type": "VARCHAR(100)",
+          "isPrimaryKey": false,
+          "isOptional": false,
+          "isUnique": true
+        }
+      ]
+    },
+    {
+      "name": "posts",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "isPrimaryKey": true,
+          "isOptional": false,
+          "default": "autoincrement()"
+        },
+        {
+          "name": "title",
+          "type": "VARCHAR(300)",
+          "isPrimaryKey": false,
+          "isOptional": false
+        },
+        {
+          "name": "content",
+          "type": "TEXT",
+          "isPrimaryKey": false,
+          "isOptional": true
+        },
+        {
+          "name": "author_id",
+          "type": "INTEGER",
+          "isPrimaryKey": false,
+          "isOptional": false,
+          "references": {
+            "table": "users",
+            "column": "id",
+            "onDelete": "CASCADE"
+          }
+        },
+        {
+          "name": "category_id",
+          "type": "INTEGER",
+          "isPrimaryKey": false,
+          "isOptional": true,
+          "references": {
+            "table": "categories",
+            "column": "id",
+            "onDelete": "SET NULL"
+          }
+        },
+        {
+          "name": "published_at",
+          "type": "TIMESTAMP WITHOUT TIME ZONE",
+          "isPrimaryKey": false,
+          "isOptional": true
+        },
+        {
+          "name": "view_count",
+          "type": "INTEGER",
+          "isPrimaryKey": false,
+          "isOptional": false,
+          "default": "0"
+        },
+        {
+          "name": "is_featured",
+          "type": "BOOLEAN",
+          "isPrimaryKey": false,
+          "isOptional": false,
+          "default": "false"
+        }
+      ]
+    },
+    {
+      "name": "tags",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INTEGER",
+          "isPrimaryKey": true,
+          "isOptional": false,
+          "default": "autoincrement()"
+        },
+        {
+          "name": "name",
+          "type": "VARCHAR(50)",
+          "isPrimaryKey": false,
+          "isOptional": false,
+          "isUnique": true
+        }
+      ]
+    },
+    {
+      "name": "post_tags",
+      "columns": [
+        {
+          "name": "post_id",
+          "type": "INTEGER",
+          "isPrimaryKey": true,
+          "isOptional": false,
+          "references": {
+            "table": "posts",
+            "column": "id",
+            "onDelete": "CASCADE"
+          }
+        },
+        {
+          "name": "tag_id",
+          "type": "INTEGER",
+          "isPrimaryKey": true,
+          "isOptional": false,
+          "references": {
+            "table": "tags",
+            "column": "id",
+            "onDelete": "CASCADE"
+          }
+        }
+      ],
+      "primaryKey": ["post_id", "tag_id"]
+    }
+  ]
+}

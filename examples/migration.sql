@@ -1,0 +1,117 @@
+ALTER TABLE "Posts" DROP CONSTRAINT FK_Posts_UserId;
+
+ALTER TABLE "Posts" DROP CONSTRAINT FK_Posts_CategoryId;
+
+ALTER TABLE "Users" DROP COLUMN "PasswordHash";
+
+ALTER TABLE "Users" DROP COLUMN "CreatedAt";
+
+ALTER TABLE "Users" DROP COLUMN "IsActive";
+
+ALTER TABLE "Users" DROP COLUMN "UserGuid";
+
+ALTER TABLE "Posts" DROP COLUMN "UserId";
+
+ALTER TABLE "Posts" DROP COLUMN "CategoryId";
+
+ALTER TABLE "Posts" DROP COLUMN "PublishedAt";
+
+ALTER TABLE "Posts" DROP COLUMN "ViewCount";
+
+CREATE TABLE "tags" (
+  "id" INTEGER NOT NULL,
+  "name" VARCHAR(50) NOT NULL UNIQUE,
+  PRIMARY KEY ("id")
+);
+
+CREATE TABLE "post_tags" (
+  "post_id" INTEGER NOT NULL,
+  "tag_id" INTEGER NOT NULL,
+  PRIMARY KEY ("post_id", "tag_id"),
+  FOREIGN KEY ("post_id") REFERENCES "posts"("id") ON DELETE CASCADE,
+  FOREIGN KEY ("tag_id") REFERENCES "tags"("id") ON DELETE CASCADE
+);
+
+ALTER TABLE "users" ADD COLUMN "password_hash" VARCHAR(255) NOT NULL;
+
+ALTER TABLE "users" ADD COLUMN "full_name" VARCHAR(100);
+
+ALTER TABLE "users" ADD COLUMN "created_at" TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now();
+
+ALTER TABLE "users" ADD COLUMN "updated_at" TIMESTAMP WITHOUT TIME ZONE;
+
+ALTER TABLE "users" ADD COLUMN "is_active" BOOLEAN NOT NULL DEFAULT true;
+
+ALTER TABLE "users" ADD COLUMN "user_uuid" UUID NOT NULL DEFAULT gen_random_uuid();
+
+ALTER TABLE "categories" ADD COLUMN "slug" VARCHAR(100) NOT NULL UNIQUE;
+
+ALTER TABLE "posts" ADD COLUMN "author_id" INTEGER NOT NULL;
+
+ALTER TABLE "posts" ADD COLUMN "category_id" INTEGER;
+
+ALTER TABLE "posts" ADD COLUMN "published_at" TIMESTAMP WITHOUT TIME ZONE;
+
+ALTER TABLE "posts" ADD COLUMN "view_count" INTEGER NOT NULL DEFAULT 0;
+
+ALTER TABLE "posts" ADD COLUMN "is_featured" BOOLEAN NOT NULL DEFAULT false;
+
+ALTER TABLE "users" ALTER COLUMN "id" TYPE INTEGER USING "id"::INTEGER;
+ALTER TABLE "users" ALTER COLUMN "id" SET NOT NULL;
+ALTER TABLE "users" ALTER COLUMN "id" DROP DEFAULT
+
+ALTER TABLE "users" ALTER COLUMN "username" TYPE VARCHAR(50) USING "username"::VARCHAR(50);
+ALTER TABLE "users" ALTER COLUMN "username" SET NOT NULL;
+ALTER TABLE "users" ALTER COLUMN "username" DROP DEFAULT
+
+ALTER TABLE "users" ALTER COLUMN "email" TYPE VARCHAR(100) USING "email"::VARCHAR(100);
+ALTER TABLE "users" ALTER COLUMN "email" SET NOT NULL;
+ALTER TABLE "users" ALTER COLUMN "email" DROP DEFAULT
+
+ALTER TABLE "categories" ALTER COLUMN "id" TYPE INTEGER USING "id"::INTEGER;
+ALTER TABLE "categories" ALTER COLUMN "id" SET NOT NULL;
+ALTER TABLE "categories" ALTER COLUMN "id" DROP DEFAULT
+
+ALTER TABLE "categories" ALTER COLUMN "name" TYPE VARCHAR(100) USING "name"::VARCHAR(100);
+ALTER TABLE "categories" ALTER COLUMN "name" SET NOT NULL;
+ALTER TABLE "categories" ALTER COLUMN "name" DROP DEFAULT
+
+ALTER TABLE "categories" ALTER COLUMN "description" TYPE TEXT USING "description"::TEXT;
+ALTER TABLE "categories" ALTER COLUMN "description" DROP NOT NULL;
+ALTER TABLE "categories" ALTER COLUMN "description" DROP DEFAULT
+
+ALTER TABLE "posts" ALTER COLUMN "id" TYPE INTEGER USING "id"::INTEGER;
+ALTER TABLE "posts" ALTER COLUMN "id" SET NOT NULL;
+ALTER TABLE "posts" ALTER COLUMN "id" DROP DEFAULT
+
+ALTER TABLE "posts" ALTER COLUMN "title" TYPE VARCHAR(300) USING "title"::VARCHAR(300);
+ALTER TABLE "posts" ALTER COLUMN "title" SET NOT NULL;
+ALTER TABLE "posts" ALTER COLUMN "title" DROP DEFAULT
+
+ALTER TABLE "users" RENAME COLUMN "Id" TO "id";
+
+ALTER TABLE "users" RENAME COLUMN "Username" TO "username";
+
+ALTER TABLE "users" RENAME COLUMN "Email" TO "email";
+
+ALTER TABLE "categories" RENAME COLUMN "Id" TO "id";
+
+ALTER TABLE "categories" RENAME COLUMN "Name" TO "name";
+
+ALTER TABLE "categories" RENAME COLUMN "Description" TO "description";
+
+ALTER TABLE "posts" RENAME COLUMN "Id" TO "id";
+
+ALTER TABLE "posts" RENAME COLUMN "Title" TO "title";
+
+ALTER TABLE "posts" RENAME COLUMN "Content" TO "content";
+
+ALTER TABLE "Users" RENAME TO "users";
+
+ALTER TABLE "Categories" RENAME TO "categories";
+
+ALTER TABLE "Posts" RENAME TO "posts";
+
+ALTER TABLE "posts" ADD CONSTRAINT FK_posts_author_id FOREIGN KEY ("author_id") REFERENCES "users"("id") ON DELETE CASCADE;
+
+ALTER TABLE "posts" ADD CONSTRAINT FK_posts_category_id FOREIGN KEY ("category_id") REFERENCES "categories"("id") ON DELETE SET NULL;

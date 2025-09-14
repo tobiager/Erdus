@@ -1,0 +1,139 @@
+{
+  "tables": [
+    {
+      "name": "Users",
+      "columns": [
+        {
+          "name": "Id",
+          "type": "INT",
+          "isPrimaryKey": true,
+          "isOptional": false,
+          "default": "autoincrement()"
+        },
+        {
+          "name": "Username",
+          "type": "NVARCHAR(50)",
+          "isPrimaryKey": false,
+          "isOptional": false,
+          "isUnique": true
+        },
+        {
+          "name": "Email",
+          "type": "NVARCHAR(100)",
+          "isPrimaryKey": false,
+          "isOptional": false
+        },
+        {
+          "name": "PasswordHash",
+          "type": "NVARCHAR(255)",
+          "isPrimaryKey": false,
+          "isOptional": false
+        },
+        {
+          "name": "CreatedAt",
+          "type": "DATETIME2",
+          "isPrimaryKey": false,
+          "isOptional": false,
+          "default": "GETDATE()"
+        },
+        {
+          "name": "IsActive",
+          "type": "BIT",
+          "isPrimaryKey": false,
+          "isOptional": false,
+          "default": "1"
+        },
+        {
+          "name": "UserGuid",
+          "type": "UNIQUEIDENTIFIER",
+          "isPrimaryKey": false,
+          "isOptional": false,
+          "default": "NEWID()"
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "columns": [
+        {
+          "name": "Id",
+          "type": "INT",
+          "isPrimaryKey": true,
+          "isOptional": false,
+          "default": "autoincrement()"
+        },
+        {
+          "name": "Name",
+          "type": "NVARCHAR(100)",
+          "isPrimaryKey": false,
+          "isOptional": false
+        },
+        {
+          "name": "Description",
+          "type": "NVARCHAR(MAX)",
+          "isPrimaryKey": false,
+          "isOptional": true
+        }
+      ]
+    },
+    {
+      "name": "Posts",
+      "columns": [
+        {
+          "name": "Id",
+          "type": "INT",
+          "isPrimaryKey": true,
+          "isOptional": false,
+          "default": "autoincrement()"
+        },
+        {
+          "name": "Title",
+          "type": "NVARCHAR(200)",
+          "isPrimaryKey": false,
+          "isOptional": false
+        },
+        {
+          "name": "Content",
+          "type": "TEXT",
+          "isPrimaryKey": false,
+          "isOptional": true
+        },
+        {
+          "name": "UserId",
+          "type": "INT",
+          "isPrimaryKey": false,
+          "isOptional": false,
+          "references": {
+            "table": "Users",
+            "column": "Id",
+            "onDelete": "CASCADE"
+          }
+        },
+        {
+          "name": "CategoryId",
+          "type": "INT",
+          "isPrimaryKey": false,
+          "isOptional": true,
+          "references": {
+            "table": "Categories",
+            "column": "Id",
+            "onDelete": "SET NULL"
+          }
+        },
+        {
+          "name": "PublishedAt",
+          "type": "DATETIME2",
+          "isPrimaryKey": false,
+          "isOptional": true
+        },
+        {
+          "name": "ViewCount",
+          "type": "INT",
+          "isPrimaryKey": false,
+          "isOptional": false,
+          "default": "0"
+        }
+      ]
+    }
+  ]
+}
