@@ -131,7 +131,24 @@ export class ${className} extends Model<${className}> {
 
 function generateImports(options: SequelizeOptions): string {
   if (options.useSequelizeTypescript) {
-    return `import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, AllowNull, Unique, Default, ForeignKey, BelongsTo, HasMany, HasOne, BelongsToMany } from 'sequelize-typescript';`;
+    return (
+      `import {
+  Table,
+  Column,
+  Model,
+  DataType,
+  PrimaryKey,
+  AutoIncrement,
+  AllowNull,
+  Unique,
+  Default,
+  ForeignKey,
+  BelongsTo,
+  HasMany,
+  HasOne,
+  BelongsToMany
+} from 'sequelize-typescript';`
+    );
   }
 
   return `import { DataTypes, Model, Sequelize } from 'sequelize';`;
