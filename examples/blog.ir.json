@@ -1,0 +1,87 @@
+{
+  "entities": [
+    {
+      "name": "users",
+      "attributes": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "pk": true,
+          "nullable": false,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "unique": true,
+          "nullable": false,
+          "length": 255
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "nullable": true,
+          "length": 100
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "nullable": false,
+          "default": "now()"
+        }
+      ]
+    },
+    {
+      "name": "posts",
+      "attributes": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "pk": true,
+          "nullable": false,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "nullable": false,
+          "length": 200
+        },
+        {
+          "name": "content",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "nullable": false,
+          "references": {
+            "table": "users",
+            "column": "id",
+            "onDelete": "CASCADE"
+          }
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "nullable": false,
+          "default": "now()"
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "type": "1-N",
+      "from": {
+        "entity": "users",
+        "attributes": ["id"]
+      },
+      "to": {
+        "entity": "posts",
+        "attributes": ["user_id"]
+      }
+    }
+  ]
+}

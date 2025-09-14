@@ -206,7 +206,7 @@ export function normalizeTypeName(typeName: string): string {
   return typeName.toUpperCase().trim();
 }
 
-export function mapDefaultValue(value: string, targetDialect: 'postgres' = 'postgres'): string {
+export function mapDefaultValue(value: string, _targetDialect: 'postgres' = 'postgres'): string {
   const normalized = value.toUpperCase().trim();
   return DEFAULT_MAPPINGS[normalized] || value;
 }

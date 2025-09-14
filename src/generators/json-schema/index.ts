@@ -100,8 +100,8 @@ function generateFromIRSchema(ir: IRSchema, options: JSONSchemaOptions): Record<
       const property = mapAttributeToProperty(attr, options.target!);
       schema.properties[attr.name] = property;
 
-      // Add to required if not nullable and not optional
-      if (!attr.nullable && !attr.default) {
+      // Add to required if not nullable
+      if (!attr.nullable) {
         required.push(attr.name);
       }
     }

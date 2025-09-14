@@ -1,5 +1,5 @@
-import type { IRSchema, IRDiagram, IREntity, IRTable, IRAttribute, IRColumn } from '../ir';
-import { validateIRSchema, validateIRDiagram } from '../ir/validators';
+import type { IRSchema, IRDiagram, IREntity, IRAttribute } from '../ir';
+import { isValidIRSchema } from '../ir/validators';
 
 export interface MigrationOperation {
   type: 'create_table' | 'drop_table' | 'rename_table' | 
@@ -51,7 +51,7 @@ export function diffSchemas(
 
   // Handle rename detection if enabled
   if (opts.detectRenames && droppedTables.length > 0 && createdTables.length > 0) {
-    const { renames, remaining } = detectTableRenames(droppedTables, createdTables, opts.renameThreshold);
+    const { renames } = detectTableRenames(droppedTables, createdTables, opts.renameThreshold);
     
     for (const rename of renames) {
       operations.push({
@@ -347,15 +347,17 @@ function operationToSQL(op: MigrationOperation, schemaPrefix: string): string {
     case 'rename_column':
       return `ALTER TABLE ${tableName} RENAME COLUMN ${op.column} TO ${op.newColumn};`;
 
-    case 'add_index':
+    case 'add_index': {
       const indexName = `idx_${op.table}_${op.definition.columns.join('_')}`;
       const unique = op.definition.unique ? 'UNIQUE ' : '';
       const columns = op.definition.columns.join(', ');
       return `CREATE ${unique}INDEX ${indexName} ON ${tableName} (${columns});`;
+    }
 
-    case 'drop_index':
+    case 'drop_index': {
       const dropIndexName = `idx_${op.table}_${op.definition.columns.join('_')}`;
       return `DROP INDEX ${dropIndexName};`;
+    }
 
     default:
       return `-- Unsupported operation: ${op.type}`;
@@ -483,7 +485,7 @@ function generateAlterColumnSQL(tableName: string, newAttr: IRAttribute, oldAttr
   return statements.join('\n');
 }
 
-function isCompositePK(attr: IRAttribute): boolean {
+function isCompositePK(_attr: IRAttribute): boolean {
   // This is a simplified check
   return false;
 }
