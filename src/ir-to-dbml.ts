@@ -92,7 +92,7 @@ function mapType(col: IRColumn): string {
       return 'decimal';
     case 'Double':
       return 'decimal';
-    default:
+    default: {
       // For SQL types, try to map them appropriately
       const lowerType = col.type.toLowerCase();
       if (lowerType.includes('varchar') || lowerType.includes('text')) {
@@ -112,6 +112,7 @@ function mapType(col: IRColumn): string {
       }
       // Default fallback
       return col.type;
+    }
   }
 }
 

@@ -1,5 +1,8 @@
 {
-  "name": "erdplus-converter",
+  "name": "erdus",
+  "bin": {
+    "erdus": "./dist/cli.js"
+  },
   "version": "1.0.0",
   "description": "Lossless converter between ERDPlus old and new JSON formats (composite FKs supported).",
   "private": false,
@@ -14,20 +17,27 @@
   },
   "homepage": "https://erdplus-converter.vercel.app",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "tsup --watch",
+    "build": "tsup src/cli.ts --dts --format esm,cjs --sourcemap",
+    "build:web": "vite build",
     "preview": "vite preview --strictPort --port 4173",
     "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "eslint .",
+    "fmt": "prettier --write .",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "format": "prettier --write .",
+    "release:check": "npm run lint && npm run test && npm run build",
     "cli": "node dist/cli.js"
   },
   "dependencies": {
+    "change-case": "^5.4.4",
     "clsx": "^2.1.1",
+    "commander": "^11.1.0",
     "framer-motion": "^12.23.12",
     "i18next": "^23.7.16",
     "lucide-react": "^0.542.0",
+    "pluralize": "^8.0.0",
     "react": "18",
     "react-dom": "18",
     "react-i18next": "^15.3.1",
@@ -35,10 +45,12 @@
     "react-markdown": "^10.1.0",
     "react-router-dom": "^6",
     "remark-gfm": "^4.0.1",
-    "typeorm": "^0.3.26"
+    "typeorm": "^0.3.26",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/node": "^24.3.1",
+    "@types/pluralize": "^0.0.33",
     "@types/react": "18",
     "@types/react-dom": "18",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
@@ -46,10 +58,12 @@
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.16",
     "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.2",
     "eslint-plugin-react-hooks": "^5.2.0",
     "postcss": "^8.4.38",
     "prettier": "^3.3.3",
     "tailwindcss": "^3.4.1",
+    "tsup": "^8.5.0",
     "typescript": "^5",
     "vite": "^5.4.19",
     "vitest": "^1.6.0"

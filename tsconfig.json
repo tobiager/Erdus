@@ -3,15 +3,21 @@
     "target": "ES2020",
     "module": "ES2020",
     "moduleResolution": "Bundler",
+    "baseUrl": "src",
     "outDir": "dist",
     "strict": true,
     "skipLibCheck": true,
     "jsx": "react-jsx",
     "lib": ["DOM", "ES2020"],
-    "types": ["vite/client", "react", "react-dom"],
+    "types": ["vite/client", "react", "react-dom", "node"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "paths": {
+      "~/*": ["./*"]
+    }
   },
   "include": ["src/**/*", "tests/**/*"]
 }

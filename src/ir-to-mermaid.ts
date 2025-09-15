@@ -12,7 +12,7 @@ export interface MermaidOptions {
  * Mermaid is used for documentation in Markdown files and repositories.
  */
 export function irToMermaid(diagram: IRDiagram, opts: MermaidOptions = {}): string {
-  const { includeAttributes = true, direction = 'TD' } = opts;
+  const { includeAttributes = true } = opts;
   const lines: string[] = [];
   
   // Start with Mermaid ER diagram declaration
@@ -107,7 +107,7 @@ function mapMermaidType(col: IRColumn): string {
     case 'Float':
     case 'Double':
       return 'decimal';
-    default:
+    default: {
       // For SQL types, normalize them
       const lowerType = col.type.toLowerCase();
       if (lowerType.includes('varchar') || lowerType.includes('text')) {
@@ -127,6 +127,7 @@ function mapMermaidType(col: IRColumn): string {
       }
       // Return as-is for other types
       return col.type.toLowerCase();
+    }
   }
 }
 
