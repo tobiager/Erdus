@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { parsePostgreSQL, generatePostgreSQL } from '../src/parsers/postgresql';
-import { parseMySQL, generateMySQL } from '../src/parsers/mysql';
-import { parseSQLite, generateSQLite } from '../src/parsers/sqlite';
+import { parsePostgreSQL, generatePostgreSQL } from '../parsers/postgresql';
+import { parseMySQL, generateMySQL } from '../parsers/mysql';
+import { parseSQLite, generateSQLite } from '../parsers/sqlite';
 
 describe('Database Parsers', () => {
   describe('PostgreSQL Parser', () => {
