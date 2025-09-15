@@ -54,6 +54,11 @@ https://github.com/user-attachments/assets/ad18f7ab-0b26-4033-9eae-6a9b209543b8
 - TypeORM (IR → entity models)
 - DBML (for dbdiagram.io)
 - Mermaid ER (for documentation)
+- **NEW**: Universal Database Migration
+  - Oracle, MySQL, SQL Server, PostgreSQL, MongoDB, SQLite
+  - PostgreSQL/Supabase schema generation with RLS policies
+  - Safe migration scripts with diff/ALTER capabilities
+  - Dry-run mode for safe testing
 
 ---
 
@@ -207,6 +212,28 @@ npm run build
 npm run preview
 ```
 
+### CLI Usage
+
+The CLI now supports comprehensive database migration:
+
+```bash
+# Convert between formats (original functionality)
+erdus convert schema.sql prisma
+erdus convert schema.prisma typeorm
+
+# NEW: Migrate between database engines
+erdus migrate mysql postgresql schema.sql
+erdus migrate oracle postgresql schema.sql --include-rls
+
+# NEW: Generate safe migration scripts
+erdus diff old-schema.sql new-schema.sql
+
+# NEW: Generate RLS policies for Supabase
+erdus rls schema.sql user-owned
+```
+
+See the [Migration Guide](docs/migration-guide.md) for detailed usage examples.
+
 ---
 
 ## Testing the conversion
@@ -281,15 +308,16 @@ npm i
 
 ---
 
-🟣 **Phase 3 – Developer ecosystem**
+🟣 **Phase 3 – Developer ecosystem** ✅
 
  *Goal*: be useful in pipelines and serious projects
 
 - IR → JSON Schema (APIs, validation)
 - ✅ IR → TypeORM models
 - IR → Sequelize models
-- IR → Supabase schema (+ optional RLS policies)
-- Diff/Migration plan: compare two IR → SQL `ALTER` script
+- ✅ IR → Supabase schema (+ optional RLS policies)
+- ✅ Diff/Migration plan: compare two IR → SQL `ALTER` script
+- ✅ Universal DB Migration: Oracle, MySQL, SQL Server, PostgreSQL, MongoDB, SQLite
 -  Attracts: startups, SaaS projects → stars from productive folks
 
 ---

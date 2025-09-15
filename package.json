@@ -35,7 +35,8 @@
     "react-markdown": "^10.1.0",
     "react-router-dom": "^6",
     "remark-gfm": "^4.0.1",
-    "typeorm": "^0.3.26"
+    "typeorm": "^0.3.26",
+    "zod": "^4.1.8"
   },
   "devDependencies": {
     "@types/node": "^24.3.1",
