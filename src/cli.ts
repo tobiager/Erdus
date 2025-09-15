@@ -11,7 +11,7 @@ import { toSequelize, type SequelizeOptions } from './generators/sequelize/index
 import { toSupabaseSQL, type SupabaseOptions } from './generators/supabase/index.js';
 import { diffSchemas, emitAlterSQL } from './diff/index.js';
 import { migrateScriptToSupabase, type SupportedEngine, type MigrationOptions } from './migrations/index.js';
-import { validateIRSchema, validateIRDiagram, diagramToSchema } from './ir/validators.js';
+import { validateIRSchema, validateIRDiagram, diagramToSchema } from './ir/validators';
 
 const program = new Command();
 
