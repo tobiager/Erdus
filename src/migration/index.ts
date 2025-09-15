@@ -301,12 +301,23 @@ export class DatabaseMigrator {
    * the parsers to return the diagram directly
    */
   private extractDiagramFromParseResult(schema: string, engine: DatabaseEngine): IRDiagram {
-    // This is a placeholder implementation
-    // In reality, you'd need to modify each parser to return the IR diagram
-    // For now, we'll create a simple diagram structure
-    return {
-      tables: [] // This would be populated by the actual parser
-    };
+    // Call the appropriate parser based on the engine
+    switch (engine) {
+      case 'postgresql':
+        return parsePostgreSQL(schema);
+      case 'mysql':
+        return parseMySQL(schema);
+      case 'sqlite':
+        return parseSQLite(schema);
+      case 'mongodb':
+        return parseMongoDB(schema);
+      case 'oracle':
+        return parseOracle(schema);
+      case 'sqlserver':
+        return parseSQLServer(schema);
+      default:
+        throw new Error(`Unsupported source engine: ${engine}`);
+    }
   }
 }
 
