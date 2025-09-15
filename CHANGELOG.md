@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - API documentation for developers
 - Enhanced installation and development guides
 
-## [1.0.0] - 2024-01-15
+## [1.0.0] - 2025-09-15
 
 ### Added
 - Universal ER diagram converter with IR (Intermediate Representation)
