@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { diffIRDiagrams, generateMigrationSQL } from '../src/migration/diff';
-import { DatabaseMigrator } from '../src/migration';
+import { diffIRDiagrams, generateMigrationSQL } from '../migration/diff';
+import { DatabaseMigrator } from '../migration';
 
 describe('Migration Diff', () => {
   const oldDiagram = {
