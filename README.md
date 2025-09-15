@@ -6,15 +6,13 @@
 ### Universal ER Diagram Converter
 
 
-[Also available in Spanish](README.es.md) ✦ [Demo](https://erdus-inky.vercel.app) ✦ [Docs](https://deepwiki.com/tobiager/Erdus) ✦ [Contributing](#-contributing) ✦ [Roadmap](#%EF%B8%8F-roadmap--universal-converter)
+[Also available in Spanish](README.es.md) ✦ [Demo](https://erdus-inky.vercel.app) ✦ [Docs](https://deepwiki.com/tobiager/Erdus) ✦ [Contributing](#contributing) ✦ [Roadmap](#roadmap--universal-converter)
 
 **One IR to map them all.** Erdus is the **open-source universal converter** for ER diagrams and database schemas.  
 
 It unifies ERDPlus, SQL DDL, Prisma, TypeORM, JSON Schema and more under a strict **Intermediate Representation (IR)**.  
 
-Build once, convert everywhere. 🚀
-
-The web interface is built with React using TSX components and styled with Tailwind CSS.
+Build once, convert everywhere. 
 
 </div>
 
@@ -38,10 +36,6 @@ https://github.com/user-attachments/assets/ad18f7ab-0b26-4033-9eae-6a9b209543b8
 
 </div>
 
-
-
-
-
 - **100% client side (privacy)**: files never leave the browser.
 - **Input**: `.erdplus` or `.json` files (format detected automatically).
 - **Output**: file with the extension matching the desired target format (e.g., `name-old.erdplus`, `schema.sql`, `schema.prisma`).
@@ -57,26 +51,79 @@ https://github.com/user-attachments/assets/ad18f7ab-0b26-4033-9eae-6a9b209543b8
 
 ---
 
-## 📁 Project structure
+## Project structure
 ```
-.
-├── src/                # source: CLI, converters and web UI
-│   ├── components/     # reusable React components
-│   ├── pages/          # application pages
-│   ├── convert.ts      # ERDPlus old ⇄ new conversion logic
-│   └── ...             # other modules
-├── public/             # static assets (favicon, etc.)
-├── docs/               # documentation site
-├── examples/           # example schemas
-├── tests/              # unit tests
-├── assets/             # images used in README/docs
-├── index.html          # minimal landing + dropzone
-├── vite.config.ts
-├── tailwind.config.ts
-├── tsconfig.json
-├── vercel.json
-└── LICENSE
+Erdus/
+├──  src/                    # Core application source
+│   ├──  converters/         # Format conversion modules
+│   ├──  components/         # React UI components  
+│   ├──  pages/              # Application pages
+│   ├──  utils/              # Utility functions
+│   ├──  types/              # TypeScript definitions
+│   └──  docs/               # In-app documentation
+├──  examples/               # Example schemas & conversions
+│   ├──  blog/               # Blog system example
+│   ├──  ecommerce/          # E-commerce schema
+│   └──  school/             # Educational system
+├──  tests/                  # Comprehensive test suite
+├──  docs/                   # Documentation website (Docusaurus)
+├──  public/                 # Static assets
+└──  assets/                 # README images & media
 ```
+
+---
+
+## Supported Formats
+
+<div align="center">
+
+### Input Formats → Intermediate Representation → Output Formats
+
+```mermaid
+graph LR
+    subgraph "Input"
+        A[ERDPlus Old]
+        B[ERDPlus New] 
+        C[SQL DDL]
+        D[Prisma]
+        E[TypeORM]
+    end
+    
+    subgraph "Core"
+        IR[Intermediate<br/>Representation]
+    end
+    
+    subgraph "Output"
+        F[SQL DDL]
+        G[Prisma]
+        H[TypeORM]
+        I[DBML]
+        J[Mermaid]
+    end
+    
+    A --> IR
+    B --> IR
+    C --> IR
+    D --> IR
+    E --> IR
+    
+    IR --> F
+    IR --> G
+    IR --> H
+    IR --> I
+    IR --> J
+```
+
+</div>
+
+| Format | Input | Output | Use Case |
+|--------|:-----:|:------:|----------|
+| **ERDPlus** | ✅ | ✅ | Educational projects, visual design |
+| **SQL DDL** | ✅ | ✅ | Database creation, migrations |
+| **Prisma** | ✅ | ✅ | Modern Node.js development |
+| **TypeORM** | ✅ | ✅ | Enterprise TypeScript apps |
+| **DBML** | — | ✅ | Documentation with dbdiagram.io |
+| **Mermaid** | — | ✅ | README files, technical docs |
 
 ---
 
@@ -174,7 +221,7 @@ https://github.com/user-attachments/assets/ad18f7ab-0b26-4033-9eae-6a9b209543b8
 
 ---
 
-## 👐 Open source & scalable
+## Open source & scalable
 
 - MIT-licensed with a lightweight, modular core.
 - New converters or exporters can plug in as simple modules.
@@ -182,31 +229,53 @@ https://github.com/user-attachments/assets/ad18f7ab-0b26-4033-9eae-6a9b209543b8
 
 ---
 
-## 🚀 Local usage
+## Quick Start
 
-### Requirements
-- **Node 18+** (20+ recommended)
-- **npm** or **pnpm**
+### Web Interface (Recommended)
 
-### Steps
+Get started in seconds with our web interface:
+
+1. **Visit** [erdus-inky.vercel.app](https://erdus-inky.vercel.app)
+2. **Upload** your ER diagram or schema file
+3. **Select** your desired output format
+4. **Download** the converted result
+
+### Local Installation
+
+For development or offline use:
+
 ```bash
-# install dependencies
-npm i
-# or with pnpm:
-# corepack enable && corepack prepare pnpm@8 --activate
-# pnpm i
+# Clone and install
+git clone https://github.com/tobiager/Erdus.git
+cd Erdus
+npm install --legacy-peer-deps
 
-# run in development mode
+# Start development server
 npm run dev
-# (opens http://localhost:5173)
-
-# build for production
-npm run build
-
-# preview the build
-npm run preview
+# → Open http://localhost:5173
 ```
 
+### Programmatic Usage
+
+```typescript
+import { erdplusToIR, irToSQL, irToPrisma } from 'erdus';
+
+// Convert ERDPlus to SQL
+const erdplusData = JSON.parse(fileContent);
+const schema = erdplusToIR(erdplusData);
+const sqlScript = irToSQL(schema);
+
+// Or convert to Prisma
+const prismaSchema = irToPrisma(schema);
+```
+
+### Development Resources
+
+- [**Contributing Guide**](CONTRIBUTING.md) - Detailed contribution process
+- [**Development Setup**](DEVELOPMENT.md) - Local development guide
+- [**Architecture**](docs/docs/architecture.md) - System design overview
+- [**API Documentation**](API.md) - Programmatic usage guide
+  
 ---
 
 ## Testing the conversion
@@ -223,7 +292,7 @@ npm i
 
 ---
 
-## ☁️ Deploy on Vercel
+##  Deploy on Vercel
 1. Import the repository (Framework: **Vite**).
 2. Build: `npm run build`
 3. Output directory: `dist/`
@@ -232,22 +301,22 @@ npm i
 
 ---
 
-## 🔒 Privacy & security
+## Privacy & security
 - Processing happens entirely in your browser.
 - No files are sent to any server, not even Vercel.
 - You can use it offline with `npm run build` followed by `npm run preview`.
 
 ---
 
-## 🧭 Known limitations
+##  Known limitations
 - ERDPlus (new version) may route lines differently (curves) but connections and cardinalities are correct.
 - If your NEW file comes from another tool with proprietary IDs, the converter will not clone those IDs. They are invisible and do not affect rendering.
 
 ---
 
-## 🗺️ Roadmap — Universal Converter
+##  Roadmap — Universal Converter
 
-🟢 **Phase 0 – What exists today (base)**
+ **Phase 0 – What exists today (base)**
 
 - ERDPlus old ⇄ new
 - ✅ Full support for PK, FK, unique groups
@@ -256,7 +325,7 @@ npm i
 
 ---
 
-🟡 **Phase 1 – “Useful + viral” MVP**
+ **Phase 1 – “Useful + viral” MVP**
 
  *Goal*: anyone can use it online and get value right away
 
@@ -269,7 +338,7 @@ npm i
 
 ---
 
-🔵 **Phase 2 – Import & documentation** ✅
+ **Phase 2 – Import & documentation** 
 
  *Goal*: import existing models and document them
 
@@ -281,7 +350,7 @@ npm i
 
 ---
 
-🟣 **Phase 3 – Developer ecosystem**
+ **Phase 3 – Developer ecosystem**
 
  *Goal*: be useful in pipelines and serious projects
 
@@ -294,7 +363,7 @@ npm i
 
 ---
 
-🔴 **Phase 4 – Advanced / killer features**
+ **Phase 4 – Advanced / killer features**
 
  *Goal*: expand to NoSQL and modern APIs
 
@@ -307,7 +376,7 @@ npm i
 
 ---
 
-📈 **Recommended release order**
+ **Recommended release order**
 
 1. Phase 1 (MVP): Postgres + Prisma + web demo (fast value, viral)
 2. Phase 2: Documentation (dbml/Mermaid) → virality on GitHub/Reddit
@@ -316,7 +385,7 @@ npm i
 
 ---
 
-🌟 **Growth strategy**
+ **Growth strategy**
 
 - Each phase = a release with changelog and post on Reddit/HN/Twitter
 - README with short GIFs (drag & drop, instant output)
@@ -325,7 +394,7 @@ npm i
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 [![Contribute](assets/Contribute1.PNG)](CONTRIBUTING.md)
 
@@ -338,10 +407,9 @@ Please read the [Contributing Guide](CONTRIBUTING.md) before getting started.
 
 ---
 
-## 🤝🏻 Top Contributors
+## Top Contributors
 
 Thanks to everyone who contributes to the growth of this project. Your contribution can also be included here!
-
 
 <p align="center">
   <a href="https://github.com/tobiager/erdus/graphs/contributors">
@@ -351,7 +419,7 @@ Thanks to everyone who contributes to the growth of this project. Your contribut
 
 ---
 
-## 📝 License
+## License
 
 MIT — see [LICENSE](LICENSE).
 

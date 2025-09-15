@@ -3,17 +3,16 @@
 [![Erdus](assets/Banner.JPEG)](https://erdus-inky.vercel.app)
 
 # Erdus
-### Conversor universal de diagramas ER
+### Conversor Universal de Diagramas ER
 
 
-[Disponible en inglés](README.md) ✦ [Demo](https://erdus-inky.vercel.app) ✦ [Docs](https://deepwiki.com/tobiager/Erdus) ✦ [Contribuir](#-contribuyendo) ✦ [Roadmap](#%EF%B8%8F-roadmap-erdus--conversor-universal)
+[También disponible en inglés](README.md) ✦ [Demo](https://erdus-inky.vercel.app) ✦ [Docs](https://deepwiki.com/tobiager/Erdus) ✦ [Contribuir](#contribuir) ✦ [Hoja de ruta](#hoja-de-ruta--conversor-universal)
 
-**Un IR para mapearlos a todos.** Erdus es el **conversor universal open source** para diagramas ER y esquemas de bases de datos.  
+**Una RI para mapearlos a todos.** Erdus es el **conversor universal de código abierto** para diagramas ER y esquemas de bases de datos.
 
-Unifica ERDPlus, SQL DDL, Prisma, TypeORM, JSON Schema y más bajo una estricta **Representación Intermedia (IR)**.  
-Construí una vez, convertí en cualquier lugar. 🚀
+Unifica ERDPlus, SQL DDL, Prisma, TypeORM, JSON Schema y más bajo una estricta **Representación Intermedia (RI)**.
 
-La interfaz web está construida con React mediante componentes TSX y utiliza Tailwind CSS para los estilos.
+Construye una vez, convierte en todas partes.
 
 </div>
 
@@ -31,48 +30,100 @@ La interfaz web está construida con React mediante componentes TSX y utiliza Ta
 ![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?logo=vite&logoColor=white&style=for-the-badge&labelColor=black)
 ![Node](https://img.shields.io/badge/Node-≥18-339933?logo=node.js&logoColor=white&style=for-the-badge&labelColor=black)
 
-<a href="https://www.producthunt.com/products/erdus?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-erdus" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1012222&theme=dark&t=1756930414298" alt="Erdus - Universal&#0032;converter | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+<a href="https://www.producthunt.com/products/erdus?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-erdus" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1012222&theme=dark&t=1756930414298" alt="Erdus - Conversor&#0032;universal | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
 https://github.com/user-attachments/assets/ad18f7ab-0b26-4033-9eae-6a9b209543b8
 
 </div>
 
-
-- **100% en el cliente (privacidad)**: los archivos nunca salen del navegador.  
-- **Entrada**: archivos `.erdplus` o `.json` (el formato se detecta automáticamente).  
-- **Salida**: archivo con la extensión que corresponda al formato de destino deseado (por ejemplo, `name-old.erdplus`, `schema.sql`, `schema.prisma`).  
-- **Relaciones**: dibuja un único enlace por cada FK (incluyendo compuestas) y lo ancla a las columnas hijas reales.  
+- **100% del lado del cliente (privacidad)**: los archivos nunca salen del navegador.
+- **Entrada**: archivos `.erdplus` o `.json` (formato detectado automáticamente).
+- **Salida**: archivo con la extensión correspondiente al formato destino deseado (ej. `nombre-viejo.erdplus`, `schema.sql`, `schema.prisma`).
+- **Relaciones**: dibuja un solo enlace por cada FK (incluyendo compuestas) y lo ancla a las columnas hijas reales.
 
 **Módulos disponibles**
-- ERDPlus Old ⇄ New (incluido)
-- SQL (DDL de PostgreSQL)
+- ERDPlus Viejo ⇄ Nuevo (incluido)
+- SQL (PostgreSQL DDL)
 - Prisma
-- TypeORM (IR → entidades)
+- TypeORM (RI → modelos de entidad)
 - DBML (para dbdiagram.io)
 - Mermaid ER (para documentación)
 
 ---
 
-## 📁 Estructura del proyecto
+## Estructura del proyecto
 ```
-.
-├── src/                # código fuente: CLI, conversores y web
-│   ├── components/     # componentes React reutilizables
-│   ├── pages/          # páginas de la aplicación
-│   ├── convert.ts      # lógica de conversión old ⇄ new
-│   └── ...             # otros módulos
-├── public/             # assets estáticos (favicon, etc.)
-├── docs/               # sitio de documentación
-├── examples/           # esquemas de ejemplo
-├── tests/              # pruebas unitarias
-├── assets/             # imágenes usadas en README/docs
-├── index.html          # landing mínima + dropzone
-├── vite.config.ts
-├── tailwind.config.ts
-├── tsconfig.json
-├── vercel.json
-└── LICENSE
+Erdus/
+├──  src/                    # Código fuente principal de la aplicación
+│   ├──  converters/         # Módulos de conversión de formato
+│   ├──  components/         # Componentes UI de React
+│   ├──  pages/              # Páginas de la aplicación
+│   ├──  utils/              # Funciones de utilidad
+│   ├──  types/              # Definiciones de TypeScript
+│   └──  docs/               # Documentación dentro de la app
+├──  examples/               # Esquemas de ejemplo y conversiones
+│   ├──  blog/               # Ejemplo de sistema de blog
+│   ├──  ecommerce/          # Esquema de e-commerce
+│   └──  school/             # Sistema educativo
+├──  tests/                  # Suite de pruebas completa
+├──  docs/                   # Sitio web de documentación (Docusaurus)
+├──  public/                 # Recursos estáticos
+└──  assets/                 # Imágenes y media del README
 ```
+
+---
+
+## Formatos Soportados
+
+<div align="center">
+
+### Formatos de Entrada → Representación Intermedia → Formatos de Salida
+
+```mermaid
+graph LR
+    subgraph "Entrada"
+        A[ERDPlus Viejo]
+        B[ERDPlus Nuevo] 
+        C[SQL DDL]
+        D[Prisma]
+        E[TypeORM]
+    end
+    
+    subgraph "Núcleo"
+        IR[Representación<br/>Intermedia]
+    end
+    
+    subgraph "Salida"
+        F[SQL DDL]
+        G[Prisma]
+        H[TypeORM]
+        I[DBML]
+        J[Mermaid]
+    end
+    
+    A --> IR
+    B --> IR
+    C --> IR
+    D --> IR
+    E --> IR
+    
+    IR --> F
+    IR --> G
+    IR --> H
+    IR --> I
+    IR --> J
+```
+
+</div>
+
+| Formato | Entrada | Salida | Caso de Uso |
+|---------|:-------:|:------:|-------------|
+| **ERDPlus** | ✅ | ✅ | Proyectos educativos, diseño visual |
+| **SQL DDL** | ✅ | ✅ | Creación de bases de datos, migraciones |
+| **Prisma** | ✅ | ✅ | Desarrollo moderno en Node.js |
+| **TypeORM** | ✅ | ✅ | Aplicaciones empresariales en TypeScript |
+| **DBML** | — | ✅ | Documentación con dbdiagram.io |
+| **Mermaid** | — | ✅ | Archivos README, documentación técnica |
 
 ---
 
@@ -81,258 +132,284 @@ https://github.com/user-attachments/assets/ad18f7ab-0b26-4033-9eae-6a9b209543b8
 - StackBlitz: [Sandbox interactivo](https://stackblitz.com/github/tobiager/Erdus)
 
 > [!TIP]
-> En ERDPlus (versión nueva) elegí **Menu → Restore → Upload** para abrir el archivo convertido.  
-> Las posiciones, tipos, restricciones y conexiones se mantienen intactas.
+> En ERDPlus (versión nueva) elige **Menú → Restaurar → Subir** para abrir el archivo convertido. Las posiciones, tipos, restricciones y conexiones permanecen intactas.
 
 ---
 
 ##  Características del módulo ERDPlus
-- **Detección automática** del formato de entrada (old o new).  
-- **Old → New**: tablas → *nodes*, atributos → *columns*, FKs simples o compuestas → un único *edge* agrupado con `foreignKeyGroupId`.  
-- **New → Old**: *edges* → atributos FK y `connectors` con `fkSubIndex` para mantener el orden.  
-- **IDs determinísticos** para columnas en NEW (`c-<tableId>-<attrId>`) que permiten a ERDPlus anclar líneas y marcar columnas como **(FK)**.  
-- **Privado por diseño**: todo el procesamiento ocurre localmente, no hay backend ni subida de archivos.  
-- **Funciona en Windows, macOS y Linux**. El servidor de Vite provee HMR instantáneo.  
+- **Detección automática** del formato de entrada (viejo o nuevo).
+- **Viejo → Nuevo**: tablas → *nodos*, atributos → *columnas*, FKs simples o compuestas → un solo *borde* agrupado con `foreignKeyGroupId` estable.
+- **Nuevo → Viejo**: *bordes* → atributos FK y `conectores` con `fkSubIndex` para preservar el orden.
+- **IDs determinísticos** para columnas en NUEVO (`c-<tableId>-<attrId>`) permitiendo a ERDPlus anclar líneas y etiquetar columnas como **(FK)**.
+- **Privacidad por diseño**: todo el procesamiento ocurre localmente; no hay backend ni subida de archivos.
+- **Funciona en Windows, macOS y Linux**. El servidor de desarrollo de Vite proporciona HMR instantáneo.
 
 <details>
-<summary>##  ERDPlus module: cómo funciona</summary>
+<summary>##  Módulo ERDPlus: cómo funciona</summary>
 
-### Old → New (visuales idénticos)
-1. Lee las tablas en `shapes[]` y crea nodos con `id = t-<id>` y columnas `id = c-<tableId>-<attrId>`.  
-2. Reconstruye las FKs priorizando `connectors[]` (fuente de verdad en Old).  
-   - Agrupa por (hijo → padre), **ordena por `fkSubIndex`** y genera un único edge por FK compuesta.  
-   - Usa el ID real de la columna hija en `foreignKeyProps.columns[].id`; ERDPlus dibuja la línea y etiqueta *(FK)*.  
-3. Asigna un `foreignKeyGroupId` estable basado en hijo, padre y el conjunto ordenado de atributos.  
+### Viejo → Nuevo (visuales idénticos)
+1. Lee las tablas `shapes[]` y crea nodos con `id = t-<id>` y columnas `id = c-<tableId>-<attrId>`.
+2. Reconstruye FKs priorizando `connectors[]` (fuente de verdad en Viejo).
+   - Agrupa por (hijo → padre), **ordena por `fkSubIndex`** y genera un solo borde por FK compuesta.
+   - Usa el ID real de la columna hija en `foreignKeyProps.columns[].id`; ERDPlus dibuja la línea y etiqueta *(FK)*.
+3. Asigna un `foreignKeyGroupId` estable basado en el hijo, padre y conjunto ordenado de atributos.
 
-### New → Old (estructura equivalente)
-1. Convierte nodos y columnas a tablas y atributos preservando PK, UNIQUE, NULL y tipos.  
-2. De cada edge crea atributos FK en la tabla hija con `references` apuntando a la PK del padre y `fkSubIndex` siguiendo el orden.  
-3. Crea `connectors` por columna FK para que los visores legacy dibujen las conexiones.  
+### Nuevo → Viejo (estructura equivalente)
+1. Convierte nodos y columnas a tablas y atributos preservando PK, UNIQUE, NULL y tipos.
+2. De cada borde crea atributos FK en la tabla hija con `references` apuntando a la PK del padre y `fkSubIndex` siguiendo el orden de columnas del borde.
+3. Crea `conectores` por columna FK para que los visualizadores legacy puedan dibujar las conexiones.
 
-> **Garantías**  
-> - Round-trip **old → new → old** sin pérdida: estructura, claves, orden y posiciones se preservan.  
-> - Round-trip **new → old → new**: nodos, edges y columnas FK se preservan.  
-> - El JSON “new” puede diferir en IDs internos invisibles pero es visual y semánticamente equivalente.  
+> **Garantías**
+> - Viaje de ida y vuelta **viejo → nuevo → viejo** sin pérdida: estructura, claves, orden y posiciones se preservan.
+> - Viaje de ida y vuelta **nuevo → viejo → nuevo**: nodos, bordes y columnas FK se preservan.
+> - El JSON "nuevo" puede diferir en IDs internos invisibles pero es visual y semánticamente equivalente.
 
 </details>
 
 ##  Características del módulo SQL
-- Detecta automáticamente scripts `CREATE TABLE` de PostgreSQL.
-- IR ⇔ SQL: convierte la IR canónica a DDL de PostgreSQL y parsea SQL a IR.
-- Preserva claves primarias, foráneas y únicas.
+- Auto-detecta scripts `CREATE TABLE` de PostgreSQL.
+- RI ⇔ SQL: convierte la RI canónica a DDL de PostgreSQL y parsea SQL de vuelta a RI.
+- Preserva restricciones PK, FK y unique.
 
 <details>
 <summary>##  Módulo SQL: cómo funciona</summary>
 
-### SQL → IR
-1. Escanea sentencias `CREATE TABLE` y arma tablas y columnas.
+### SQL → RI
+1. Escanea declaraciones `CREATE TABLE` y construye tablas y columnas.
 2. Lee cláusulas `FOREIGN KEY` para reconstruir relaciones.
 
-### IR → SQL
-1. Recorre tablas y columnas para emitir definiciones `CREATE TABLE`.
-2. Genera `ALTER TABLE` para FKs compuestas e índices.
+### RI → SQL
+1. Itera tablas y columnas para generar definiciones `CREATE TABLE`.
+2. Emite `ALTER TABLE` para FKs compuestas e índices.
 
 </details>
 
 ##  Características del módulo Prisma
-- Detecta automáticamente archivos de esquema Prisma.
-- IR ⇔ Prisma: genera modelos Prisma a partir de la IR y parsea esquemas de vuelta.
-- Mapea tipos SQL a escalares y relaciones de Prisma.
+- Auto-detecta archivos de esquema Prisma.
+- RI ⇔ Prisma: genera modelos Prisma desde RI y parsea esquemas de vuelta.
+- Mapea tipos SQL a escalares y relaciones Prisma.
 
 <details>
 <summary>##  Módulo Prisma: cómo funciona</summary>
 
-### Prisma → IR
+### Prisma → RI
 1. Parsea bloques `model` extrayendo campos, tipos y relaciones.
 
-### IR → Prisma
+### RI → Prisma
 1. Genera bloques `model` con atributos `@id`, `@unique` y `@relation`.
 
 </details>
 
 ##  Características del módulo TypeORM
-- Autodetecta clases de entidades TypeORM.
-- IR ⇔ TypeORM: genera modelos de entidades y los parsea de vuelta al IR.
-- Mapea tipos SQL a tipos de TypeScript y decoradores, preservando relaciones e índices.
+- Auto-detecta clases de entidad TypeORM.
+- RI ⇔ TypeORM: genera modelos de entidad y los parsea de vuelta a RI.
+- Mapea tipos SQL a tipos TypeScript y decoradores, preservando relaciones e índices.
 
 <details>
 <summary>##  Módulo TypeORM: cómo funciona</summary>
 
-### TypeORM → IR
-1. Analiza las clases decoradas con `@Entity` para extraer columnas y relaciones.
-2. Reconstruye enlaces `@ManyToOne`/`@OneToMany` usando `@JoinColumn` y marca campos opcionales.
+### TypeORM → RI
+1. Parsea clases `@Entity` para extraer columnas y relaciones.
+2. Reconstruye enlaces `@ManyToOne`/`@OneToMany` vía `@JoinColumn`, marcando campos opcionales.
 
-### IR → TypeORM
+### RI → TypeORM
 1. Emite clases `@Entity` con decoradores `@Column`, `@PrimaryColumn` y `@PrimaryGeneratedColumn`.
-2. Genera relaciones `@ManyToOne`/`@OneToMany` e índices `@Index`.
-3. Mapea tipos SQL a tipos de TypeORM añadiendo opciones `nullable` y `unique`.
+2. Genera relaciones `@ManyToOne`/`@OneToMany` y declaraciones `@Index`.
+3. Mapea tipos SQL a tipos TypeORM y añade opciones nullable/unique.
 
 </details>
 
 ---
 
-## 👐 Open source & escalable
-- Licencia MIT con núcleo modular y liviano.  
-- Nuevos conversores o exportadores se pueden enchufar como módulos simples.  
-- Incluye CLI y API mínima para integrarse en pipelines CI/CD, funciones serverless o contenedores.  
+## Código abierto y escalable
+
+- Licenciado bajo MIT con un núcleo ligero y modular.
+- Nuevos convertidores o exportadores pueden conectarse como módulos simples.
+- Incluye CLI y API mínima para que encaje en pipelines CI/CD, funciones serverless o clusters de contenedores.
 
 ---
 
-## 🚀 Uso local
+## Inicio Rápido
 
-### Requisitos
-- **Node 18+** (20+ recomendado)  
-- **npm** o **pnpm**  
+### Interfaz Web (Recomendado)
 
-### Pasos
+Comienza en segundos con nuestra interfaz web:
+
+1. **Visita** [erdus-inky.vercel.app](https://erdus-inky.vercel.app)
+2. **Sube** tu diagrama ER o archivo de esquema
+3. **Selecciona** tu formato de salida deseado
+4. **Descarga** el resultado convertido
+
+### Instalación Local
+
+Para desarrollo o uso sin conexión:
+
 ```bash
-# instalar dependencias
-npm i
-# o con pnpm:
-# corepack enable && corepack prepare pnpm@8 --activate
-# pnpm i
+# Clonar e instalar
+git clone https://github.com/tobiager/Erdus.git
+cd Erdus
+npm install --legacy-peer-deps
 
-# ejecutar en modo desarrollo
+# Iniciar servidor de desarrollo
 npm run dev
-# (abre http://localhost:5173)
+# → Abrir http://localhost:5173
+```
 
-# build de producción
-npm run build
+### Uso Programático
 
-# previsualizar el build
-npm run preview
+```typescript
+import { erdplusToIR, irToSQL, irToPrisma } from 'erdus';
+
+// Convertir ERDPlus a SQL
+const erdplusData = JSON.parse(fileContent);
+const schema = erdplusToIR(erdplusData);
+const sqlScript = irToSQL(schema);
+
+// O convertir a Prisma
+const prismaSchema = irToPrisma(schema);
+```
+
+### Recursos de Desarrollo
+
+- [**Guía de Contribución**](CONTRIBUTING.md) - Proceso detallado de contribución
+- [**Configuración de Desarrollo**](DEVELOPMENT.md) - Guía de desarrollo local
+- [**Arquitectura**](docs/docs/architecture.md) - Descripción del diseño del sistema
+- [**Documentación de API**](API.md) - Guía de uso programático
+  
+---
+
+## Probando la conversión
+1. Abre la aplicación local en `http://localhost:5173`.
+2. Arrastra o selecciona un archivo `.erdplus` (viejo o nuevo) y presiona **Convertir**.
+3. `*-new.erdplus` o `*-old.erdplus` se descargará automáticamente según corresponda.
+4. En ERDPlus nuevo: **Restaurar → Subir** para verificar que el diagrama es idéntico.
+
+En Windows/PowerShell, si aparecen conflictos de dependencias pares, fija ESLint 8.57:
+```bash
+npm i -D eslint@8.57.0
+npm i
 ```
 
 ---
 
-## ☁️ Deploy en Vercel
-1. Importá el repositorio (Framework: **Vite**).
+##  Desplegar en Vercel
+1. Importa el repositorio (Framework: **Vite**).
 2. Build: `npm run build`
 3. Directorio de salida: `dist/`
 
-El archivo `vercel.json` ya apunta a `dist/`.
-
+`vercel.json` ya apunta a `dist/`.
 
 ---
 
-## 🔒 Privacidad y seguridad
-- El procesamiento se realiza completamente en tu navegador.
+## Privacidad y seguridad
+- El procesamiento ocurre completamente en tu navegador.
 - No se envían archivos a ningún servidor, ni siquiera a Vercel.
-- Podés usarlo offline con `npm run build` seguido de `npm run preview`.
+- Puedes usarlo sin conexión con `npm run build` seguido de `npm run preview`.
 
 ---
 
-## 🧭 Limitaciones conocidas
-- ERDPlus (versión new) puede enrutar las líneas de forma distinta (curvas), pero las conexiones y cardinalidades son correctas.
-- Si tu archivo NEW proviene de otra herramienta con IDs propietarios, el conversor no clonará esos IDs. No son visibles y no afectan el render.
+##  Limitaciones conocidas
+- ERDPlus (versión nueva) puede enrutar líneas de manera diferente (curvas) pero las conexiones y cardinalidades son correctas.
+- Si tu archivo NUEVO viene de otra herramienta con IDs propietarios, el conversor no clonará esos IDs. Son invisibles y no afectan el renderizado.
 
 ---
 
-## 🗺️ Roadmap ERDUS — Conversor Universal
+##  Hoja de ruta — Conversor Universal
 
-🟢 **Fase 0 – Lo que ya existe (base)**
+ **Fase 0 – Lo que existe hoy (base)**
 
-- ERDPlus old ⇄ new
-- ✔️ Soporte completo de PK, FK, unique groups
-- ✔️ Round-trip lossless
--  Público: estudiantes, profes, ejercicios de facu
-
----
-
-🟡 **Fase 1 – MVP “útil + viral”**
-
- *Objetivo*: hacer que cualquiera lo pueda usar online y le sirva YA
-
-- IR canónico (v1) → núcleo
-- ✔️ IR → PostgreSQL DDL → generar `CREATE TABLE` real
-- ✔️ IR → Prisma schema → conectar con Next.js/TS
-- ✔️ Web demo (Vercel) → drag & drop + pestañas con resultados + loss report
-- ✔️ CLI simple (`erdus convert ...`)
--  Atrae: fullstackers, devs indie, estudiantes → primeras ⭐
+- ERDPlus viejo ⇄ nuevo
+- ✅ Soporte completo para PK, FK, grupos únicos
+- ✅ Viaje de ida y vuelta sin pérdidas
+-  Audiencia: estudiantes, profesores, ejercicios universitarios
 
 ---
 
-🔵 **Fase 2 – Import & documentación** ✅
+ **Fase 1 – MVP "Útil + viral"**
+
+ *Objetivo*: cualquiera puede usarlo en línea y obtener valor inmediatamente
+
+- RI canónica (v1) → núcleo
+- ✅ RI → PostgreSQL DDL → generar `CREATE TABLE` real
+- ✅ RI → esquema Prisma → conectar con Next.js/TypeScript
+- ✅ Demo web (Vercel) → arrastrar y soltar, pestañas de resultado, reporte de pérdidas
+- ✅ CLI simple (`erdus convert ...`)
+-  Atrae: desarrolladores fullstack, indie hackers, estudiantes → primeras estrellas
+
+---
+
+ **Fase 2 – Importación y documentación** 
 
  *Objetivo*: importar modelos existentes y documentarlos
 
-- ✅ PostgreSQL DDL → IR (parser robusto)
-- ✅ IR → dbml → usar en dbdiagram.io
-- ✅ IR → Mermaid ER → documentar en Markdown/repos
+- ✅ PostgreSQL DDL → RI (parser robusto)
+- ✅ RI → dbml → usar en dbdiagram.io
+- ✅ RI → Mermaid ER → documentar en Markdown/repos
 - ✅ Ejemplos completos (blog, e‑commerce, escuela)
--  Atrae: devs que documentan, OSS maintainers → visibilidad en GitHub
+-  Atrae: desarrolladores que documentan, mantenedores OSS → visibilidad en GitHub
 
 ---
 
-🟣 **Fase 3 – Ecosistema dev**
+ **Fase 3 – Ecosistema de desarrolladores**
 
  *Objetivo*: ser útil en pipelines y proyectos serios
 
-- IR → JSON Schema (APIs, validación)
-- ✅ IR → TypeORM models
-- IR → Sequelize models
-- IR → Supabase schema (+ políticas RLS opcionales)
-- Diff/Migration plan: comparar dos IR → script SQL `ALTER`
+- RI → JSON Schema (APIs, validación)
+- ✅ RI → modelos TypeORM
+- RI → modelos Sequelize
+- RI → esquema Supabase (+ políticas RLS opcionales)
+- Plan Diff/Migración: comparar dos RI → script SQL `ALTER`
 -  Atrae: startups, proyectos SaaS → estrellas de gente productiva
 
 ---
 
-🔴 **Fase 4 – Advanced / killer features**
+ **Fase 4 – Características avanzadas / definitivas**
 
- *Objetivo*: expandirse a NoSQL y APIs modernas
+ *Objetivo*: expandir a NoSQL y APIs modernas
 
-- IR ↔ Mongoose schemas (MongoDB)
-- IR ↔ OpenAPI schemas
-- IR ↔ GraphQL SDL
-- Visualizer: editor web básico con vista ERD interactiva
--  Atrae: devs modernos, comunidad API/GraphQL
--  Este es el punto donde se puede volver referencia estándar OSS
-
----
-
-📈 **Orden de salida recomendado**
-
-1. Fase 1 (MVP): Postgres + Prisma + web demo (rápido valor, viral)
-2. Fase 2: Documentación (dbml/Mermaid) → viralidad en GitHub/Reddit
-3. Fase 3: JSON Schema + Supabase + Diff → devs serios
-4. Fase 4: MongoDB + GraphQL + Visualizer → consolidación como suite universal
+- RI ↔ esquemas Mongoose (MongoDB)
+- RI ↔ esquemas OpenAPI
+- RI ↔ GraphQL SDL
+- Visualizador: editor web básico con vista ERD interactiva
+-  Atrae: desarrolladores modernos, comunidad API/GraphQL
+-  Aquí es donde ERDUS podría convertirse en el estándar OSS
 
 ---
 
-🌟 **Estrategia de crecimiento**
+ **Orden de lanzamiento recomendado**
 
-- Cada fase = un release con changelog y post en Reddit/HN/Twitter
-- README con GIFs cortos (drag & drop, output instantáneo)
-- Badges de CI + demo online → confianza
-- Good first issues para invitar a PRs → comunidad
-
----
-
-## 🤝 Contribuyendo
-
-[![Contribuir](assets/Contribuir1.PNG)](CONTRIBUTING.es.md)
-
-Lee la [Guía de Contribución](CONTRIBUTING.es.md) antes de empezar.
-
-1. Bifurca y crea una rama `feat/my-improvement`.
-2. Ejecuta `npm i` y `npm run dev`.
-3. Incluye un archivo `.erdplus` de ejemplo cuando sea necesario.
-4. Abre una solicitud de colaboración (PR). ¡Agradecemos tus contribuciones!
+1. Fase 1 (MVP): Postgres + Prisma + demo web (valor rápido, viral)
+2. Fase 2: Documentación (dbml/Mermaid) → viralidad en GitHub/Reddit
+3. Fase 3: JSON Schema + Supabase + Diff → desarrolladores serios
+4. Fase 4: MongoDB + GraphQL + Visualizador → consolidación de suite universal
 
 ---
 
-## ❓ FAQ
+ **Estrategia de crecimiento**
 
-**¿El conversor sube mis archivos?** No, todo corre en tu navegador.
-
-**¿Funciona con claves foráneas compuestas?** Sí, soporta FKs múltiples sin perder información.
+- Cada fase = un lanzamiento con changelog y post en Reddit/HN/Twitter
+- README con GIFs cortos (arrastrar y soltar, salida instantánea)
+- Badges CI + demo en línea → confianza
+- "Good first issues" para invitar PRs → comunidad
 
 ---
 
-## 🤝🏻 Principales contribuidores
+## Contribuir
 
-Gracias a todas las personas que contribuyen al crecimiento de este proyecto. ¡Tu contribución también puede aparecer aquí!
+[![Contribuir](assets/Contribute1.PNG)](CONTRIBUTING.md)
 
+Por favor lee la [Guía de Contribución](CONTRIBUTING.md) antes de comenzar.
+
+1. Haz fork y crea una rama `feat/mi-mejora`.  
+2. Ejecuta `npm i` y `npm run dev`.  
+3. Incluye un archivo `.erdplus` de ejemplo cuando sea relevante.  
+4. Abre un PR — ¡las contribuciones son bienvenidas!  
+
+---
+
+## Principales Contribuyentes
+
+Gracias a todos los que contribuyen al crecimiento de este proyecto. ¡Tu contribución también puede estar incluida aquí!
 
 <p align="center">
   <a href="https://github.com/tobiager/erdus/graphs/contributors">
@@ -342,6 +419,6 @@ Gracias a todas las personas que contribuyen al crecimiento de este proyecto. ¡
 
 ---
 
-## 📝 Licencia
+## Licencia
 
 MIT — ver [LICENSE](LICENSE).
