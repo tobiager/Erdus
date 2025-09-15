@@ -1,5 +1,5 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { Github, MoreVertical } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -76,23 +76,23 @@ export default function Navbar() {
   const converterRef = useRef<HTMLAnchorElement>(null);
   const docsRef = useRef<HTMLAnchorElement>(null);
 
-  const linkRefs: Record<LinkKey, React.RefObject<HTMLAnchorElement>> = {
+  const linkRefs: Record<LinkKey, React.RefObject<HTMLAnchorElement>> = useMemo(() => ({
     home: homeRef,
     converter: converterRef,
     docs: docsRef,
-  };
+  }), []);
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [indicator, setIndicator] = useState({ left: 0, width: 0, ready: false });
 
-  const moveIndicatorTo = (el?: HTMLElement | null) => {
+  const moveIndicatorTo = useCallback((el?: HTMLElement | null) => {
     const wrapper = wrapperRef.current;
     if (!wrapper || !el) return;
     const wrapRect = wrapper.getBoundingClientRect();
     const elRect = el.getBoundingClientRect();
     const left = elRect.left - wrapRect.left + wrapper.scrollLeft;
     setIndicator({ left, width: elRect.width, ready: true });
-  };
+  }, []);
 
   const activeKey: LinkKey =
     location.pathname.startsWith('/converter')
@@ -103,13 +103,13 @@ export default function Navbar() {
 
   useEffect(() => {
     requestAnimationFrame(() => moveIndicatorTo(linkRefs[activeKey].current));
-  }, [activeKey, location.pathname]);
+  }, [activeKey, location.pathname, moveIndicatorTo, linkRefs]);
 
   useEffect(() => {
     const handler = () => moveIndicatorTo(linkRefs[activeKey].current);
     window.addEventListener('resize', handler);
     return () => window.removeEventListener('resize', handler);
-  }, [activeKey]);
+  }, [activeKey, moveIndicatorTo, linkRefs]);
 
   // ——— Menú móvil (3 puntos)
   const [menuOpen, setMenuOpen] = useState(false);
