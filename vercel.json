@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "installCommand": "pnpm install --frozen-lockfile",
+  "installCommand": "pnpm install --no-frozen-lockfile",
   "buildCommand": "pnpm build",
   "outputDirectory": "dist",
   "cleanUrls": true,
