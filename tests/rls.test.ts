@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateRLSPolicies, generateSupabaseRLSHelpers, generatePatternBasedRLS } from '../src/generators/rls-policies';
+import { generateRLSPolicies, generateSupabaseRLSHelpers, generatePatternBasedRLS } from '../generators/rls-policies';
 
 describe('RLS Policy Generator', () => {
   const sampleDiagram = {
