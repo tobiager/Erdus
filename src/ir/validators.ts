@@ -85,18 +85,18 @@ export const IRDiagramSchema = z.object({
 });
 
 // Helper function to validate IR
-export function validateIRSchema(schema: unknown): IRSchemaSchema['_output'] {
+export function validateIRSchema(schema: unknown): z.infer<typeof IRSchemaSchema> {
   return IRSchemaSchema.parse(schema);
 }
 
-export function validateIRDiagram(diagram: unknown): IRDiagramSchema['_output'] {
+export function validateIRDiagram(diagram: unknown): z.infer<typeof IRDiagramSchema> {
   return IRDiagramSchema.parse(diagram);
 }
 
 // Convert IRDiagram to IRSchema for new API compatibility
-export function diagramToSchema(diagram: IRDiagramSchema['_output']): IRSchemaSchema['_output'] {
+export function diagramToSchema(diagram: z.infer<typeof IRDiagramSchema>): z.infer<typeof IRSchemaSchema> {
   return {
-    entities: diagram.tables.map(table => ({
+    entities: diagram.tables.map((table: any) => ({
       ...table,
       attributes: table.columns,
     })),
@@ -105,9 +105,9 @@ export function diagramToSchema(diagram: IRDiagramSchema['_output']): IRSchemaSc
 }
 
 // Convert IRSchema to IRDiagram for backward compatibility  
-export function schemaToDiagram(schema: IRSchemaSchema['_output']): IRDiagramSchema['_output'] {
+export function schemaToDiagram(schema: z.infer<typeof IRSchemaSchema>): z.infer<typeof IRDiagramSchema> {
   return {
-    tables: schema.entities.map(entity => ({
+    tables: schema.entities.map((entity: any) => ({
       name: entity.name,
       columns: entity.attributes || entity.columns,
       primaryKey: entity.primaryKey,

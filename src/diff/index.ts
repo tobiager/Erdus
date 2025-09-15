@@ -99,8 +99,8 @@ export function diffSchemas(a: IRSchema, b: IRSchema): MigrationPlan {
   const operations: MigrationOperation[] = [];
   
   // Create maps for efficient lookups
-  const entitiesA = new Map(schemaA.entities.map(e => [e.name, e]));
-  const entitiesB = new Map(schemaB.entities.map(e => [e.name, e]));
+  const entitiesA = new Map(schemaA.entities.map((e: IREntity) => [e.name, e]));
+  const entitiesB = new Map(schemaB.entities.map((e: IREntity) => [e.name, e]));
   
   // Find table operations
   const tableOps = diffTables(entitiesA, entitiesB);
