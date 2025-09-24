@@ -182,6 +182,7 @@ export default function Canvas() {
           gap={16} 
           size={1} 
           color="#404040"
+          className="dark:opacity-100 opacity-30"
         />
       </ReactFlow>
     </div>

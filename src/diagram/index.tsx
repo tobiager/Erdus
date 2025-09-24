@@ -69,14 +69,14 @@ export default function DiagramApp() {
   return (
     <ReactFlowProvider>
       <div className="h-full w-full flex">
-        <aside className="w-72 shrink-0 border-r border-white/10 bg-black/20 backdrop-blur-sm overflow-auto">
+        <aside className="w-72 shrink-0 border-r border-neutral-200 dark:border-white/10 bg-white/90 dark:bg-black/20 backdrop-blur-sm overflow-auto">
           <Sidebar />
         </aside>
         <main className="flex-1 relative overflow-hidden">
           <Toolbar className="absolute top-16 left-1/2 -translate-x-1/2 z-40" />
           <Canvas />
         </main>
-        <aside className="w-96 shrink-0 border-l border-white/10 bg-black/20 backdrop-blur-sm overflow-auto">
+        <aside className="w-96 shrink-0 border-l border-neutral-200 dark:border-white/10 bg-white/90 dark:bg-black/20 backdrop-blur-sm overflow-auto">
           <Properties />
         </aside>
       </div>
