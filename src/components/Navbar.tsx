@@ -8,43 +8,44 @@ import LanguageToggleCompact from './LanguageToggleCompact';
 
 type LinkKey = 'home' | 'converter' | 'diagrams' | 'docs';
 
-const link = ({ isActive }: { isActive: boolean }) =>
+type Props = { variant?: 'default' | 'transparent' };
+
+const link = ({ isActive }: { isActive: boolean }, variant: 'default' | 'transparent' = 'default') =>
   [
     'px-2 py-1.5 text-sm sm:px-3 sm:py-2 sm:text-base font-medium transition-colors',
-    'text-slate-700 dark:text-slate-300',
-    'hover:text-slate-900 dark:hover:text-white',
-    isActive ? 'text-[#1280ff] dark:text-[#1280ff]' : '',
+    variant === 'transparent' 
+      ? 'text-white/90 hover:text-white'
+      : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white',
+    isActive ? (variant === 'transparent' ? 'text-white' : 'text-[#1280ff] dark:text-[#1280ff]') : '',
   ].join(' ');
 
 
-const iconWrapDesktop = [
+const iconWrapDesktop = (variant: 'default' | 'transparent' = 'default') => [
   "group relative inline-flex items-center justify-center rounded-full select-none",
   "size-9 md:size-6",
-  "text-[#1280ff] transition",
+  variant === 'transparent' ? "text-white/90 hover:text-white" : "text-[#1280ff]",
+  "transition",
   "md:bg-transparent md:border-0 md:shadow-none",
   "md:transition-transform md:transform-gpu md:hover:scale-[1.03]",
-  "md:hover:drop-shadow-[0_0_14px_rgba(18,128,255,0.45)]",
+  variant === 'default' ? "md:hover:drop-shadow-[0_0_14px_rgba(18,128,255,0.45)]" : "",
   "focus:outline-none focus-visible:outline-none",
 
-
   "before:pointer-events-none before:absolute before:inset-0 before:rounded-full before:content-['']",
-  "before:bg-[radial-gradient(60%_60%_at_50%_50%,rgba(18,128,255,0.35),transparent_72%)]",
+  variant === 'default' ? "before:bg-[radial-gradient(60%_60%_at_50%_50%,rgba(18,128,255,0.35),transparent_72%)]" : "before:bg-[radial-gradient(60%_60%_at_50%_50%,rgba(255,255,255,0.2),transparent_72%)]",
   "before:blur-[2px] before:opacity-0 before:transition",
   "md:hover:before:opacity-100",
 
-
   "after:pointer-events-none after:absolute after:rounded-full after:content-['']",
-  "md:after:inset-[-4px] md:after:ring-2 md:after:ring-[#1280ff]/40",
+  variant === 'default' ? "md:after:inset-[-4px] md:after:ring-2 md:after:ring-[#1280ff]/40" : "md:after:inset-[-4px] md:after:ring-2 md:after:ring-white/40",
   "after:opacity-0 after:transition",
   "md:hover:after:opacity-100",
-].join(" ");
+].filter(Boolean).join(" ");
 
-
-const iconInnerDesktop = [
+const iconInnerDesktop = (variant: 'default' | 'transparent' = 'default') => [
   'relative z-[1] grid place-items-center',
   'h-6 w-6 md:h-5 md:w-5',
   'leading-none select-none transition-colors',
-  'group-hover:text-slate-900 dark:group-hover:text-white',
+  variant === 'transparent' ? 'group-hover:text-white' : 'group-hover:text-slate-900 dark:group-hover:text-white',
   // ✅ Sólo aplica al SVG hijo directo
   '[&>svg]:h-full [&>svg]:w-full [&>svg]:stroke-current [&>svg]:[stroke-width:2.25]',
 ].join(' ');
@@ -68,9 +69,20 @@ const iconInnerMobile = [
   'font-semibold text-[13px]',
 ].join(' ');
 
-export default function Navbar() {
+export default function Navbar({ variant = 'default' }: Props) {
   const location = useLocation();
   const { t } = useTranslation();
+  const [scrolled, setScrolled] = useState(false);
+
+  // Scroll detection for transparent navbar
+  useEffect(() => {
+    if (variant !== 'transparent') return;
+    
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [variant]);
 
   const homeRef = useRef<HTMLAnchorElement>(null);
   const converterRef = useRef<HTMLAnchorElement>(null);
@@ -131,13 +143,21 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', onDocClick);
   }, [menuOpen]);
 
+  const base = 'w-full';
+  const transparent = `fixed inset-x-0 top-0 z-50 border-b border-transparent ${
+    scrolled ? 'bg-neutral-900/70 backdrop-blur supports-[backdrop-filter]:bg-neutral-900/40' : 'bg-transparent'
+  } text-white`;
+  const normal = 'sticky top-0 z-40 bg-white dark:bg-neutral-900';
+
   return (
-    <nav className="w-full">
+    <nav className={`${base} ${variant === 'transparent' ? transparent : normal}`}>
       <div className="mx-auto max-w-7xl h-16 md:h-20 px-4 sm:px-6 flex items-center justify-between">
         {/* Logo */}
         <Link
           to="/"
-          className="text-lg sm:text-xl font-bold flex items-center gap-2 text-slate-900 dark:text-white"
+          className={`text-lg sm:text-xl font-bold flex items-center gap-2 ${
+            variant === 'transparent' ? 'text-white' : 'text-slate-900 dark:text-white'
+          }`}
         >
           Erdus
           <span className="text-[10px] leading-none bg-blue-600 text-white px-1.5 py-0.5 rounded-md">
@@ -169,7 +189,7 @@ export default function Navbar() {
             <NavLink
               to="/"
               ref={homeRef}
-              className={link}
+              className={({ isActive }) => link({ isActive }, variant)}
               onMouseEnter={(e) => moveIndicatorTo(e.currentTarget)}
               onMouseLeave={() => moveIndicatorTo(linkRefs[activeKey].current)}
             >
@@ -179,7 +199,7 @@ export default function Navbar() {
             <NavLink
               to="/converter"
               ref={converterRef}
-              className={link}
+              className={({ isActive }) => link({ isActive }, variant)}
               onMouseEnter={(e) => moveIndicatorTo(e.currentTarget)}
               onMouseLeave={() => moveIndicatorTo(linkRefs[activeKey].current)}
             >
@@ -189,7 +209,7 @@ export default function Navbar() {
             <NavLink
               to="/diagramas"
               ref={diagramsRef}
-              className={link}
+              className={({ isActive }) => link({ isActive }, variant)}
               onMouseEnter={(e) => moveIndicatorTo(e.currentTarget)}
               onMouseLeave={() => moveIndicatorTo(linkRefs[activeKey].current)}
             >
@@ -199,7 +219,7 @@ export default function Navbar() {
             <NavLink
               to="/documentation"
               ref={docsRef}
-              className={link}
+              className={({ isActive }) => link({ isActive }, variant)}
               onMouseEnter={(e) => moveIndicatorTo(e.currentTarget)}
               onMouseLeave={() => moveIndicatorTo(linkRefs[activeKey].current)}
             >
@@ -211,9 +231,9 @@ export default function Navbar() {
           {/* Indicador */}
           <span
             aria-hidden
-            className={`absolute -bottom-[2px] h-[4px] bg-[#1280ff] rounded transition-all duration-300 ease-out ${
-              indicator.ready ? 'opacity-100' : 'opacity-0'
-            }`}
+            className={`absolute -bottom-[2px] h-[4px] rounded transition-all duration-300 ease-out ${
+              variant === 'transparent' ? 'bg-white' : 'bg-[#1280ff]'
+            } ${indicator.ready ? 'opacity-100' : 'opacity-0'}`}
             style={{ left: indicator.left, width: indicator.width }}
           />
         </div>
@@ -223,15 +243,15 @@ export default function Navbar() {
           {/* Desktop */}
           <div className="hidden md:flex items-center gap-7">
             {/* Idioma */}
-            <div className={iconWrapDesktop} aria-label="Language">
-              <span className={iconInnerDesktop}>
+            <div className={iconWrapDesktop(variant)} aria-label="Language">
+              <span className={iconInnerDesktop(variant)}>
                 <LanguageToggleCompact className="grid place-items-center h-full w-full text-[12px] font-semibold leading-none translate-y-[0.5px]" />
               </span>
             </div>
 
             {/* Tema */}
-            <div className={iconWrapDesktop} aria-label="Theme">
-              <span className={iconInnerDesktop}>
+            <div className={iconWrapDesktop(variant)} aria-label="Theme">
+              <span className={iconInnerDesktop(variant)}>
                 <ThemeToggle buttonClassName="h-full w-full [&>svg]:h-full [&>svg]:w-full [&>svg]:[stroke-width:2.25]" />
               </span>
             </div>
@@ -242,9 +262,9 @@ export default function Navbar() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub"
-              className={iconWrapDesktop}
+              className={iconWrapDesktop(variant)}
             >
-              <span className={iconInnerDesktop}>
+              <span className={iconInnerDesktop(variant)}>
                 <Github size={22} strokeWidth={2.25} />
               </span>
             </a>

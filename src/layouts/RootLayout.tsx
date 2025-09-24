@@ -1,8 +1,15 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
 export default function RootLayout() {
+  const location = useLocation();
+  
+  // Skip layout for diagram page (it has its own full-bleed layout)
+  if (location.pathname === '/diagramas') {
+    return <Outlet />;
+  }
+
   return (
     <div
       className="

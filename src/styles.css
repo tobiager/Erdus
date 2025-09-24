@@ -15,11 +15,11 @@ body,
 }
 body {
   overflow-x: hidden;
-  background: #f8fafc; /* slate-50 aprox */
+  background: #0a0a0a; /* black background for diagrams page */
   color: #0f172a; /* slate-900 */
 }
 html.dark body {
-  background: #000; /* dark */
+  background: #0a0a0a; /* dark */
   color: #f1f5f9; /* slate-100 */
 }
 

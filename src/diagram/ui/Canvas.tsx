@@ -161,6 +161,7 @@ export default function Canvas() {
           animated: true,
           style: { stroke: '#94a3b8', strokeWidth: 2 }
         }}
+        className="!h-full !w-full"
         fitView
       >
         <Controls />
@@ -180,7 +181,7 @@ export default function Canvas() {
           variant={BackgroundVariant.Dots} 
           gap={16} 
           size={1} 
-          color="#e2e8f0"
+          color="#404040"
         />
       </ReactFlow>
     </div>

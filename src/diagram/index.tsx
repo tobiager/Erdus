@@ -9,7 +9,7 @@ import { autoSave } from './services/autosave';
 
 import 'reactflow/dist/style.css';
 
-export default function DiagramEditor() {
+export default function DiagramApp() {
   const { project, reset } = useDiagramStore();
 
   useEffect(() => {
@@ -68,29 +68,17 @@ export default function DiagramEditor() {
 
   return (
     <ReactFlowProvider>
-      <div className="h-full w-full bg-slate-50 dark:bg-slate-900 flex flex-col">
-        {/* Toolbar */}
-        <div className="h-12 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-          <Toolbar />
-        </div>
-
-        {/* Main Editor */}
-        <div className="flex-1 flex">
-          {/* Sidebar */}
-          <div className="w-80 border-r border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-            <Sidebar />
-          </div>
-
-          {/* Canvas */}
-          <div className="flex-1 relative">
-            <Canvas />
-          </div>
-
-          {/* Properties Panel */}
-          <div className="w-80 border-l border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-            <Properties />
-          </div>
-        </div>
+      <div className="h-full w-full flex">
+        <aside className="w-72 shrink-0 border-r border-white/10 bg-black/20 backdrop-blur-sm overflow-auto">
+          <Sidebar />
+        </aside>
+        <main className="flex-1 relative overflow-hidden">
+          <Toolbar className="absolute top-16 left-1/2 -translate-x-1/2 z-40" />
+          <Canvas />
+        </main>
+        <aside className="w-96 shrink-0 border-l border-white/10 bg-black/20 backdrop-blur-sm overflow-auto">
+          <Properties />
+        </aside>
       </div>
     </ReactFlowProvider>
   );

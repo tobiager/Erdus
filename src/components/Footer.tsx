@@ -1,12 +1,12 @@
 export default function Footer() {
   const year = new Date().getFullYear();
   return (
-    <footer className="w-full border-t border-slate-700 bg-black">
+    <footer className="w-full border-t border-white/10 bg-black/60 text-neutral-300">
       <div className="mx-auto max-w-screen px-3 py-3">
         <div
           className="
             flex items-center justify-center gap-1 sm:gap-2
-            text-slate-300 text-xs sm:text-sm
+            text-neutral-300 text-xs sm:text-sm
             whitespace-nowrap overflow-x-auto
             [scrollbar-width:none] [-ms-overflow-style:none]
             [&::-webkit-scrollbar]:hidden
