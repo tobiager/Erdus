@@ -166,8 +166,13 @@ export const useDiagramStore = create<DiagramState>()(
         project.schemas[0].tables = [customersTable, ordersTable, productsTable, orderItemsTable];
       }
       
-      set({ project });
-      get().saveToHistory();
+      set({ project, selectedTable: null, selectedColumn: null, history: [], historyIndex: -1 });
+      
+      // Save to history after setting the state
+      setTimeout(() => {
+        get().saveToHistory();
+      }, 0);
+      
       autoSave.scheduleAutoSave(project);
     },
 
