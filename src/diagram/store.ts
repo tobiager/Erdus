@@ -24,6 +24,12 @@ interface DiagramState {
   // UI state
   isLoading: boolean;
   error: string | null;
+  sidebarCollapsed: boolean;
+  propertiesCollapsed: boolean;
+  recentProjects: ERProject[];
+  
+  // Table colors
+  tableColors: Record<string, string>;
   
   // Actions
   createProject: (name: string, dialect: Dialect, template?: string) => void;
@@ -64,6 +70,14 @@ interface DiagramState {
   
   // Clear state
   reset: () => void;
+  
+  // UI state
+  toggleSidebar: () => void;
+  toggleProperties: () => void;
+  loadRecentProjects: () => Promise<void>;
+  
+  // Table colors
+  setTableColor: (tableId: string, color: string) => void;
 }
 
 const createEmptyProject = (name: string, dialect: Dialect): ERProject => ({
@@ -96,6 +110,19 @@ const createEmptyTable = (name: string, position?: { x: number; y: number }): ER
   primaryKey: ['id']
 });
 
+const getStorageValue = (key: string, defaultValue: string) => {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    return localStorage.getItem(key) || defaultValue;
+  }
+  return defaultValue;
+};
+
+const setStorageValue = (key: string, value: string) => {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    localStorage.setItem(key, value);
+  }
+};
+
 export const useDiagramStore = create<DiagramState>()(
   subscribeWithSelector((set, get) => ({
     // Initial state
@@ -106,6 +133,10 @@ export const useDiagramStore = create<DiagramState>()(
     historyIndex: -1,
     isLoading: false,
     error: null,
+    sidebarCollapsed: JSON.parse(getStorageValue('erdus-sidebar-collapsed', 'false')),
+    propertiesCollapsed: JSON.parse(getStorageValue('erdus-properties-collapsed', 'false')),
+    recentProjects: [],
+    tableColors: JSON.parse(getStorageValue('erdus-table-colors', '{}')),
 
     // Helper function to save current state to history
     saveToHistory: () => {
@@ -560,6 +591,36 @@ export const useDiagramStore = create<DiagramState>()(
         error: null
       });
       autoSave.cancel();
+    },
+
+    toggleSidebar: () => {
+      const collapsed = !get().sidebarCollapsed;
+      setStorageValue('erdus-sidebar-collapsed', JSON.stringify(collapsed));
+      set({ sidebarCollapsed: collapsed });
+    },
+
+    toggleProperties: () => {
+      const collapsed = !get().propertiesCollapsed;
+      setStorageValue('erdus-properties-collapsed', JSON.stringify(collapsed));
+      set({ propertiesCollapsed: collapsed });
+    },
+
+    loadRecentProjects: async () => {
+      set({ isLoading: true });
+      try {
+        const projects = await autoSave.loadAllProjects();
+        set({ recentProjects: projects.slice(0, 12), isLoading: false });
+      } catch (error) {
+        console.error('Error loading recent projects:', error);
+        set({ error: 'Error al cargar proyectos recientes', isLoading: false });
+      }
+    },
+
+    setTableColor: (tableId: string, color: string) => {
+      const { tableColors } = get();
+      const newColors = { ...tableColors, [tableId]: color };
+      setStorageValue('erdus-table-colors', JSON.stringify(newColors));
+      set({ tableColors: newColors });
     }
   }))
 );

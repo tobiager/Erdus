@@ -8,12 +8,13 @@ import classnames from 'classnames';
 interface TableNodeProps {
   data: {
     table: ERTable;
+    color?: string;
   };
   selected: boolean;
 }
 
 export default function TableNode({ data, selected }: TableNodeProps) {
-  const { table } = data;
+  const { table, color = '#64748b' } = data;
   const { selectTable, selectColumn, selectedColumn } = useDiagramStore();
 
   const handleTableClick = (e: React.MouseEvent) => {
@@ -93,8 +94,14 @@ export default function TableNode({ data, selected }: TableNodeProps) {
       />
 
       {/* Table header */}
-      <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 rounded-t-lg">
-        <h3 className="font-semibold text-slate-900 dark:text-slate-100 flex items-center">
+      <div 
+        className="px-4 py-3 border-b border-slate-200 dark:border-slate-600 rounded-t-lg"
+        style={{ backgroundColor: `${color}20`, borderColor: `${color}40` }}
+      >
+        <h3 
+          className="font-semibold text-slate-900 dark:text-slate-100 flex items-center"
+          style={{ color: color }}
+        >
           {table.name}
           {table.comment && (
             <span className="ml-2 text-xs text-slate-500 dark:text-slate-400" title={table.comment}>

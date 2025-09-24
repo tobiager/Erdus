@@ -30,6 +30,7 @@ export default function Canvas() {
   const { 
     project, 
     selectedTable,
+    tableColors,
     setTablePosition,
     createForeignKey,
     selectTable
@@ -48,7 +49,10 @@ export default function Canvas() {
       id: table.id,
       type: 'tableNode',
       position: table.position || { x: 100, y: 100 },
-      data: { table },
+      data: { 
+        table,
+        color: tableColors[table.id] || '#64748b'
+      },
       selected: selectedTable === table.id
     }));
 
@@ -76,7 +80,7 @@ export default function Canvas() {
 
     setNodes(newNodes);
     setEdges(newEdges);
-  }, [project, selectedTable, setNodes, setEdges]);
+  }, [project, selectedTable, tableColors, setNodes, setEdges]);
 
   // Handle node position changes
   const onNodeDragStop = useCallback(
@@ -164,16 +168,18 @@ export default function Canvas() {
         className="!h-full !w-full"
         fitView
       >
-        <Controls />
+        <Controls 
+          className="[&_button]:!bg-white/90 dark:[&_button]:!bg-neutral-800/90 [&_button]:!border-neutral-200 dark:[&_button]:!border-neutral-600 [&_button]:!text-neutral-700 dark:[&_button]:!text-neutral-300 [&_button_svg]:!fill-current"
+        />
         <MiniMap
           nodeColor={(node) => {
-            switch (node.type) {
-              case 'tableNode':
-                return node.selected ? '#3b82f6' : '#64748b';
-              default:
-                return '#64748b';
+            if (node.type === 'tableNode') {
+              const color = node.data?.color || '#64748b';
+              return node.selected ? '#3b82f6' : color;
             }
+            return '#64748b';
           }}
+          className="!bg-white/90 dark:!bg-neutral-800/90 !border-neutral-200 dark:!border-neutral-600"
           pannable
           zoomable
         />
@@ -181,8 +187,8 @@ export default function Canvas() {
           variant={BackgroundVariant.Dots} 
           gap={16} 
           size={1} 
-          color="#404040"
-          className="dark:opacity-100 opacity-30"
+          color="#e5e7eb"
+          className="dark:!text-neutral-600"
         />
       </ReactFlow>
     </div>
