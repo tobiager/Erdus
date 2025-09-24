@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Download, Settings, Undo, Redo, Command } from 'lucide-react';
 import { useDiagramStore } from '../store';
+import { exportProject, downloadFile, ExportFormat } from '../services/exporters';
 
 export default function Toolbar() {
   const [showExportMenu, setShowExportMenu] = useState(false);
@@ -15,10 +16,17 @@ export default function Toolbar() {
     canRedo
   } = useDiagramStore();
 
-  const handleExport = (format: string) => {
-    // TODO: Implement export functionality
-    console.log('Export to:', format);
-    setShowExportMenu(false);
+  const handleExport = (format: ExportFormat) => {
+    if (!project) return;
+    
+    try {
+      const result = exportProject(project, format);
+      downloadFile(result);
+      setShowExportMenu(false);
+    } catch (error) {
+      console.error('Export error:', error);
+      alert('Error al exportar: ' + (error as Error).message);
+    }
   };
 
   const handleDialectChange = (dialect: 'default' | 'postgres' | 'mysql' | 'mssql' | 'sqlite') => {
@@ -86,10 +94,28 @@ export default function Toolbar() {
                   Base de datos
                 </div>
                 <button
-                  onClick={() => handleExport('sql')}
+                  onClick={() => handleExport('postgres')}
                   className="block w-full text-left px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
                 >
-                  SQL DDL
+                  PostgreSQL DDL
+                </button>
+                <button
+                  onClick={() => handleExport('mysql')}
+                  className="block w-full text-left px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
+                >
+                  MySQL DDL
+                </button>
+                <button
+                  onClick={() => handleExport('mssql')}
+                  className="block w-full text-left px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
+                >
+                  SQL Server DDL
+                </button>
+                <button
+                  onClick={() => handleExport('sqlite')}
+                  className="block w-full text-left px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
+                >
+                  SQLite DDL
                 </button>
                 <button
                   onClick={() => handleExport('prisma')}
@@ -126,19 +152,19 @@ export default function Toolbar() {
                   Imágenes
                 </div>
                 <button
-                  onClick={() => handleExport('png')}
+                  onClick={() => alert('PNG export coming soon!')}
                   className="block w-full text-left px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
                 >
                   PNG
                 </button>
                 <button
-                  onClick={() => handleExport('svg')}
+                  onClick={() => alert('SVG export coming soon!')}
                   className="block w-full text-left px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
                 >
                   SVG
                 </button>
                 <button
-                  onClick={() => handleExport('pdf')}
+                  onClick={() => alert('PDF export coming soon!')}
                   className="block w-full text-left px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
                 >
                   PDF
