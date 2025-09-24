@@ -99,7 +99,7 @@ export default function Navbar() {
   const activeKey: LinkKey =
     location.pathname.startsWith('/converter')
       ? 'converter'
-      : location.pathname.startsWith('/diagramas')
+      : location.pathname.startsWith('/diagrams')
       ? 'diagrams'
       : location.pathname.startsWith('/documentation')
       ? 'docs'
@@ -187,7 +187,7 @@ export default function Navbar() {
             </NavLink>
 
             <NavLink
-              to="/diagramas"
+              to="/diagrams"
               ref={diagramsRef}
               className={link}
               onMouseEnter={(e) => moveIndicatorTo(e.currentTarget)}

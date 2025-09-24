@@ -166,11 +166,6 @@ export default function Canvas() {
         connectionMode={ConnectionMode.Loose}
         snapToGrid={true}
         snapGrid={[16, 16]}
-        defaultEdgeOptions={{
-          type: 'smoothstep',
-          animated: true,
-          style: { stroke: '#94a3b8', strokeWidth: 2 }
-        }}
         className="!h-full !w-full"
         fitView
         defaultEdgeOptions={{
