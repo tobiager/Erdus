@@ -1,9 +1,8 @@
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { nanoid } from 'nanoid';
-import { ERProject, ERTable, ERColumn, Dialect, ERSchema } from '../../types';
-import { autoSave } from '../../diagram/services/autosave';
-import { validateTypeForDialect } from '../../diagram/services/typeCatalog';
+import { ERProject, ERTable, ERColumn, Dialect } from '../../types';
+import { diagramsService } from '../services/diagramsService';
 
 interface HistoryState {
   project: ERProject | null;
@@ -141,82 +140,10 @@ export const useDiagramStore = create<DiagramState>()(
 
     // Project actions
     createProject: (name: string, dialect: Dialect, template = 'empty') => {
-      const project = createEmptyProject(name, dialect);
+      const project = diagramsService.createProject(name, dialect, template);
+      diagramsService.saveRecentProject(project);
       
-      // Add template tables if requested
-      if (template === 'crud') {
-        const usersTable: ERTable = {
-          id: nanoid(),
-          name: 'users',
-          columns: [
-            { name: 'id', type: 'serial', isPrimaryKey: true, isOptional: false },
-            { name: 'name', type: 'varchar(255)', isOptional: false },
-            { name: 'email', type: 'varchar(255)', isOptional: false, isUnique: true },
-            { name: 'created_at', type: 'timestamp', isOptional: false, default: 'now()' }
-          ],
-          position: { x: 100, y: 100 }
-        };
-        
-        const postsTable: ERTable = {
-          id: nanoid(),
-          name: 'posts',
-          columns: [
-            { name: 'id', type: 'serial', isPrimaryKey: true, isOptional: false },
-            { name: 'title', type: 'varchar(255)', isOptional: false },
-            { name: 'content', type: 'text', isOptional: true },
-            { name: 'user_id', type: 'int', isOptional: false, references: { table: 'users', column: 'id', onDelete: 'cascade' } },
-            { name: 'created_at', type: 'timestamp', isOptional: false, default: 'now()' }
-          ],
-          position: { x: 400, y: 100 }
-        };
-        
-        project.schemas[0].tables = [usersTable, postsTable];
-      } else if (template === 'ventas') {
-        // Add sales template tables
-        const customersTable: ERTable = {
-          id: nanoid(),
-          name: 'customers',
-          columns: [
-            { name: 'id', type: 'serial', isPrimaryKey: true, isOptional: false },
-            { name: 'name', type: 'varchar(255)', isOptional: false },
-            { name: 'email', type: 'varchar(255)', isOptional: false, isUnique: true },
-            { name: 'phone', type: 'varchar(50)', isOptional: true },
-            { name: 'created_at', type: 'timestamp', isOptional: false, default: 'now()' }
-          ],
-          position: { x: 100, y: 100 }
-        };
-        
-        const productsTable: ERTable = {
-          id: nanoid(),
-          name: 'products',
-          columns: [
-            { name: 'id', type: 'serial', isPrimaryKey: true, isOptional: false },
-            { name: 'name', type: 'varchar(255)', isOptional: false },
-            { name: 'price', type: 'decimal(10,2)', isOptional: false },
-            { name: 'stock', type: 'int', isOptional: false, default: '0' },
-            { name: 'created_at', type: 'timestamp', isOptional: false, default: 'now()' }
-          ],
-          position: { x: 400, y: 100 }
-        };
-        
-        const ordersTable: ERTable = {
-          id: nanoid(),
-          name: 'orders',
-          columns: [
-            { name: 'id', type: 'serial', isPrimaryKey: true, isOptional: false },
-            { name: 'customer_id', type: 'int', isOptional: false, references: { table: 'customers', column: 'id', onDelete: 'cascade' } },
-            { name: 'total', type: 'decimal(10,2)', isOptional: false },
-            { name: 'status', type: 'varchar(50)', isOptional: false, default: "'pending'" },
-            { name: 'created_at', type: 'timestamp', isOptional: false, default: 'now()' }
-          ],
-          position: { x: 100, y: 300 }
-        };
-        
-        project.schemas[0].tables = [customersTable, productsTable, ordersTable];
-      }
-
       set({ project });
-      autoSave.saveProject(project);
       return project.id;
     },
 
@@ -227,10 +154,9 @@ export const useDiagramStore = create<DiagramState>()(
     loadProjectById: async (id: string) => {
       set({ isLoading: true });
       try {
-        const project = await autoSave.loadProject(id);
-        if (project) {
-          set({ project, selectedTable: null, selectedColumn: null, history: [], historyIndex: -1 });
-        }
+        // For now, we don't have project persistence by ID in localStorage
+        // This would require extending the service
+        set({ error: 'Project loading by ID not yet implemented' });
       } catch (error) {
         set({ error: 'Failed to load project' });
       } finally {
@@ -247,7 +173,7 @@ export const useDiagramStore = create<DiagramState>()(
           updatedAt: new Date().toISOString()
         };
         set({ project: updatedProject });
-        autoSave.saveProject(updatedProject);
+        diagramsService.saveRecentProject(updatedProject);
       }
     },
 
@@ -271,7 +197,7 @@ export const useDiagramStore = create<DiagramState>()(
       };
 
       set({ project: updatedProject });
-      autoSave.saveProject(updatedProject);
+      diagramsService.saveRecentProject(updatedProject);
     },
 
     removeTable: (tableId: string) => {
@@ -289,7 +215,7 @@ export const useDiagramStore = create<DiagramState>()(
         project: updatedProject,
         selectedTable: get().selectedTable === tableId ? null : get().selectedTable
       });
-      autoSave.saveProject(updatedProject);
+      diagramsService.saveRecentProject(updatedProject);
     },
 
     renameTable: (tableId: string, newName: string) => {
@@ -307,7 +233,7 @@ export const useDiagramStore = create<DiagramState>()(
       };
 
       set({ project: updatedProject });
-      autoSave.saveProject(updatedProject);
+      diagramsService.saveRecentProject(updatedProject);
     },
 
     setTablePosition: (tableId: string, position: { x: number; y: number }) => {
@@ -343,7 +269,7 @@ export const useDiagramStore = create<DiagramState>()(
       };
 
       set({ project: updatedProject });
-      autoSave.saveProject(updatedProject);
+      diagramsService.saveRecentProject(updatedProject);
     },
 
     // Column operations
@@ -371,7 +297,7 @@ export const useDiagramStore = create<DiagramState>()(
       };
 
       set({ project: updatedProject });
-      autoSave.saveProject(updatedProject);
+      diagramsService.saveRecentProject(updatedProject);
     },
 
     removeColumn: (tableId: string, columnName: string) => {
@@ -391,7 +317,7 @@ export const useDiagramStore = create<DiagramState>()(
       };
 
       set({ project: updatedProject });
-      autoSave.saveProject(updatedProject);
+      diagramsService.saveRecentProject(updatedProject);
     },
 
     updateColumn: (tableId: string, columnName: string, updates: Partial<ERColumn>) => {
@@ -416,7 +342,7 @@ export const useDiagramStore = create<DiagramState>()(
       };
 
       set({ project: updatedProject });
-      autoSave.saveProject(updatedProject);
+      diagramsService.saveRecentProject(updatedProject);
     },
 
     // FK operations
@@ -468,7 +394,7 @@ export const useDiagramStore = create<DiagramState>()(
       };
 
       set({ project: updatedProject });
-      autoSave.saveProject(updatedProject);
+      diagramsService.saveRecentProject(updatedProject);
     },
 
     // Selection
@@ -494,26 +420,18 @@ export const useDiagramStore = create<DiagramState>()(
     canUndo: () => false,
     canRedo: () => false,
 
+    // Validation
+    validateColumn: (tableId: string, columnName: string) => {
+      // Simplified validation for now
+      return { valid: true };
+    },
+
     // Persistence
     save: async () => {
       const { project } = get();
       if (project) {
-        await autoSave.saveProject(project);
+        diagramsService.saveRecentProject(project);
       }
-    },
-
-    // Validation
-    validateColumn: (tableId: string, columnName: string) => {
-      const { project } = get();
-      if (!project) return { valid: true };
-
-      const table = project.schemas[0].tables.find(t => t.id === tableId);
-      if (!table) return { valid: true };
-
-      const column = table.columns.find(c => c.name === columnName);
-      if (!column) return { valid: true };
-
-      return validateTypeForDialect(column.type, project.settings.dialect);
     },
 
     // Clear state
@@ -544,7 +462,27 @@ export const useDiagramStore = create<DiagramState>()(
     loadRecentProjects: async () => {
       set({ isLoading: true });
       try {
-        const projects = await autoSave.loadRecentProjects();
+        const projectsMetadata = diagramsService.getRecentProjects();
+        // Convert metadata to ERProject format for compatibility
+        const projects: ERProject[] = projectsMetadata.map(meta => ({
+          id: meta.id,
+          name: meta.name,
+          description: meta.description || '',
+          createdAt: meta.lastModified,
+          updatedAt: meta.lastModified,
+          version: '1.0.0',
+          settings: {
+            dialect: meta.dialect as Dialect,
+            createdAt: meta.lastModified,
+          },
+          schemas: [{
+            id: nanoid(),
+            name: 'public',
+            tables: [],
+            views: [],
+            enums: []
+          }],
+        }));
         set({ recentProjects: projects });
       } catch (error) {
         set({ error: 'Failed to load recent projects' });

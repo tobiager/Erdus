@@ -32,7 +32,7 @@ export type NewDoc = {
 };
 
 // ER Diagram Editor Types
-export type Dialect = 'default' | 'postgres' | 'mysql' | 'mssql' | 'sqlite';
+export type Dialect = 'default' | 'postgres' | 'mysql' | 'sqlserver' | 'sqlite';
 
 export interface ProjectSettings {
   dialect: Dialect;
@@ -73,6 +73,7 @@ export interface ERTable {
 }
 
 export interface ERSchema {
+  id?: string;
   name: string;
   tables: ERTable[];
   views?: any[];
@@ -82,6 +83,8 @@ export interface ERSchema {
 export interface ERProject {
   id: string;
   name: string;
+  description?: string;
+  version?: string;
   settings: ProjectSettings;
   schemas: ERSchema[];
   createdAt: string;
