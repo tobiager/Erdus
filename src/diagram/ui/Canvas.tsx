@@ -68,10 +68,16 @@ export default function Canvas() {
               id: `${table.id}-${column.name}-${targetTable.id}`,
               source: table.id,
               target: targetTable.id,
-              label: `${column.name} → ${column.references.column}`,
+              label: `${column.name} → ${column.references.column} (1:N)`,
               type: 'smoothstep',
               animated: true,
-              style: { stroke: '#94a3b8', strokeWidth: 2 }
+              style: { stroke: '#94a3b8', strokeWidth: 2 },
+              markerEnd: {
+                type: 'arrowclosed',
+                width: 20,
+                height: 20,
+                color: '#94a3b8',
+              }
             });
           }
         }
@@ -167,6 +173,17 @@ export default function Canvas() {
         }}
         className="!h-full !w-full"
         fitView
+        defaultEdgeOptions={{
+          type: 'smoothstep',
+          animated: true,
+          style: { stroke: '#94a3b8', strokeWidth: 2 },
+          markerEnd: {
+            type: 'arrowclosed',
+            width: 20,
+            height: 20,
+            color: '#94a3b8',
+          },
+        }}
       >
         <Controls 
           className="[&_button]:!bg-white/90 dark:[&_button]:!bg-neutral-800/90 [&_button]:!border-neutral-200 dark:[&_button]:!border-neutral-600 [&_button]:!text-neutral-700 dark:[&_button]:!text-neutral-300 [&_button_svg]:!fill-current"
@@ -188,7 +205,7 @@ export default function Canvas() {
           gap={16} 
           size={1} 
           color="#e5e7eb"
-          className="dark:!text-neutral-600"
+          className="dark:[&>*]:!fill-neutral-600"
         />
       </ReactFlow>
     </div>

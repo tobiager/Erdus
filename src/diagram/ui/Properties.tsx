@@ -125,21 +125,35 @@ export default function Properties() {
                       type="text"
                       value={tempTableName}
                       onChange={(e) => setTempTableName(e.target.value)}
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') handleTableNameSave();
-                        if (e.key === 'Escape') handleTableNameCancel();
+                      onKeyDown={(e) => {
+                        e.stopPropagation(); // Prevent event bubbling
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleTableNameSave();
+                        }
+                        if (e.key === 'Escape') {
+                          e.preventDefault();
+                          handleTableNameCancel();
+                        }
                       }}
+                      onClick={(e) => e.stopPropagation()}
                       className="flex-1 px-2 py-1 text-sm border border-slate-300 dark:border-slate-600 rounded focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-slate-100"
                       autoFocus
                     />
                     <button
-                      onClick={handleTableNameSave}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleTableNameSave();
+                      }}
                       className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
                     >
                       ✓
                     </button>
                     <button
-                      onClick={handleTableNameCancel}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleTableNameCancel();
+                      }}
                       className="px-2 py-1 text-xs bg-slate-300 text-slate-700 rounded hover:bg-slate-400"
                     >
                       ✕
@@ -233,6 +247,8 @@ export default function Properties() {
                   type="text"
                   value={currentColumn.name}
                   onChange={(e) => handleColumnUpdate('name', e.target.value)}
+                  onKeyDown={(e) => e.stopPropagation()}
+                  onClick={(e) => e.stopPropagation()}
                   className="w-full px-2 py-1 text-sm border border-slate-300 dark:border-slate-600 rounded focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-slate-100"
                 />
               </div>

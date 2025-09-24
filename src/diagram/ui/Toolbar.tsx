@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Download, Settings, Undo, Redo, MoreHorizontal, Palette, Save } from 'lucide-react';
+import { Download, Settings, Undo, Redo, MoreHorizontal, Palette, Save, Sun, Moon, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useDiagramStore } from '../store';
 import { exportProject, downloadFile, ExportFormat } from '../services/exporters';
 
@@ -11,6 +12,7 @@ export default function Toolbar({ className = '' }: ToolbarProps) {
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const { i18n } = useTranslation();
 
   const { 
     project,
@@ -30,6 +32,22 @@ export default function Toolbar({ className = '' }: ToolbarProps) {
     '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', 
     '#ec4899', '#f43f5e'
   ];
+
+  const toggleTheme = () => {
+    const html = document.documentElement;
+    if (html.classList.contains('dark')) {
+      html.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    } else {
+      html.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    }
+  };
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language === 'en' ? 'es' : 'en';
+    i18n.changeLanguage(newLang);
+  };
 
   const handleExport = (format: ExportFormat) => {
     if (!project) return;
@@ -52,13 +70,18 @@ export default function Toolbar({ className = '' }: ToolbarProps) {
   const handleColorChange = (color: string) => {
     if (selectedTable) {
       setTableColor(selectedTable, color);
+      setShowColorPicker(false);
     }
-    setShowColorPicker(false);
   };
 
   const handleSave = async () => {
-    await save();
-    setShowMoreMenu(false);
+    try {
+      await save();
+      setShowMoreMenu(false);
+    } catch (error) {
+      console.error('Save error:', error);
+      alert('Error al guardar: ' + (error as Error).message);
+    }
   };
 
   if (!project) {
@@ -241,6 +264,26 @@ export default function Toolbar({ className = '' }: ToolbarProps) {
                 className="block w-full text-left px-3 py-1.5 text-xs text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-white/10"
               >
                 SQLite
+              </button>
+              
+              <div className="border-t border-neutral-200 dark:border-white/20 my-1"></div>
+              
+              <button
+                onClick={toggleTheme}
+                className="flex items-center gap-2 w-full text-left px-3 py-2 text-xs text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-white/10"
+              >
+                <Sun className="w-3 h-3 dark:hidden" />
+                <Moon className="w-3 h-3 hidden dark:block" />
+                <span className="dark:hidden">Modo oscuro</span>
+                <span className="hidden dark:block">Modo claro</span>
+              </button>
+              
+              <button
+                onClick={toggleLanguage}
+                className="flex items-center gap-2 w-full text-left px-3 py-2 text-xs text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-white/10"
+              >
+                <Globe className="w-3 h-3" />
+                {i18n.language === 'en' ? 'Español' : 'English'}
               </button>
             </div>
           </div>
