@@ -30,3 +30,60 @@ export type NewDoc = {
   data: { nodes: NewNode[]; edges: NewEdge[]; viewport: {x:number;y:number;zoom:number} };
   name: string; folder: any; id: number; updatedAtTimestamp: number;
 };
+
+// ER Diagram Editor Types
+export type Dialect = 'default' | 'postgres' | 'mysql' | 'mssql' | 'sqlite';
+
+export interface ProjectSettings {
+  dialect: Dialect;
+  createdAt: string;
+  repoUrl?: string;
+  demoUrl?: string;
+}
+
+export interface TablePosition {
+  x: number;
+  y: number;
+}
+
+export interface ERColumn {
+  name: string;
+  type: string;
+  isPrimaryKey?: boolean;
+  isOptional?: boolean;
+  isUnique?: boolean;
+  default?: string;
+  check?: string;
+  references?: {
+    table: string;
+    column: string;
+    onDelete?: string;
+    onUpdate?: string;
+  };
+}
+
+export interface ERTable {
+  id: string;
+  name: string;
+  comment?: string;
+  columns: ERColumn[];
+  position?: TablePosition;
+  primaryKey?: string[];
+  indexes?: { columns: string[]; unique?: boolean; name?: string }[];
+}
+
+export interface ERSchema {
+  name: string;
+  tables: ERTable[];
+  views?: any[];
+  enums?: any[];
+}
+
+export interface ERProject {
+  id: string;
+  name: string;
+  settings: ProjectSettings;
+  schemas: ERSchema[];
+  createdAt: string;
+  updatedAt: string;
+}

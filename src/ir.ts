@@ -17,6 +17,8 @@ export interface IRTable {
   /** Order of primary key columns for composite keys. */
   primaryKey?: string[];
   indexes?: { columns: string[]; unique?: boolean }[];
+  /** Position for diagram editor */
+  position?: { x: number; y: number };
 }
 
 export interface IRDiagram {

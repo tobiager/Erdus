@@ -5,6 +5,7 @@ import RootLayout from "./layouts/RootLayout";
 import Home from "./pages/Home";
 import Converter from "./pages/Converter";
 import Documentation from "./pages/Documentation";
+import Diagrams from "./pages/Diagrams";
 import "./styles.css";
 import "./i18n";
 
@@ -21,6 +22,7 @@ const router = createBrowserRouter([
 
       { path: "converter", element: <Converter /> },
       { path: "documentation", element: <Documentation /> },
+      { path: "diagramas", element: <Diagrams /> },
 
       // Fallback: cualquier otra ruta → /
       { path: "*", element: <Navigate to="/" replace /> },
