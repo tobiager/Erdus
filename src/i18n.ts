@@ -7,6 +7,7 @@ const resources = {
       nav: {
         home: 'Home',
         converter: 'Converter',
+        diagrams: 'Diagrams',
         documentation: 'Documentation',
         docs: 'Docs',
       },
@@ -101,6 +102,7 @@ const resources = {
       nav: {
         home: 'Inicio',
         converter: 'Convertidor',
+        diagrams: 'Diagramas',
         documentation: 'Documentación',
         docs: 'Docs',
       },

@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggleCompact from './LanguageToggleCompact';
 
-type LinkKey = 'home' | 'converter' | 'docs';
+type LinkKey = 'home' | 'converter' | 'diagrams' | 'docs';
 
 const link = ({ isActive }: { isActive: boolean }) =>
   [
@@ -74,11 +74,13 @@ export default function Navbar() {
 
   const homeRef = useRef<HTMLAnchorElement>(null);
   const converterRef = useRef<HTMLAnchorElement>(null);
+  const diagramsRef = useRef<HTMLAnchorElement>(null);
   const docsRef = useRef<HTMLAnchorElement>(null);
 
   const linkRefs: Record<LinkKey, React.RefObject<HTMLAnchorElement>> = {
     home: homeRef,
     converter: converterRef,
+    diagrams: diagramsRef,
     docs: docsRef,
   };
 
@@ -97,6 +99,8 @@ export default function Navbar() {
   const activeKey: LinkKey =
     location.pathname.startsWith('/converter')
       ? 'converter'
+      : location.pathname.startsWith('/diagramas')
+      ? 'diagrams'
       : location.pathname.startsWith('/documentation')
       ? 'docs'
       : 'home';
@@ -180,6 +184,16 @@ export default function Navbar() {
               onMouseLeave={() => moveIndicatorTo(linkRefs[activeKey].current)}
             >
               {t('nav.converter')}
+            </NavLink>
+
+            <NavLink
+              to="/diagramas"
+              ref={diagramsRef}
+              className={link}
+              onMouseEnter={(e) => moveIndicatorTo(e.currentTarget)}
+              onMouseLeave={() => moveIndicatorTo(linkRefs[activeKey].current)}
+            >
+              {t('nav.diagrams')}
             </NavLink>
 
             <NavLink
