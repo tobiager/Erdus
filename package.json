@@ -5,6 +5,10 @@
   "private": false,
   "type": "module",
   "license": "MIT",
+  "packageManager": "pnpm@10.0.0",
+  "engines": {
+    "node": ">=18"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/your-user/erdplus-converter.git"
