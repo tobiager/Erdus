@@ -4,42 +4,24 @@ import { Plus, Search, Upload, FileText } from 'lucide-react';
 import { useDiagrams } from './store/diagrams';
 import { useT } from './services/i18n';
 import DiagramCard from './components/DiagramCard';
+import CreateDiagramDialog from './components/CreateDiagramDialog';
 import { DiagramEngine } from './store/db';
 
 export default function DiagramsGallery() {
   const { t } = useT();
-  const { diagrams, loading, createDiagram, deleteDiagram, duplicateDiagram } = useDiagrams();
+  const { diagrams, loading, deleteDiagram, duplicateDiagram, refreshDiagrams } = useDiagrams();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterEngine, setFilterEngine] = useState<DiagramEngine | 'all'>('all');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [newDiagramName, setNewDiagramName] = useState('');
-  const [newDiagramEngine, setNewDiagramEngine] = useState<DiagramEngine>('ir');
 
   const filteredDiagrams = useMemo(() => {
     return diagrams.filter(diagram => {
-      const matchesSearch = diagram.meta.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = diagram.meta.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (diagram.meta.description && diagram.meta.description.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesEngine = filterEngine === 'all' || diagram.meta.engine === filterEngine;
       return matchesSearch && matchesEngine;
     });
   }, [diagrams, searchQuery, filterEngine]);
-
-  const handleCreateDiagram = async () => {
-    if (!newDiagramName.trim()) return;
-
-    try {
-      await createDiagram(newDiagramName.trim(), newDiagramEngine);
-      setShowCreateDialog(false);
-      setNewDiagramName('');
-      setNewDiagramEngine('ir');
-    } catch (error) {
-      console.error('Failed to create diagram:', error);
-    }
-  };
-
-  const handleRenameDiagram = async (id: string, newName: string) => {
-    // This would be implemented in the diagram store
-    console.log('Rename diagram', id, 'to', newName);
-  };
 
   const engineOptions = [
     { value: 'all', label: 'All Engines' },
@@ -162,7 +144,7 @@ export default function DiagramsGallery() {
                 diagram={diagram}
                 onDuplicate={duplicateDiagram}
                 onDelete={deleteDiagram}
-                onRename={handleRenameDiagram}
+                onRefresh={refreshDiagrams}
               />
             ))}
           </motion.div>
@@ -170,84 +152,10 @@ export default function DiagramsGallery() {
       </AnimatePresence>
 
       {/* Create Dialog */}
-      <AnimatePresence>
-        {showCreateDialog && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-            onClick={(e) => {
-              if (e.target === e.currentTarget) {
-                setShowCreateDialog(false);
-              }
-            }}
-          >
-            <motion.div
-              initial={{ scale: 0.95 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.95 }}
-              className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 w-full max-w-md"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">
-                Create New Diagram
-              </h3>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                    Diagram Name
-                  </label>
-                  <input
-                    type="text"
-                    value={newDiagramName}
-                    onChange={(e) => setNewDiagramName(e.target.value)}
-                    placeholder="My ER Diagram"
-                    className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    autoFocus
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                    Database Engine
-                  </label>
-                  <select
-                    value={newDiagramEngine}
-                    onChange={(e) => setNewDiagramEngine(e.target.value as DiagramEngine)}
-                    className="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="ir">Default (IR)</option>
-                    <option value="mssql">SQL Server</option>
-                    <option value="mysql">MySQL</option>
-                    <option value="postgres">PostgreSQL</option>
-                    <option value="sqlite">SQLite</option>
-                    <option value="prisma">Prisma</option>
-                    <option value="typeorm">TypeORM</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex gap-3 mt-6">
-                <button
-                  onClick={() => setShowCreateDialog(false)}
-                  className="flex-1 px-4 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleCreateDiagram}
-                  disabled={!newDiagramName.trim()}
-                  className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  Create
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <CreateDiagramDialog 
+        isOpen={showCreateDialog}
+        onClose={() => setShowCreateDialog(false)}
+      />
     </div>
   );
 }

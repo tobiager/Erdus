@@ -24,7 +24,7 @@ export default function SidePanels({ side, collapsed, diagram, selectedElement }
           animate={{ x: 0 }}
           exit={{ x: direction * panelWidth }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          className={`w-[280px] bg-white dark:bg-slate-900 border-${side === 'left' ? 'r' : 'l'} border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden`}
+          className={`w-[280px] bg-slate-900 border-${side === 'left' ? 'r' : 'l'} border-slate-700 flex flex-col overflow-hidden`}
         >
           {side === 'left' ? (
             <LeftPanelContent diagram={diagram} />
@@ -42,8 +42,8 @@ function LeftPanelContent({ diagram }: { diagram: DiagramDoc }) {
 
   return (
     <>
-      <div className="p-4 border-b border-slate-200 dark:border-slate-700">
-        <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+      <div className="p-4 border-b border-slate-700">
+        <h3 className="font-semibold text-white flex items-center gap-2">
           <Table className="w-4 h-4" />
           Tables & Relations
         </h3>
@@ -52,7 +52,7 @@ function LeftPanelContent({ diagram }: { diagram: DiagramDoc }) {
       <div className="flex-1 overflow-y-auto">
         {/* Tables List */}
         <div className="p-4">
-          <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+          <h4 className="text-sm font-medium text-slate-300 mb-3 flex items-center gap-2">
             <Table className="w-4 h-4" />
             Tables ({diagram.ir.tables.length})
           </h4>
@@ -61,15 +61,15 @@ function LeftPanelContent({ diagram }: { diagram: DiagramDoc }) {
             {diagram.ir.tables.map((table) => (
               <div
                 key={table.name}
-                className="p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
+                className="p-3 rounded-lg hover:bg-slate-800 cursor-pointer transition-colors border border-transparent hover:border-slate-700"
               >
-                <div className="font-medium text-slate-900 dark:text-white">
+                <div className="font-medium text-white">
                   {table.name}
                 </div>
-                <div className="text-sm text-slate-500 dark:text-slate-400">
+                <div className="text-sm text-slate-400">
                   {table.columns.length} columns
                   {table.columns.filter(c => c.references).length > 0 && (
-                    <span className="ml-2 text-green-600 dark:text-green-400">
+                    <span className="ml-2 text-green-400">
                       {table.columns.filter(c => c.references).length} FK
                     </span>
                   )}
@@ -80,8 +80,8 @@ function LeftPanelContent({ diagram }: { diagram: DiagramDoc }) {
         </div>
 
         {/* Relations List */}
-        <div className="p-4 border-t border-slate-200 dark:border-slate-700">
-          <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+        <div className="p-4 border-t border-slate-700">
+          <h4 className="text-sm font-medium text-slate-300 mb-3 flex items-center gap-2">
             <Link className="w-4 h-4" />
             Relations ({diagram.meta.stats.relations})
           </h4>
@@ -93,16 +93,16 @@ function LeftPanelContent({ diagram }: { diagram: DiagramDoc }) {
                 .map((column) => (
                   <div
                     key={`${table.name}.${column.name}`}
-                    className="p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
+                    className="p-3 rounded-lg hover:bg-slate-800 cursor-pointer transition-colors border border-transparent hover:border-slate-700"
                   >
-                    <div className="font-medium text-slate-900 dark:text-white text-sm">
+                    <div className="font-medium text-white text-sm">
                       {table.name}.{column.name}
                     </div>
-                    <div className="text-sm text-slate-500 dark:text-slate-400">
+                    <div className="text-sm text-slate-400">
                       → {column.references!.table}.{column.references!.column}
                     </div>
                     {(column.references!.onDelete || column.references!.onUpdate) && (
-                      <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                      <div className="text-xs text-slate-500 mt-1">
                         {column.references!.onDelete && `ON DELETE ${column.references!.onDelete}`}
                         {column.references!.onUpdate && column.references!.onDelete && ' • '}
                         {column.references!.onUpdate && `ON UPDATE ${column.references!.onUpdate}`}
@@ -124,8 +124,8 @@ function RightPanelContent({ diagram, selectedElement }: { diagram: DiagramDoc; 
   if (!selectedElement) {
     return (
       <>
-        <div className="p-4 border-b border-slate-200 dark:border-slate-700">
-          <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+        <div className="p-4 border-b border-slate-700">
+          <h3 className="font-semibold text-white flex items-center gap-2">
             <Info className="w-4 h-4" />
             Diagram Info
           </h3>
@@ -133,23 +133,23 @@ function RightPanelContent({ diagram, selectedElement }: { diagram: DiagramDoc; 
 
         <div className="p-4 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Name
             </label>
             <input
               type="text"
               defaultValue={diagram.meta.name}
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+              className="w-full px-3 py-2 border border-slate-600 rounded-lg bg-slate-800 text-white"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Engine
             </label>
             <select
               defaultValue={diagram.meta.engine}
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+              className="w-full px-3 py-2 border border-slate-600 rounded-lg bg-slate-800 text-white"
             >
               <option value="ir">Default (IR)</option>
               <option value="mssql">SQL Server</option>
@@ -162,41 +162,41 @@ function RightPanelContent({ diagram, selectedElement }: { diagram: DiagramDoc; 
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Color
             </label>
             <div className="flex items-center gap-2">
               <input
                 type="color"
                 defaultValue={diagram.meta.color}
-                className="w-12 h-8 rounded border border-slate-300 dark:border-slate-600"
+                className="w-12 h-8 rounded border border-slate-600"
               />
               <input
                 type="text"
                 defaultValue={diagram.meta.color}
-                className="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+                className="flex-1 px-3 py-2 border border-slate-600 rounded-lg bg-slate-800 text-white"
               />
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
-            <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+          <div className="pt-4 border-t border-slate-700">
+            <h4 className="text-sm font-medium text-slate-300 mb-2">
               Statistics
             </h4>
             <div className="grid grid-cols-2 gap-3">
-              <div className="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                <div className="text-2xl font-bold text-slate-900 dark:text-white">
+              <div className="text-center p-3 bg-slate-800 rounded-lg">
+                <div className="text-2xl font-bold text-white">
                   {diagram.meta.stats.tables}
                 </div>
-                <div className="text-sm text-slate-600 dark:text-slate-400">
+                <div className="text-sm text-slate-400">
                   Tables
                 </div>
               </div>
-              <div className="text-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                <div className="text-2xl font-bold text-slate-900 dark:text-white">
+              <div className="text-center p-3 bg-slate-800 rounded-lg">
+                <div className="text-2xl font-bold text-white">
                   {diagram.meta.stats.relations}
                 </div>
-                <div className="text-sm text-slate-600 dark:text-slate-400">
+                <div className="text-sm text-slate-400">
                   Relations
                 </div>
               </div>

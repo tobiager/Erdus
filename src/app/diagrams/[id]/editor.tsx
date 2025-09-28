@@ -211,14 +211,14 @@ function DiagramEditor() {
 
   if (loading || isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-white dark:bg-slate-900">
+      <div className="fixed inset-x-0 bottom-0 top-[64px] bg-black flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen flex flex-col bg-white dark:bg-slate-900">
+    <div className="fixed inset-x-0 bottom-0 top-[64px] bg-black">
       {/* Toolbar */}
       <Toolbar
         diagram={diagram!}
@@ -231,7 +231,7 @@ function DiagramEditor() {
         onToggleRightPanel={() => setRightPanelCollapsed(!rightPanelCollapsed)}
       />
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex h-[calc(100%-56px)] overflow-hidden">
         {/* Left Panel */}
         <SidePanels
           side="left"
@@ -253,7 +253,8 @@ function DiagramEditor() {
             connectionMode={ConnectionMode.Loose}
             fitView={false}
             attributionPosition="top-right"
-            colorMode={isDark ? 'dark' : 'light'}
+            colorMode="dark"
+            className="h-full w-full !bg-black"
             onSelectionChange={({ nodes, edges }) => {
               const selected = nodes[0]?.id || edges[0]?.id || null;
               setSelectedElement(selected);
@@ -263,7 +264,7 @@ function DiagramEditor() {
               variant={BackgroundVariant.Dots}
               gap={20}
               size={1}
-              color={isDark ? '#374151' : '#e5e7eb'}
+              color="#374151"
             />
             <Controls position="bottom-right" />
           </ReactFlow>

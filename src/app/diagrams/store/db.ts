@@ -11,6 +11,7 @@ export interface DiagramMeta {
   createdAt: string;     // ISO
   updatedAt: string;     // ISO
   stats: { tables: number; relations: number };
+  description?: string;  // optional description
 }
 
 export interface DiagramDoc {

@@ -23,7 +23,12 @@ export function useDiagrams() {
     loadDiagrams();
   }, [loadDiagrams]);
 
-  const createDiagram = useCallback(async (name: string, engine: DiagramEngine = 'ir') => {
+  const createDiagram = useCallback(async (
+    name: string, 
+    engine: DiagramEngine = 'ir', 
+    description?: string, 
+    color: string = '#3b82f6'
+  ) => {
     const id = nanoid();
     const now = new Date().toISOString();
     const doc: DiagramDoc = {
@@ -31,10 +36,11 @@ export function useDiagrams() {
         id,
         name,
         engine,
-        color: '#3b82f6',
+        color,
         createdAt: now,
         updatedAt: now,
-        stats: { tables: 0, relations: 0 }
+        stats: { tables: 0, relations: 0 },
+        description
       },
       ir: { tables: [] },
       layout: { nodes: {}, viewport: { x: 0, y: 0, zoom: 1 } }
@@ -80,6 +86,57 @@ export function useDiagrams() {
     duplicateDiagram,
     refreshDiagrams: loadDiagrams
   };
+}
+
+// Additional helper functions
+export async function renameDiagram(id: string, name: string): Promise<void> {
+  const diagram = await db.diagrams.get(id);
+  if (!diagram) throw new Error('Diagram not found');
+
+  const updatedDoc = {
+    ...diagram,
+    meta: {
+      ...diagram.meta,
+      name,
+      updatedAt: new Date().toISOString()
+    }
+  };
+
+  await db.diagrams.put(updatedDoc);
+}
+
+export async function changeColor(id: string, color: string): Promise<void> {
+  const diagram = await db.diagrams.get(id);
+  if (!diagram) throw new Error('Diagram not found');
+
+  const updatedDoc = {
+    ...diagram,
+    meta: {
+      ...diagram.meta,
+      color,
+      updatedAt: new Date().toISOString()
+    }
+  };
+
+  await db.diagrams.put(updatedDoc);
+}
+
+export async function changeEngine(id: string, engine: DiagramEngine): Promise<void> {
+  const diagram = await db.diagrams.get(id);
+  if (!diagram) throw new Error('Diagram not found');
+
+  // TODO: Implement type mapping when changing engines
+  // For now, we'll just change the engine without IR transformation
+  const updatedDoc = {
+    ...diagram,
+    meta: {
+      ...diagram.meta,
+      engine,
+      updatedAt: new Date().toISOString()
+    }
+  };
+
+  await db.diagrams.put(updatedDoc);
 }
 
 // Hook for managing individual diagram
