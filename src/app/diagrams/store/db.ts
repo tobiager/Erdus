@@ -12,6 +12,7 @@ export interface DiagramMeta {
   updatedAt: string;     // ISO
   stats: { tables: number; relations: number };
   description?: string;  // optional description
+  deletedAt?: string | null;   // ISO - soft delete
 }
 
 export interface DiagramDoc {

@@ -10,7 +10,12 @@ export function useDiagrams() {
 
   const loadDiagrams = useCallback(async () => {
     try {
-      const docs = await db.diagrams.orderBy('meta.updatedAt').reverse().toArray();
+      // Only load non-deleted diagrams
+      const docs = await db.diagrams
+        .orderBy('meta.updatedAt')
+        .reverse()
+        .filter(doc => !doc.meta.deletedAt)
+        .toArray();
       setDiagrams(docs);
     } catch (error) {
       console.error('Failed to load diagrams:', error);
@@ -56,6 +61,24 @@ export function useDiagrams() {
     await loadDiagrams();
   }, [loadDiagrams]);
 
+  // Soft delete - move to trash
+  const softDeleteDiagram = useCallback(async (id: string) => {
+    const diagram = await db.diagrams.get(id);
+    if (!diagram) return;
+
+    const updatedDoc = {
+      ...diagram,
+      meta: {
+        ...diagram.meta,
+        deletedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+    };
+
+    await db.diagrams.put(updatedDoc);
+    await loadDiagrams();
+  }, [loadDiagrams]);
+
   const duplicateDiagram = useCallback(async (id: string) => {
     const original = await db.diagrams.get(id);
     if (!original) return null;
@@ -83,6 +106,7 @@ export function useDiagrams() {
     loading,
     createDiagram,
     deleteDiagram,
+    softDeleteDiagram,
     duplicateDiagram,
     refreshDiagrams: loadDiagrams
   };
@@ -225,4 +249,115 @@ function debounce<T extends (...args: any[]) => any>(func: T, delay: number): T 
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => func.apply(null, args), delay);
   }) as T;
+}
+
+// Additional helper functions for trash management
+export async function restoreDiagram(id: string): Promise<void> {
+  const diagram = await db.diagrams.get(id);
+  if (!diagram) throw new Error('Diagram not found');
+
+  const updatedDoc = {
+    ...diagram,
+    meta: {
+      ...diagram.meta,
+      deletedAt: null,
+      updatedAt: new Date().toISOString()
+    }
+  };
+
+  await db.diagrams.put(updatedDoc);
+}
+
+export async function purgeDeletedDiagrams(thresholdDays: number = 7): Promise<void> {
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - thresholdDays);
+  const cutoffISO = cutoffDate.toISOString();
+
+  const toDelete = await db.diagrams
+    .filter(doc => doc.meta.deletedAt && doc.meta.deletedAt < cutoffISO)
+    .toArray();
+
+  for (const doc of toDelete) {
+    await db.diagrams.delete(doc.meta.id);
+  }
+}
+
+export async function getDeletedDiagrams(): Promise<DiagramDoc[]> {
+  return db.diagrams
+    .filter(doc => !!doc.meta.deletedAt)
+    .sortBy('meta.deletedAt')
+    .then(docs => docs.reverse());
+}
+
+// Add table helper function
+export async function addTable(
+  diagramId: string, 
+  partial?: { name?: string; x?: number; y?: number }
+): Promise<void> {
+  const diagram = await db.diagrams.get(diagramId);
+  if (!diagram) throw new Error('Diagram not found');
+
+  // Generate unique table name
+  const existingNames = diagram.ir.tables.map(t => t.name);
+  let baseName = partial?.name || 'Table';
+  let tableName = baseName;
+  let counter = 1;
+  while (existingNames.includes(tableName)) {
+    tableName = `${baseName}${counter}`;
+    counter++;
+  }
+
+  // Create new table in IR
+  const newTable = {
+    name: tableName,
+    columns: [
+      {
+        name: 'id',
+        type: 'INTEGER',
+        isPrimaryKey: true,
+        isOptional: false
+      }
+    ]
+  };
+
+  // Add to layout at center of viewport or specified position
+  const tableId = `table-${tableName}`;
+  const layoutNode = {
+    x: partial?.x ?? 250,
+    y: partial?.y ?? 250
+  };
+
+  const updatedIR = {
+    ...diagram.ir,
+    tables: [...diagram.ir.tables, newTable]
+  };
+
+  const updatedLayout = {
+    ...diagram.layout,
+    nodes: {
+      ...diagram.layout.nodes,
+      [tableId]: layoutNode
+    }
+  };
+
+  // Update stats
+  const stats = {
+    tables: updatedIR.tables.length,
+    relations: updatedIR.tables.reduce((count, table) => 
+      count + table.columns.filter(col => col.references).length, 0
+    )
+  };
+
+  const updatedDoc = {
+    ...diagram,
+    ir: updatedIR,
+    layout: updatedLayout,
+    meta: {
+      ...diagram.meta,
+      stats,
+      updatedAt: new Date().toISOString()
+    }
+  };
+
+  await db.diagrams.put(updatedDoc);
 }

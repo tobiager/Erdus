@@ -24,6 +24,7 @@ interface ToolbarProps {
   onToggleLeftPanel: () => void;
   rightPanelCollapsed: boolean;
   onToggleRightPanel: () => void;
+  onAddTable: () => void;
 }
 
 export default function Toolbar({
@@ -33,6 +34,7 @@ export default function Toolbar({
   onToggleLeftPanel,
   rightPanelCollapsed,
   onToggleRightPanel,
+  onAddTable,
 }: ToolbarProps) {
   const { t } = useT();
   const [showEngineMenu, setShowEngineMenu] = useState(false);
@@ -92,6 +94,7 @@ export default function Toolbar({
       {/* Main actions */}
       <div className="flex items-center gap-2">
         <button
+          onClick={onAddTable}
           className="flex items-center gap-2 px-3 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           title="Add new table (N)"
         >

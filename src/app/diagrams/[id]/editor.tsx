@@ -15,7 +15,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
-import { useDiagram } from '../store/diagrams';
+import { useDiagram, addTable } from '../store/diagrams';
 import { useT } from '../services/i18n';
 import { useTheme } from '../services/theme';
 import Toolbar from '../components/Toolbar';
@@ -36,7 +36,7 @@ function DiagramEditor() {
   const navigate = useNavigate();
   const { t } = useT();
   const { isDark } = useTheme();
-  const { diagram, loading, updateIR, updateLayout } = useDiagram(id!);
+  const { diagram, loading, updateIR, updateLayout, refreshDiagram } = useDiagram(id!);
   
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -154,21 +154,42 @@ function DiagramEditor() {
     });
   }, [diagram, updateLayout]);
 
+  // Add table function
+  const handleAddTable = useCallback(async () => {
+    if (!id || !reactFlowInstance) return;
+
+    try {
+      // Get center of current viewport
+      const viewport = reactFlowInstance.getViewport();
+      const center = reactFlowInstance.project({
+        x: window.innerWidth / 2,
+        y: (window.innerHeight - 64) / 2, // Account for navbar height
+      });
+
+      await addTable(id, { x: center.x, y: center.y });
+      await refreshDiagram();
+    } catch (error) {
+      console.error('Failed to add table:', error);
+    }
+  }, [id, reactFlowInstance, refreshDiagram]);
+
+  // Check if user is typing
+  const isTyping = useCallback(() => {
+    const activeElement = document.activeElement;
+    return ['INPUT', 'TEXTAREA'].includes(activeElement?.tagName ?? '') ||
+           activeElement?.getAttribute('contenteditable') === 'true';
+  }, []);
+
   // Keyboard shortcuts
   useEffect(() => {
-    if (isEditing) return; // Don't handle shortcuts while editing
-
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Don't handle shortcuts if user is typing in an input
-      const target = event.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.contentEditable === 'true') {
-        return;
-      }
+      // Don't handle shortcuts if user is typing
+      if (isTyping()) return;
 
       switch (event.key.toLowerCase()) {
         case 'n':
           event.preventDefault();
-          // TODO: Add new table
+          handleAddTable();
           break;
         case 'r':
           event.preventDefault();
@@ -205,9 +226,9 @@ function DiagramEditor() {
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isEditing, selectedElement]);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isTyping, selectedElement, handleAddTable]);
 
   if (loading || isLoading) {
     return (
@@ -229,6 +250,7 @@ function DiagramEditor() {
         onToggleLeftPanel={() => setLeftPanelCollapsed(!leftPanelCollapsed)}
         rightPanelCollapsed={rightPanelCollapsed}
         onToggleRightPanel={() => setRightPanelCollapsed(!rightPanelCollapsed)}
+        onAddTable={handleAddTable}
       />
 
       <div className="flex h-[calc(100%-56px)] overflow-hidden">

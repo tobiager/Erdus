@@ -1,18 +1,25 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, Upload, FileText } from 'lucide-react';
-import { useDiagrams } from './store/diagrams';
+import { Plus, Search, Upload, FileText, Trash2 } from 'lucide-react';
+import { useDiagrams, purgeDeletedDiagrams } from './store/diagrams';
 import { useT } from './services/i18n';
 import DiagramCard from './components/DiagramCard';
 import CreateDiagramDialog from './components/CreateDiagramDialog';
+import TrashBar from './components/TrashBar';
 import { DiagramEngine } from './store/db';
 
 export default function DiagramsGallery() {
   const { t } = useT();
-  const { diagrams, loading, deleteDiagram, duplicateDiagram, refreshDiagrams } = useDiagrams();
+  const { diagrams, loading, softDeleteDiagram, duplicateDiagram, refreshDiagrams } = useDiagrams();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterEngine, setFilterEngine] = useState<DiagramEngine | 'all'>('all');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showTrash, setShowTrash] = useState(false);
+
+  // Purge old deleted diagrams on mount
+  useEffect(() => {
+    purgeDeletedDiagrams(7).catch(console.error);
+  }, []);
 
   const filteredDiagrams = useMemo(() => {
     return diagrams.filter(diagram => {
@@ -57,6 +64,15 @@ export default function DiagramsGallery() {
           </div>
 
           <div className="flex gap-3">
+            <button
+              onClick={() => setShowTrash(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              title="View trash"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span className="hidden sm:inline">Trash</span>
+            </button>
+
             <button
               onClick={() => setShowCreateDialog(true)}
               className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
@@ -143,7 +159,7 @@ export default function DiagramsGallery() {
                 key={diagram.meta.id}
                 diagram={diagram}
                 onDuplicate={duplicateDiagram}
-                onDelete={deleteDiagram}
+                onDelete={softDeleteDiagram}
                 onRefresh={refreshDiagrams}
               />
             ))}
@@ -156,6 +172,16 @@ export default function DiagramsGallery() {
         isOpen={showCreateDialog}
         onClose={() => setShowCreateDialog(false)}
       />
+
+      {/* Trash Bar */}
+      <AnimatePresence>
+        {showTrash && (
+          <TrashBar 
+            onClose={() => setShowTrash(false)}
+            onRefresh={refreshDiagrams}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

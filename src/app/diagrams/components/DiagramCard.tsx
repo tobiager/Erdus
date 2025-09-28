@@ -86,12 +86,12 @@ export default function DiagramCard({ diagram, onDuplicate, onDelete, onRefresh 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4 }}
-      className="group relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden"
+      className="group relative bg-neutral-900/80 hover:bg-neutral-900 border border-neutral-800 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden"
     >
       {/* Color accent line */}
       <div
-        className="h-1 w-full"
-        style={{ backgroundColor: diagram.meta.color }}
+        className="absolute inset-x-0 top-0 h-1 rounded-t-2xl"
+        style={{ background: diagram.meta.color ?? '#3b82f6' }}
       />
 
       <div className="p-6">
