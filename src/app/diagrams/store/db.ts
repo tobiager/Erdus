@@ -1,12 +1,11 @@
 import Dexie, { Table } from 'dexie';
 import { IRDiagram } from '../../../ir';
-
-export type DiagramEngine = 'ir' | 'mssql' | 'mysql' | 'postgres' | 'sqlite' | 'prisma' | 'typeorm';
+import { Engine } from '../../../types';
 
 export interface DiagramMeta {
   id: string;            // nanoid
   name: string;
-  engine: DiagramEngine;
+  engine: Engine;        // Engine from types.ts
   color: string;         // hex
   createdAt: string;     // ISO
   updatedAt: string;     // ISO
