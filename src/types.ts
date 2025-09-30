@@ -1,3 +1,48 @@
+// ============================================================
+// Engine types and data type mappings for diagrams section
+// ============================================================
+
+export type Engine =
+  | 'Default(IR)'
+  | 'SQL Server'
+  | 'MySQL'
+  | 'PostgreSQL'
+  | 'SQLite'
+  | 'Prisma'
+  | 'TypeORM';
+
+export const DATA_TYPES: Record<Engine, string[]> = {
+  'Default(IR)': [
+    'INTEGER','BIGINT','VARCHAR','TEXT','BOOLEAN','DATE','TIMESTAMP','DECIMAL','FLOAT','UUID'
+  ],
+  'SQL Server': [
+    'TINYINT','SMALLINT','INT','BIGINT','DECIMAL','FLOAT','REAL',
+    'CHAR','VARCHAR','NVARCHAR','TEXT','DATE','DATETIME2','BIT','UNIQUEIDENTIFIER'
+  ],
+  'MySQL': [
+    'TINYINT','SMALLINT','INT','BIGINT','DECIMAL','FLOAT','DOUBLE',
+    'CHAR','VARCHAR','TEXT','DATE','DATETIME','TIMESTAMP','BOOLEAN','JSON'
+  ],
+  'PostgreSQL': [
+    'SMALLINT','INTEGER','BIGINT','NUMERIC','REAL','DOUBLE PRECISION',
+    'SERIAL','BIGSERIAL','BOOLEAN','CHAR','VARCHAR','TEXT','DATE',
+    'TIMESTAMP','TIMESTAMPTZ','UUID','JSON','JSONB'
+  ],
+  'SQLite': [
+    'INTEGER','REAL','TEXT','BLOB','NUMERIC','BOOLEAN','DATE','DATETIME'
+  ],
+  'Prisma': [
+    'Int','BigInt','String','Boolean','DateTime','Decimal','Float','Bytes','Json','Uuid'
+  ],
+  'TypeORM': [
+    'int','bigint','varchar','text','boolean','date','datetime','timestamp','decimal','float','uuid','json'
+  ],
+};
+
+// ============================================================
+// ERDPlus legacy types (old and new formats)
+// ============================================================
+
 export type OldAttrRef = { tableId: number; attributeId: number; fkSubIndex?: number };
 export type OldAttr = {
   id: number; names: string[]; order: number;
