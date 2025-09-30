@@ -1,4 +1,3 @@
-import { useState, useRef, useEffect } from 'react';
 import { Handle, Position } from 'reactflow';
 import { ChevronDown, ChevronUp, Key, Hash, Lock } from 'lucide-react';
 import clsx from 'clsx';
@@ -9,43 +8,12 @@ interface TableNodeProps {
     table: IRTable;
     color: string;
     collapsed: boolean;
-    onEdit: (editing: boolean) => void;
   };
   selected: boolean;
 }
 
 export default function TableNode({ data, selected }: TableNodeProps) {
-  const { table, color, collapsed, onEdit } = data;
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingColumn, setEditingColumn] = useState<string | null>(null);
-  const [tableName, setTableName] = useState(table.name);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (isEditing && inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
-    }
-    onEdit(isEditing || editingColumn !== null);
-  }, [isEditing, editingColumn, onEdit]);
-
-  const handleTableNameEdit = () => {
-    setIsEditing(true);
-  };
-
-  const handleTableNameSave = () => {
-    // TODO: Update table name in IR
-    setIsEditing(false);
-  };
-
-  const handleTableNameKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleTableNameSave();
-    } else if (e.key === 'Escape') {
-      setTableName(table.name);
-      setIsEditing(false);
-    }
-  };
+  const { table, color, collapsed } = data;
 
   const getColumnIcon = (column: IRColumn) => {
     if (column.isPrimaryKey) {
@@ -93,25 +61,9 @@ export default function TableNode({ data, selected }: TableNodeProps) {
         style={{ backgroundColor: color }}
       >
         <div className="flex items-center justify-between">
-          {isEditing ? (
-            <input
-              ref={inputRef}
-              type="text"
-              value={tableName}
-              onChange={(e) => setTableName(e.target.value)}
-              onBlur={handleTableNameSave}
-              onKeyDown={handleTableNameKeyDown}
-              className="bg-white/90 text-slate-900 px-2 py-1 rounded text-lg font-semibold border-0 outline-none flex-1"
-            />
-          ) : (
-            <h3
-              className="text-lg font-semibold text-white cursor-pointer hover:bg-black/10 px-2 py-1 rounded transition-colors"
-              onClick={handleTableNameEdit}
-              title="Click to edit table name"
-            >
-              {table.name}
-            </h3>
-          )}
+          <h3 className="text-lg font-semibold text-white">
+            {table.name}
+          </h3>
 
           <div className="flex items-center gap-2">
             <span className="text-sm text-white/80">
@@ -142,11 +94,7 @@ export default function TableNode({ data, selected }: TableNodeProps) {
         {visibleColumns.map((column, index) => (
           <div
             key={column.name}
-            className={clsx(
-              'flex items-center gap-3 px-4 py-2 border-b border-slate-100 dark:border-slate-700 last:border-b-0 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors',
-              editingColumn === column.name && 'bg-blue-50 dark:bg-blue-900/20'
-            )}
-            onClick={() => setEditingColumn(editingColumn === column.name ? null : column.name)}
+            className="flex items-center gap-3 px-4 py-2 border-b border-slate-100 dark:border-slate-700 last:border-b-0 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
           >
             <div className="flex-shrink-0">
               {getColumnIcon(column)}

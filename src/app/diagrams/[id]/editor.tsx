@@ -14,14 +14,18 @@ import ReactFlow, {
   useReactFlow,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
+import { AnimatePresence } from 'framer-motion';
 
 import { useDiagram, addTable } from '../store/diagrams';
 import { useT } from '../services/i18n';
 import { useTheme } from '../services/theme';
+import { Engine } from '../../../types';
+import { IRTable } from '../../../ir';
 import Toolbar from '../components/Toolbar';
 import TableNode from '../components/TableNode';
 import RelationEdge from '../components/RelationEdge';
 import SidePanels from '../components/SidePanels';
+import RightHandPanel from '../components/RightHandPanel';
 
 const nodeTypes = {
   table: TableNode,
@@ -43,8 +47,7 @@ function DiagramEditor() {
   const [isLoading, setIsLoading] = useState(true);
   const [leftPanelCollapsed, setLeftPanelCollapsed] = useState(false);
   const [rightPanelCollapsed, setRightPanelCollapsed] = useState(true);
-  const [selectedElement, setSelectedElement] = useState<string | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [selectedTableName, setSelectedTableName] = useState<string | null>(null);
 
   const reactFlowInstance = useReactFlow();
 
@@ -66,7 +69,6 @@ function DiagramEditor() {
           table,
           color: nodeLayout.color || diagram.meta.color,
           collapsed: nodeLayout.collapsed || false,
-          onEdit: setIsEditing,
         },
       };
     });
@@ -104,6 +106,47 @@ function DiagramEditor() {
       });
     }
   }, [diagram, setNodes, setEdges, reactFlowInstance]);
+
+  // Handle node selection - open RHP when table is clicked
+  const handleNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+    setSelectedTableName(node.id);
+    setRightPanelCollapsed(false);
+  }, []);
+
+  // Handle pane click - close RHP when canvas is clicked
+  const handlePaneClick = useCallback(() => {
+    setSelectedTableName(null);
+    setRightPanelCollapsed(true);
+  }, []);
+
+  // Get selected table from IR
+  const selectedTable = useMemo(() => {
+    if (!selectedTableName || !diagram) return null;
+    return diagram.ir.tables.find(t => t.name === selectedTableName) || null;
+  }, [selectedTableName, diagram]);
+
+  // Handle table update from RHP
+  const handleUpdateTable = useCallback(async (updatedTable: IRTable) => {
+    if (!diagram) return;
+
+    const newTables = diagram.ir.tables.map(t => 
+      t.name === updatedTable.name ? updatedTable : t
+    );
+
+    await updateIR({ ...diagram.ir, tables: newTables });
+    await refreshDiagram();
+  }, [diagram, updateIR, refreshDiagram]);
+
+  // Handle table delete from RHP
+  const handleDeleteTable = useCallback(async (tableName: string) => {
+    if (!diagram) return;
+
+    const newTables = diagram.ir.tables.filter(t => t.name !== tableName);
+    await updateIR({ ...diagram.ir, tables: newTables });
+    await refreshDiagram();
+    setSelectedTableName(null);
+    setRightPanelCollapsed(true);
+  }, [diagram, updateIR, refreshDiagram]);
 
   // Load diagram data
   useEffect(() => {
@@ -196,7 +239,7 @@ function DiagramEditor() {
           // TODO: Add new relation
           break;
         case 'delete':
-          if (selectedElement) {
+          if (selectedTableName) {
             event.preventDefault();
             // TODO: Delete selected element
           }
@@ -228,7 +271,7 @@ function DiagramEditor() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isTyping, selectedElement, handleAddTable]);
+  }, [isTyping, selectedTableName, handleAddTable]);
 
   if (loading || isLoading) {
     return (
@@ -259,7 +302,6 @@ function DiagramEditor() {
           side="left"
           collapsed={leftPanelCollapsed}
           diagram={diagram!}
-          selectedElement={selectedElement}
         />
 
         {/* Main Canvas */}
@@ -270,6 +312,8 @@ function DiagramEditor() {
             onNodesChange={handleNodesChange}
             onEdgesChange={onEdgesChange}
             onMoveEnd={handleMoveEnd}
+            onNodeClick={handleNodeClick}
+            onPaneClick={handlePaneClick}
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}
             connectionMode={ConnectionMode.Loose}
@@ -277,10 +321,6 @@ function DiagramEditor() {
             attributionPosition="top-right"
             colorMode="dark"
             className="h-full w-full !bg-black"
-            onSelectionChange={({ nodes, edges }) => {
-              const selected = nodes[0]?.id || edges[0]?.id || null;
-              setSelectedElement(selected);
-            }}
           >
             <Background
               variant={BackgroundVariant.Dots}
@@ -292,13 +332,21 @@ function DiagramEditor() {
           </ReactFlow>
         </div>
 
-        {/* Right Panel */}
-        <SidePanels
-          side="right"
-          collapsed={rightPanelCollapsed}
-          diagram={diagram!}
-          selectedElement={selectedElement}
-        />
+        {/* Right Hand Panel */}
+        <AnimatePresence>
+          {!rightPanelCollapsed && selectedTable && (
+            <RightHandPanel
+              table={selectedTable}
+              engine={diagram!.meta.engine}
+              onUpdate={handleUpdateTable}
+              onDelete={handleDeleteTable}
+              onClose={() => {
+                setSelectedTableName(null);
+                setRightPanelCollapsed(true);
+              }}
+            />
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
