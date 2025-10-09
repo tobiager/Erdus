@@ -2,7 +2,19 @@
 
 [![Erdus](assets/Banner.JPEG)](https://erdus-inky.vercel.app)
 
-[![Stars](https://img.shields.io/github/stars/tobiager/Erdus?labelColor=black&style=for-the-badge&color=1280ff&logo=github)](https://github.com/tobiager/Erdus/stargazers)
+  <!-- Social -->
+  <p style="margin-top:20px;">
+    <a href="https://github.com/tobiager">
+      <img src="https://img.shields.io/github/followers/tobiager?label=Follow%20@tobiager&style=social" alt="Follow @tobiager" />
+    </a>
+    <a href="https://github.com/tobiager/Erdus/stargazers">
+      <img src="https://img.shields.io/github/stars/tobiager/Erdus" alt="Stars Badge"/>
+    </a>
+    <a href="https://github.com/tobiager/UNNE-LSI/network/members">
+      <img src="https://img.shields.io/github/forks/tobiager/Erdus" alt="Forks Badge"/>
+    </a>
+  </p>
+  
 ![MIT](https://img.shields.io/badge/License-MIT-FFF?labelColor=black&style=for-the-badge&color=1280ff)
 ![Vercel](https://img.shields.io/badge/Deploy-Vercel-FFF?labelColor=black&logo=vercel&style=for-the-badge&color=1280ff)
 
