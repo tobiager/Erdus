@@ -2,17 +2,6 @@
 
 [![Erdus](assets/Banner.JPEG)](https://erdus-inky.vercel.app)
 
-# Erdus
-### Conversor Universal de Diagramas ER
-
-
-[También disponible en inglés](README.md) ✦ [Demo](https://erdus-inky.vercel.app) ✦ [Docs](https://deepwiki.com/tobiager/Erdus) ✦ [Contribuir](#contribuir) ✦ [Hoja de ruta](#hoja-de-ruta--conversor-universal)
-
-**Una RI para mapearlos a todos.** Erdus es el **conversor universal de código abierto** para diagramas ER y esquemas de bases de datos.
-
-Unifica ERDPlus, SQL DDL, Prisma, TypeORM, JSON Schema y más bajo una estricta **Representación Intermedia (RI)**.
-
-Construye una vez, convierte en todas partes.
 
 </div>
 
@@ -32,9 +21,22 @@ Construye una vez, convierte en todas partes.
 
 <a href="https://www.producthunt.com/products/erdus?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-erdus" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1012222&theme=dark&t=1756930414298" alt="Erdus - Conversor&#0032;universal | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
-https://github.com/user-attachments/assets/ad18f7ab-0b26-4033-9eae-6a9b209543b8
-
 </div>
+
+# Erdus
+### Conversor Universal de Diagramas ER
+
+
+[También disponible en inglés](README.md) ✦ [Demo](https://erdus-inky.vercel.app) ✦ [Docs](https://deepwiki.com/tobiager/Erdus) ✦ [Contribuir](#contribuir) ✦ [Hoja de ruta](#hoja-de-ruta--conversor-universal)
+
+**Una RI para mapearlos a todos.** Erdus es el **conversor universal de código abierto** para diagramas ER y esquemas de bases de datos.
+
+Unifica ERDPlus, SQL DDL, Prisma, TypeORM, JSON Schema y más bajo una estricta **Representación Intermedia (RI)**.
+
+Construye una vez, convierte en todas partes.
+
+
+https://github.com/user-attachments/assets/ad18f7ab-0b26-4033-9eae-6a9b209543b8
 
 - **100% del lado del cliente (privacidad)**: los archivos nunca salen del navegador.
 - **Entrada**: archivos `.erdplus` o `.json` (formato detectado automáticamente).
