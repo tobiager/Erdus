@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'fs';
 import { irToMermaid } from '../src/ir-to-mermaid';
+import { sqlToIR } from '../src/sql-to-ir';
 import type { IRDiagram } from '../src/ir';
 
 describe('IR to Mermaid conversion', () => {
@@ -9,7 +11,12 @@ describe('IR to Mermaid conversion', () => {
         {
           name: 'users',
           columns: [
-            { name: 'id', type: 'Int', isPrimaryKey: true, default: 'autoincrement()' },
+            {
+              name: 'id',
+              type: 'Int',
+              isPrimaryKey: true,
+              default: 'autoincrement()',
+            },
             { name: 'email', type: 'String', isUnique: true },
             { name: 'name', type: 'String', isOptional: true },
           ],
@@ -17,9 +24,18 @@ describe('IR to Mermaid conversion', () => {
         {
           name: 'posts',
           columns: [
-            { name: 'id', type: 'Int', isPrimaryKey: true, default: 'autoincrement()' },
+            {
+              name: 'id',
+              type: 'Int',
+              isPrimaryKey: true,
+              default: 'autoincrement()',
+            },
             { name: 'title', type: 'String' },
-            { name: 'user_id', type: 'Int', references: { table: 'users', column: 'id' } },
+            {
+              name: 'user_id',
+              type: 'Int',
+              references: { table: 'users', column: 'id' },
+            },
           ],
         },
       ],
@@ -43,9 +59,7 @@ describe('IR to Mermaid conversion', () => {
       tables: [
         {
           name: 'user-profiles',
-          columns: [
-            { name: 'id', type: 'Int', isPrimaryKey: true },
-          ],
+          columns: [{ name: 'id', type: 'Int', isPrimaryKey: true }],
         },
       ],
     };
@@ -100,5 +114,27 @@ describe('IR to Mermaid conversion', () => {
     expect(mermaid).toContain('boolean is_active "NOT NULL"');
     expect(mermaid).toContain('decimal price "NOT NULL"');
     expect(mermaid).toContain('varchar description "NOT NULL"');
+  });
+
+  it('emits Mermaid-safe output for SQL with multi-line constraints', () => {
+    const sql = readFileSync(
+      __dirname + '/fixtures/multiline-constraints.sql',
+      'utf8',
+    );
+    const mermaid = irToMermaid(sqlToIR(sql));
+
+    const attributeLines = mermaid
+      .split('\n')
+      .filter((l) => /^\s{4}\S/.test(l));
+
+    for (const line of attributeLines) {
+      expect(line).not.toMatch(/\(/);
+      expect(line).not.toMatch(/\bCHECK\b/i);
+      expect(line).not.toMatch(/\bCONSTRAINT\b/i);
+      expect(line).not.toMatch(/\bGENERATED\b/);
+    }
+
+    expect(mermaid).toContain('users ||--o{ orders : "has_user_id"');
+    expect(mermaid).toContain('products ||--o{ orders : "has_product_id"');
   });
 });
