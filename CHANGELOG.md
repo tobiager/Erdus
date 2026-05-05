@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - API documentation for developers
 - Enhanced installation and development guides
 
+### Fixed
+- `sqlToIR` correctly handles multi-line `CONSTRAINT`, `CHECK`, `FOREIGN KEY ... ON DELETE / ON UPDATE`, `UNIQUE`, and `GENERATED ALWAYS AS (...) STORED` clauses. Table-level named constraints are now recognised, and multi-line wraps no longer leak into the columns array as spurious entries. This fixes Mermaid ER output that previously failed to parse with `Expecting 'BLOCK_STOP'` on PostgreSQL schemas with table-level `CHECK` or wrapped `FOREIGN KEY` definitions ([#31](https://github.com/tobiager/Erdus/issues/31)).
+
 ## [1.0.0] - 2025-09-15
 
 ### Added
